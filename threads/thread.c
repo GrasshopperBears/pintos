@@ -28,6 +28,8 @@
    that are ready to run but not actually running. */
 static struct list ready_list;
 
+static struct list sleeping_list;
+
 /* Idle thread. */
 static struct thread *idle_thread;
 
@@ -108,6 +110,7 @@ thread_init (void) {
 	/* Init the globla thread context */
 	lock_init (&tid_lock);
 	list_init (&ready_list);
+	list_init (&sleeping_list);
 	list_init (&destruction_req);
 
 	/* Set up a thread structure for the running thread. */
@@ -243,6 +246,41 @@ thread_unblock (struct thread *t) {
 	list_push_back (&ready_list, &t->elem);
 	t->status = THREAD_READY;
 	intr_set_level (old_level);
+}
+
+void
+add_sleeping_list(int64_t ticks) {
+	struct thread *curr = thread_current ();
+	enum intr_level old_level;
+
+	ASSERT (!intr_context ());
+	
+	old_level = intr_disable ();
+	set_unblock_ticks(curr, ticks);
+	if (curr != idle_thread)
+		list_push_back (&sleeping_list, &curr->elem);
+	thread_block ();
+	intr_set_level (old_level);
+}
+
+/* set unblock time of thread */
+void
+set_unblock_ticks(struct thread *t, int64_t ticks) {
+	t->sleep_until = ticks;
+}
+
+void
+thread_wake_up(int64_t ticks) {
+	struct list_elem *el = list_begin (&sleeping_list);
+
+	while(el != list_end(&sleeping_list)) {
+		struct thread *t = list_entry (el, struct thread, elem);
+		el = list_next (el);
+		if (t->sleep_until <= ticks) {
+			list_remove(&t->elem);
+			thread_unblock(t);
+		}
+	}
 }
 
 /* Returns the name of the running thread. */
