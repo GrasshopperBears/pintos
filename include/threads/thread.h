@@ -128,6 +128,7 @@ void thread_block (void);
 void thread_unblock (struct thread *);
 
 void add_sleeping_list(int64_t ticks);
+void set_unblock_ticks(struct thread *t, int64_t ticks);
 void thread_wake_up(int64_t ticks);
 
 struct thread *thread_current (void);
