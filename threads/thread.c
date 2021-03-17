@@ -649,7 +649,8 @@ allocate_tid (void) {
 }
 
 /* Check the priorities of two thread t1 and t2. 
-   if t1 is less than t2 (t1 < t2), return true, else return false */
+   if t1 is less than t2 (t1 < t2), return true, else return false.
+   This function is used in list.c to order the list. */
 
 bool 
 thread_compare (struct list_elem *e1, struct list_elem *e2, void *aux UNUSED) {
