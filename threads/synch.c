@@ -46,7 +46,14 @@ sema_init (struct semaphore *sema, unsigned value) {
 	ASSERT (sema != NULL);
 
 	sema->value = value;
+	list_init (&sema->current_threads);
 	list_init (&sema->waiters);
+}
+
+struct thread*
+find_lowest_thread(struct semaphore *sema) {
+	 struct list_elem* lowest_el = list_max(&sema->current_threads, thread_compare, NULL);
+	 return list_entry(lowest_el, struct thread, elem);
 }
 
 /* Down or "P" operation on a semaphore.  Waits for SEMA's value
@@ -60,17 +67,27 @@ sema_init (struct semaphore *sema, unsigned value) {
 void
 sema_down (struct semaphore *sema) {
 	enum intr_level old_level;
+	struct thread* lowest_thread;
+	struct list* lower_threads;
+	struct int_list_elem* stack_node;
 
 	ASSERT (sema != NULL);
 	ASSERT (!intr_context ());
 
+	list_init(lower_threads);
 	old_level = intr_disable ();
 	while (sema->value == 0) {
-		//list_push_back (&sema->waiters, &thread_current ()->elem); // original code
+		lowest_thread = find_lowest_thread(sema);
+		if (lowest_thread->priority < thread_current()->priority) {
+			stack_node->priority = lowest_thread->priority;
+			list_push_front(&lowest_thread->priority_stack, &stack_node);
+			lowest_thread->priority = thread_current()->priority;
+		}
 		list_insert_ordered(&sema->waiters, &thread_current ()->elem, thread_compare, NULL); // modify
-		thread_block (); 
+		thread_block ();
 	}
 	sema->value--;
+	list_insert_ordered(&sema->current_threads, &thread_current ()->elem, thread_compare, NULL);
 	intr_set_level (old_level);
 }
 
@@ -116,10 +133,12 @@ sema_up (struct semaphore *sema) {
 		thread_unblock (list_entry (list_pop_front (&sema->waiters),
 					struct thread, elem));
 	}
+	
 	sema->value++;
+	if (!list_empty(&thread_current()->priority_stack))
+		thread_current()->priority = list_pop_front(&thread_current()->priority_stack);
 
 	thread_kick (); // After unblock, if this thread is biger than curr, it should be changed.
-
 	intr_set_level (old_level);
 }
 

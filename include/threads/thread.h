@@ -92,6 +92,7 @@ struct thread {
 	char name[16];                      /* Name (for debugging purposes). */
 	int priority;                       /* Priority. */
 	int64_t sleep_until;
+	struct list priority_stack;
 
 	/* Shared between thread.c and synch.c. */
 	struct list_elem elem;              /* List element. */
@@ -150,5 +151,9 @@ int thread_get_load_avg (void);
 void do_iret (struct intr_frame *tf);
 
 bool thread_compare (const struct list_elem *e1, const struct list_elem *e2, void *aux UNUSED);
+struct int_list_elem {
+	int priority;
+	struct list_elem elem;
+};
 
 #endif /* threads/thread.h */

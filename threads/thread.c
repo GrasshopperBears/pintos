@@ -466,6 +466,8 @@ init_thread (struct thread *t, const char *name, int priority) {
 	t->tf.rsp = (uint64_t) t + PGSIZE - sizeof (void *);
 	t->priority = priority;
 	t->magic = THREAD_MAGIC;
+	printf('1111');
+	list_init(&t->priority_stack);
 }
 
 /* Chooses and returns the next thread to be scheduled.  Should
@@ -477,8 +479,10 @@ static struct thread *
 next_thread_to_run (void) {
 	if (list_empty (&ready_list))
 		return idle_thread;
-	else
+	else {
+		list_sort(&ready_list, &thread_compare, NULL);
 		return list_entry (list_pop_front (&ready_list), struct thread, elem);
+	}
 }
 
 /* Use iretq to launch the thread */
