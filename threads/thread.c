@@ -65,7 +65,8 @@ static void do_schedule(int status);
 static void schedule (void);
 static tid_t allocate_tid (void);
 
-bool thread_compare (struct list_elem *e1, struct list_elem *e2, void *aux UNUSED);
+bool thread_compare (const struct list_elem *e1, const struct list_elem *e2, void *aux UNUSED);
+void thread_kick (void);
 
 /* Returns true if T appears to point to a valid thread. */
 #define is_thread(t) ((t) != NULL && (t)->magic == THREAD_MAGIC)
@@ -211,17 +212,8 @@ thread_create (const char *name, int priority,
 
 	/* Add to run queue. */
 	thread_unblock (t);
-
-	if (!list_empty(&ready_list)){
-
-		struct thread *curr = thread_current ();
-		struct thread *high = list_entry (list_begin(&ready_list), struct thread, elem);
-
-			if (curr->priority < high->priority)
-				thread_yield ();
-		
-	}
-
+	thread_kick ();
+	
 	return tid;
 }
 
@@ -362,7 +354,12 @@ thread_yield (void) {
 void
 thread_set_priority (int new_priority) {
 	thread_current ()->priority = new_priority;
-	
+	thread_kick ();
+}
+
+void
+thread_kick (void) {
+
 	if (!list_empty(&ready_list)) {
 		struct thread *curr = thread_current ();
 		struct thread *high = list_entry (list_begin(&ready_list), struct thread, elem);
@@ -371,6 +368,7 @@ thread_set_priority (int new_priority) {
 			thread_yield ();
 
 	}
+
 }
 
 /* Returns the current thread's priority. */
@@ -653,7 +651,7 @@ allocate_tid (void) {
    This function is used in list.c to order the list. */
 
 bool 
-thread_compare (struct list_elem *e1, struct list_elem *e2, void *aux UNUSED) {
+thread_compare (const struct list_elem *e1, const struct list_elem *e2, void *aux UNUSED) {
 	struct thread *t1 = list_entry(e1, struct thread, elem);
 	struct thread *t2 = list_entry(e2, struct thread, elem);
 	
