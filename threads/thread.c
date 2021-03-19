@@ -187,7 +187,6 @@ thread_create (const char *name, int priority,
 		thread_func *function, void *aux) {
 	struct thread *t;
 	tid_t tid;
-	// struct list priority_stack;
 
 	ASSERT (function != NULL);
 
@@ -198,11 +197,8 @@ thread_create (const char *name, int priority,
 
 	/* Initialize thread. */
 	init_thread (t, name, priority);
-	// list_init(&priority_stack);
-	// t->priority_stack = priority_stack;
-	// printf("IS EMPTY: %d\n", list_empty(&priority_stack));
 	tid = t->tid = allocate_tid ();
-	// list_init(&t->priority_stack);
+
 	/* Call the kernel_thread if it scheduled.
 	 * Note) rdi is 1st argument, and rsi is 2nd argument. */
 	t->tf.rip = (uintptr_t) kernel_thread;
@@ -370,11 +366,8 @@ thread_kick (void) {
 
 		list_sort(&ready_list, &thread_compare, NULL);
 		high = list_entry (list_begin(&ready_list), struct thread, elem);
-		// msg("%d, %d",curr->priority, high->priority);
-		if (curr->priority < high->priority){
-			// msg("Is it?");
+		if (curr->priority < high->priority)
 			thread_yield ();
-		}
 	}
 }
 
@@ -469,7 +462,6 @@ init_thread (struct thread *t, const char *name, int priority) {
 	ASSERT (PRI_MIN <= priority && priority <= PRI_MAX);
 	ASSERT (name != NULL);
 
-	// printf("INITIALLIZED...? : %d  %d  %d  %d\n", list_empty(&t->priority_stack),list_begin (&t->priority_stack)!=NULL, list_begin (&t->priority_stack)->prev!=NULL, list_begin (&t->priority_stack)->next==NULL);
 	memset (t, 0, sizeof *t);
 	t->priority_stack = priority_stack;
 	list_init(&t->priority_stack);
@@ -489,10 +481,8 @@ static struct thread *
 next_thread_to_run (void) {
 	if (list_empty (&ready_list))
 		return idle_thread;
-	else {
-		// list_sort(&ready_list, &thread_compare, NULL);
+	else
 		return list_entry (list_pop_front (&ready_list), struct thread, elem);
-	}
 }
 
 /* Use iretq to launch the thread */

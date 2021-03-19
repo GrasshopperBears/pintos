@@ -70,7 +70,6 @@ sema_init (struct semaphore *sema, unsigned value) {
 void
 sema_down (struct semaphore *sema) {
 	enum intr_level old_level;
-	// struct thread* lowest_thread = NULL;
 	struct int_list_elem* stack_node;
 
 	ASSERT (sema != NULL);
@@ -78,28 +77,11 @@ sema_down (struct semaphore *sema) {
 
 	old_level = intr_disable ();
 
-	// printf("\nth: %s,LIST SIZE: %d\n",thread_current()->name , list_size(&sema->current_threads));
 	while (sema->value == 0) {
-		// msg("\nth: %s,LIST SIZE: %d\n",thread_current()->name , list_size(&sema->current_threads));
-		// if (list_size(&sema->current_threads) > 0)
-		// 	lowest_thread = find_lowest_thread(sema);
-		// // printf("\nLOWEST: tid %d %d, CURRENT:%d\n",lowest_thread->tid , lowest_thread->priority, thread_current()->priority);
-		// if (lowest_thread != NULL && lowest_thread->priority < thread_current()->priority) {
-		// 	msg("\nFOUND ONE!!!!\n");
-		// 	stack_node->priority = lowest_thread->priority;
-		// 	list_push_front(&lowest_thread->priority_stack, &stack_node->elem);
-		// 	lowest_thread->priority = thread_current()->priority;
-		// }
 		list_insert_ordered(&sema->waiters, &thread_current ()->elem, thread_compare, NULL); // modify
 		thread_block ();
 	}
 	sema->value--;
-	// list_push_front(&sema->current_threads, &thread_current ()->elem);
-	// printf("\nPREV\n");
-	// msg("put it in\n");
-	// printf("\nPUT IT IN!!\n");
-	// printf("\nCURRENT THREADS id: %s\n", list_entry(list_begin(sema), struct thread, elem)->tid);
-	// printf("\nOVER\n");
 	intr_set_level (old_level);
 }
 
@@ -146,14 +128,9 @@ sema_up (struct semaphore *sema) {
 		t = list_pop_front (&sema->waiters);
 		thread_unblock (list_entry (t,
 					struct thread, elem));
-		// msg("%s", list_entry (t, struct thread, elem)->name);
-		// if (strcmp(list_entry (t, struct thread, elem)->name, "main"))
-		// 	msg("%s: %d", list_entry (t, struct thread, elem)->name, list_entry (t, struct thread, elem)->status);
 	}
 
 	sema->value++;
-	// if (!list_empty(&thread_current()->priority_stack))
-	// 	thread_current()->priority = list_pop_front(&thread_current()->priority_stack);
 	recover_priority();
 	thread_yield (); // After unblock, if this thread is biger than curr, it should be changed.
 	intr_set_level (old_level);
@@ -246,13 +223,11 @@ lock_acquire (struct lock *lock) {
 		if (lock->holder->priority < thread_current()->priority) {
 			stack_node.priority = lock->holder->priority;
 			list_push_front(&lock->holder->priority_stack, &stack_node.elem);
-			printf("INSERTED\n");
 			lock->holder->priority = thread_current()->priority;
 		}
+
 		sema = &lock->semaphore;
 		list_insert_ordered(&sema->waiters, &thread_current ()->elem, thread_compare, NULL);
-		
-		// printf("THREAD %s INSERTED\n", list_entry(list_begin(&sema->waiters), struct thread, elem)->name);
 		thread_block();
 		intr_set_level(old_level);
 	}
@@ -293,26 +268,14 @@ lock_release (struct lock *lock) {
 
 	lock->holder = NULL;
 	sema_up (&lock->semaphore);
-
-	// elem = list_pop_front(&t->priority_stack);
-	// printf("LOCK RELEASED\n");
-	// if (!list_empty(&t->priority_stack)) {
-	// 	// printf("SIZE: %d\n", list_empty(&t->priority_stack));
-	// 	stack_node = list_entry(list_pop_front(&t->priority_stack), struct int_list_elem, elem);
-	// 	t->priority = stack_node->priority;
-	// }
 }
 
 void*
 recover_priority(void) {
 	struct thread* t = thread_current();
-	// struct list_elem* last;
 
-	if (!list_empty(&t->priority_stack)) {
-		// printf("RECOVERED\n");
-		// last = 
+	if (!list_empty(&t->priority_stack))
 		thread_current()->priority = list_entry(list_pop_front(&thread_current()->priority_stack), struct int_list_elem, elem)->priority;
-	}
 }
 
 /* Returns true if the current thread holds LOCK, false
@@ -375,7 +338,6 @@ cond_wait (struct condition *cond, struct lock *lock) {
 
 	sema_init (&waiter.semaphore, 0);
 	list_insert_ordered(&cond->waiters, &waiter.elem, semaphore_compare, NULL);
-	//list_push_back (&cond->waiters, &waiter.elem); // To store semaphore in the linked list, make new struct semaphore_elem. And push sema_elem in the list of cond.
 	lock_release (lock);
 	sema_down (&waiter.semaphore);
 	lock_acquire (lock);
