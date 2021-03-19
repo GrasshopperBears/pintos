@@ -44,12 +44,6 @@ is_head (struct list_elem *elem) {
    false otherwise. */
 static inline bool
 is_interior (struct list_elem *elem) {
-	// if (elem == NULL)
-	// 	printf("CASE 1\n");
-	// else if (elem->prev == NULL)
-	// 	printf("CASE 1\n");
-	// else if (elem->next == NULL)
-	// 	printf("CASE 1\n");
 	return elem != NULL && elem->prev != NULL && elem->next != NULL;
 }
 
