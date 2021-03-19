@@ -187,6 +187,7 @@ thread_create (const char *name, int priority,
 		thread_func *function, void *aux) {
 	struct thread *t;
 	tid_t tid;
+	// struct list priority_stack;
 
 	ASSERT (function != NULL);
 
@@ -197,8 +198,11 @@ thread_create (const char *name, int priority,
 
 	/* Initialize thread. */
 	init_thread (t, name, priority);
+	// list_init(&priority_stack);
+	// t->priority_stack = priority_stack;
+	// printf("IS EMPTY: %d\n", list_empty(&priority_stack));
 	tid = t->tid = allocate_tid ();
-
+	// list_init(&t->priority_stack);
 	/* Call the kernel_thread if it scheduled.
 	 * Note) rdi is 1st argument, and rsi is 2nd argument. */
 	t->tf.rip = (uintptr_t) kernel_thread;
@@ -362,13 +366,16 @@ thread_kick (void) {
 
 	if (!list_empty(&ready_list)) {
 		struct thread *curr = thread_current ();
-		struct thread *high = list_entry (list_begin(&ready_list), struct thread, elem);
+		struct thread *high;
 
-		if (curr->priority < high->priority)
+		list_sort(&ready_list, &thread_compare, NULL);
+		high = list_entry (list_begin(&ready_list), struct thread, elem);
+		// msg("%d, %d",curr->priority, high->priority);
+		if (curr->priority < high->priority){
+			// msg("Is it?");
 			thread_yield ();
-
+		}
 	}
-
 }
 
 /* Returns the current thread's priority. */
@@ -456,18 +463,21 @@ kernel_thread (thread_func *function, void *aux) {
    NAME. */
 static void
 init_thread (struct thread *t, const char *name, int priority) {
+	struct list priority_stack;
+
 	ASSERT (t != NULL);
 	ASSERT (PRI_MIN <= priority && priority <= PRI_MAX);
 	ASSERT (name != NULL);
 
+	// printf("INITIALLIZED...? : %d  %d  %d  %d\n", list_empty(&t->priority_stack),list_begin (&t->priority_stack)!=NULL, list_begin (&t->priority_stack)->prev!=NULL, list_begin (&t->priority_stack)->next==NULL);
 	memset (t, 0, sizeof *t);
+	t->priority_stack = priority_stack;
+	list_init(&t->priority_stack);
 	t->status = THREAD_BLOCKED;
 	strlcpy (t->name, name, sizeof t->name);
 	t->tf.rsp = (uint64_t) t + PGSIZE - sizeof (void *);
 	t->priority = priority;
 	t->magic = THREAD_MAGIC;
-	printf('1111');
-	list_init(&t->priority_stack);
 }
 
 /* Chooses and returns the next thread to be scheduled.  Should
@@ -480,7 +490,7 @@ next_thread_to_run (void) {
 	if (list_empty (&ready_list))
 		return idle_thread;
 	else {
-		list_sort(&ready_list, &thread_compare, NULL);
+		// list_sort(&ready_list, &thread_compare, NULL);
 		return list_entry (list_pop_front (&ready_list), struct thread, elem);
 	}
 }

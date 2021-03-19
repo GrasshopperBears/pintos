@@ -32,6 +32,8 @@
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 
+void* recover_priority(void);
+
 /* Initializes semaphore SEMA to VALUE.  A semaphore is a
    nonnegative integer along with two atomic operators for
    manipulating it:
@@ -50,11 +52,12 @@ sema_init (struct semaphore *sema, unsigned value) {
 	list_init (&sema->waiters);
 }
 
-struct thread*
-find_lowest_thread(struct semaphore *sema) {
-	 struct list_elem* lowest_el = list_max(&sema->current_threads, thread_compare, NULL);
-	 return list_entry(lowest_el, struct thread, elem);
-}
+// struct thread*
+// find_lowest_thread(struct semaphore *sema) {
+// 	struct list_elem* lowest_el = list_max(&sema->current_threads, thread_compare, NULL);
+// 	// printf("\nLOWEST %d: %d\n", list_entry(lowest_el, struct thread, elem)->tid, list_entry(lowest_el, struct thread, elem)->priority);
+// 	return list_entry(lowest_el, struct thread, elem);
+// }
 
 /* Down or "P" operation on a semaphore.  Waits for SEMA's value
    to become positive and then atomically decrements it.
@@ -67,27 +70,36 @@ find_lowest_thread(struct semaphore *sema) {
 void
 sema_down (struct semaphore *sema) {
 	enum intr_level old_level;
-	struct thread* lowest_thread;
-	struct list* lower_threads;
+	// struct thread* lowest_thread = NULL;
 	struct int_list_elem* stack_node;
 
 	ASSERT (sema != NULL);
 	ASSERT (!intr_context ());
 
-	list_init(lower_threads);
 	old_level = intr_disable ();
+
+	// printf("\nth: %s,LIST SIZE: %d\n",thread_current()->name , list_size(&sema->current_threads));
 	while (sema->value == 0) {
-		lowest_thread = find_lowest_thread(sema);
-		if (lowest_thread->priority < thread_current()->priority) {
-			stack_node->priority = lowest_thread->priority;
-			list_push_front(&lowest_thread->priority_stack, &stack_node);
-			lowest_thread->priority = thread_current()->priority;
-		}
+		// msg("\nth: %s,LIST SIZE: %d\n",thread_current()->name , list_size(&sema->current_threads));
+		// if (list_size(&sema->current_threads) > 0)
+		// 	lowest_thread = find_lowest_thread(sema);
+		// // printf("\nLOWEST: tid %d %d, CURRENT:%d\n",lowest_thread->tid , lowest_thread->priority, thread_current()->priority);
+		// if (lowest_thread != NULL && lowest_thread->priority < thread_current()->priority) {
+		// 	msg("\nFOUND ONE!!!!\n");
+		// 	stack_node->priority = lowest_thread->priority;
+		// 	list_push_front(&lowest_thread->priority_stack, &stack_node->elem);
+		// 	lowest_thread->priority = thread_current()->priority;
+		// }
 		list_insert_ordered(&sema->waiters, &thread_current ()->elem, thread_compare, NULL); // modify
 		thread_block ();
 	}
 	sema->value--;
-	list_insert_ordered(&sema->current_threads, &thread_current ()->elem, thread_compare, NULL);
+	// list_push_front(&sema->current_threads, &thread_current ()->elem);
+	// printf("\nPREV\n");
+	// msg("put it in\n");
+	// printf("\nPUT IT IN!!\n");
+	// printf("\nCURRENT THREADS id: %s\n", list_entry(list_begin(sema), struct thread, elem)->tid);
+	// printf("\nOVER\n");
 	intr_set_level (old_level);
 }
 
@@ -123,6 +135,7 @@ sema_try_down (struct semaphore *sema) {
 void
 sema_up (struct semaphore *sema) {
 	enum intr_level old_level;
+	struct list_elem* t;
 
 	ASSERT (sema != NULL);
 
@@ -130,15 +143,19 @@ sema_up (struct semaphore *sema) {
 
 	if (!list_empty (&sema->waiters)) {
 		list_sort(&sema->waiters, thread_compare, NULL); // Before unblock thread, some threads in waiters list could be changed their priority.
-		thread_unblock (list_entry (list_pop_front (&sema->waiters),
+		t = list_pop_front (&sema->waiters);
+		thread_unblock (list_entry (t,
 					struct thread, elem));
+		// msg("%s", list_entry (t, struct thread, elem)->name);
+		// if (strcmp(list_entry (t, struct thread, elem)->name, "main"))
+		// 	msg("%s: %d", list_entry (t, struct thread, elem)->name, list_entry (t, struct thread, elem)->status);
 	}
-	
-	sema->value++;
-	if (!list_empty(&thread_current()->priority_stack))
-		thread_current()->priority = list_pop_front(&thread_current()->priority_stack);
 
-	thread_kick (); // After unblock, if this thread is biger than curr, it should be changed.
+	sema->value++;
+	// if (!list_empty(&thread_current()->priority_stack))
+	// 	thread_current()->priority = list_pop_front(&thread_current()->priority_stack);
+	recover_priority();
+	thread_yield (); // After unblock, if this thread is biger than curr, it should be changed.
 	intr_set_level (old_level);
 }
 
@@ -210,11 +227,35 @@ lock_init (struct lock *lock) {
    we need to sleep. */
 void
 lock_acquire (struct lock *lock) {
+	bool success = false;
+	struct int_list_elem stack_node;
+	enum intr_level old_level;
+	struct thread* lowest_thread = NULL;
+	struct semaphore* sema;
+
 	ASSERT (lock != NULL);
 	ASSERT (!intr_context ());
 	ASSERT (!lock_held_by_current_thread (lock));
-
-	sema_down (&lock->semaphore);
+	
+	
+	while (!success) {
+		success = sema_try_down(&lock->semaphore);
+		if (success)
+			break;
+		old_level = intr_disable ();
+		if (lock->holder->priority < thread_current()->priority) {
+			stack_node.priority = lock->holder->priority;
+			list_push_front(&lock->holder->priority_stack, &stack_node.elem);
+			printf("INSERTED\n");
+			lock->holder->priority = thread_current()->priority;
+		}
+		sema = &lock->semaphore;
+		list_insert_ordered(&sema->waiters, &thread_current ()->elem, thread_compare, NULL);
+		
+		// printf("THREAD %s INSERTED\n", list_entry(list_begin(&sema->waiters), struct thread, elem)->name);
+		thread_block();
+		intr_set_level(old_level);
+	}
 	lock->holder = thread_current ();
 }
 
@@ -245,11 +286,33 @@ lock_try_acquire (struct lock *lock) {
    handler. */
 void
 lock_release (struct lock *lock) {
+	struct thread* t = thread_current();
+	struct int_list_elem* stack_node;
 	ASSERT (lock != NULL);
 	ASSERT (lock_held_by_current_thread (lock));
 
 	lock->holder = NULL;
 	sema_up (&lock->semaphore);
+
+	// elem = list_pop_front(&t->priority_stack);
+	// printf("LOCK RELEASED\n");
+	// if (!list_empty(&t->priority_stack)) {
+	// 	// printf("SIZE: %d\n", list_empty(&t->priority_stack));
+	// 	stack_node = list_entry(list_pop_front(&t->priority_stack), struct int_list_elem, elem);
+	// 	t->priority = stack_node->priority;
+	// }
+}
+
+void*
+recover_priority(void) {
+	struct thread* t = thread_current();
+	// struct list_elem* last;
+
+	if (!list_empty(&t->priority_stack)) {
+		// printf("RECOVERED\n");
+		// last = 
+		thread_current()->priority = list_entry(list_pop_front(&thread_current()->priority_stack), struct int_list_elem, elem)->priority;
+	}
 }
 
 /* Returns true if the current thread holds LOCK, false
