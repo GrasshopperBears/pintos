@@ -48,16 +48,8 @@ sema_init (struct semaphore *sema, unsigned value) {
 	ASSERT (sema != NULL);
 
 	sema->value = value;
-	list_init (&sema->current_threads);
 	list_init (&sema->waiters);
 }
-
-// struct thread*
-// find_lowest_thread(struct semaphore *sema) {
-// 	struct list_elem* lowest_el = list_max(&sema->current_threads, thread_compare, NULL);
-// 	// printf("\nLOWEST %d: %d\n", list_entry(lowest_el, struct thread, elem)->tid, list_entry(lowest_el, struct thread, elem)->priority);
-// 	return list_entry(lowest_el, struct thread, elem);
-// }
 
 /* Down or "P" operation on a semaphore.  Waits for SEMA's value
    to become positive and then atomically decrements it.
@@ -207,13 +199,10 @@ lock_acquire (struct lock *lock) {
 	bool success = false;
 	struct int_list_elem stack_node;
 	enum intr_level old_level;
-	struct thread* lowest_thread = NULL;
-	struct semaphore* sema;
 
 	ASSERT (lock != NULL);
 	ASSERT (!intr_context ());
 	ASSERT (!lock_held_by_current_thread (lock));
-	
 	
 	while (!success) {
 		success = sema_try_down(&lock->semaphore);
@@ -226,8 +215,7 @@ lock_acquire (struct lock *lock) {
 			lock->holder->priority = thread_current()->priority;
 		}
 
-		sema = &lock->semaphore;
-		list_insert_ordered(&sema->waiters, &thread_current ()->elem, thread_compare, NULL);
+		list_insert_ordered(&(&lock->semaphore)->waiters, &thread_current ()->elem, thread_compare, NULL);
 		thread_block();
 		intr_set_level(old_level);
 	}
