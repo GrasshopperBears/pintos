@@ -32,7 +32,7 @@
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 
-void* recover_priority(void);
+void* recover_priority(struct lock *lock);
 
 /* Initializes semaphore SEMA to VALUE.  A semaphore is a
    nonnegative integer along with two atomic operators for
@@ -109,22 +109,16 @@ sema_try_down (struct semaphore *sema) {
 void
 sema_up (struct semaphore *sema) {
 	enum intr_level old_level;
-	struct list_elem* t;
 
 	ASSERT (sema != NULL);
-
 	old_level = intr_disable ();
 
 	if (!list_empty (&sema->waiters)) {
 		list_sort(&sema->waiters, thread_compare, NULL); // Before unblock thread, some threads in waiters list could be changed their priority.
-		t = list_pop_front (&sema->waiters);
-		thread_unblock (list_entry (t,
-					struct thread, elem));
+		thread_unblock (list_entry (list_pop_front (&sema->waiters), struct thread, elem));
 	}
 
 	sema->value++;
-	recover_priority();
-	thread_yield (); // After unblock, if this thread is biger than curr, it should be changed.
 	intr_set_level (old_level);
 }
 
@@ -197,29 +191,29 @@ lock_init (struct lock *lock) {
 void
 lock_acquire (struct lock *lock) {
 	bool success = false;
-	struct int_list_elem stack_node;
+	struct donate_elem el;
 	enum intr_level old_level;
 
 	ASSERT (lock != NULL);
 	ASSERT (!intr_context ());
 	ASSERT (!lock_held_by_current_thread (lock));
 	
+	old_level = intr_disable ();
 	while (!success) {
 		success = sema_try_down(&lock->semaphore);
 		if (success)
 			break;
-		old_level = intr_disable ();
 		if (lock->holder->priority < thread_current()->priority) {
-			stack_node.priority = lock->holder->priority;
-			list_push_front(&lock->holder->priority_stack, &stack_node.elem);
+			el.original_priority = lock->holder->priority;
+			el.lock = lock;
+			list_push_front(&lock->holder->donation_list, &el.elem);
 			lock->holder->priority = thread_current()->priority;
 		}
-
 		list_insert_ordered(&(&lock->semaphore)->waiters, &thread_current ()->elem, thread_compare, NULL);
 		thread_block();
-		intr_set_level(old_level);
 	}
 	lock->holder = thread_current ();
+	intr_set_level(old_level);
 }
 
 /* Tries to acquires LOCK and returns true if successful or false
@@ -249,21 +243,27 @@ lock_try_acquire (struct lock *lock) {
    handler. */
 void
 lock_release (struct lock *lock) {
-	struct thread* t = thread_current();
-	struct int_list_elem* stack_node;
 	ASSERT (lock != NULL);
 	ASSERT (lock_held_by_current_thread (lock));
 
 	lock->holder = NULL;
 	sema_up (&lock->semaphore);
+	recover_priority(lock);
 }
 
 void*
-recover_priority(void) {
+recover_priority(struct lock *lock) {
 	struct thread* t = thread_current();
+	struct donate_elem* el;
 
-	if (!list_empty(&t->priority_stack))
-		thread_current()->priority = list_entry(list_pop_front(&thread_current()->priority_stack), struct int_list_elem, elem)->priority;
+	if (!list_empty(&t->donation_list)) {
+		el = list_entry(list_begin(&t->donation_list), struct donate_elem, elem);
+		if (el->lock == lock) {
+			list_pop_front(&t->donation_list);
+			thread_current()->priority = el->original_priority;
+		}
+	}
+	thread_kick ();
 }
 
 /* Returns true if the current thread holds LOCK, false
