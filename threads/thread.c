@@ -359,11 +359,10 @@ thread_set_priority (int new_priority) {
 
 void
 thread_kick (void) {
+	struct thread *curr = thread_current ();
+	struct thread *high;
 
 	if (!list_empty(&ready_list)) {
-		struct thread *curr = thread_current ();
-		struct thread *high;
-
 		list_sort(&ready_list, &thread_compare, NULL);
 		high = list_entry (list_begin(&ready_list), struct thread, elem);
 		if (curr->priority < high->priority)
@@ -456,15 +455,15 @@ kernel_thread (thread_func *function, void *aux) {
    NAME. */
 static void
 init_thread (struct thread *t, const char *name, int priority) {
-	struct list priority_stack;
+	struct list donated_list;
 
 	ASSERT (t != NULL);
 	ASSERT (PRI_MIN <= priority && priority <= PRI_MAX);
 	ASSERT (name != NULL);
 
 	memset (t, 0, sizeof *t);
-	t->priority_stack = priority_stack;
-	list_init(&t->priority_stack);
+	t->donation_list = donated_list;
+	list_init(&t->donation_list);
 	t->status = THREAD_BLOCKED;
 	strlcpy (t->name, name, sizeof t->name);
 	t->tf.rsp = (uint64_t) t + PGSIZE - sizeof (void *);
