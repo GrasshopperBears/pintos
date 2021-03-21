@@ -11,6 +11,8 @@
 #include "threads/synch.h"
 #include "threads/vaddr.h"
 #include "intrinsic.h"
+//#include "threads/fixed-point.h"
+#include "fixed-point.c"
 #ifdef USERPROG
 #include "userprog/process.h"
 #endif
@@ -121,6 +123,9 @@ thread_init (void) {
 	init_thread (initial_thread, "main", PRI_DEFAULT);
 	initial_thread->status = THREAD_RUNNING;
 	initial_thread->tid = allocate_tid ();
+
+	initial_thread->nice = 0; //Initialize nice of thread to 0.
+	initial_thread->recent_cpu = 0; //Initialize nice of thread to 0.
 }
 
 /* Starts preemptive thread scheduling by enabling interrupts.
@@ -386,7 +391,10 @@ thread_set_nice (int nice UNUSED) {
 int
 thread_get_nice (void) {
 	/* TODO: Your implementation goes here */
-	return 0;
+
+	struct thread *cur = thread_current ();
+	int nice = cur->nice;
+	return nice;
 }
 
 /* Returns 100 times the system load average. */
@@ -400,7 +408,12 @@ thread_get_load_avg (void) {
 int
 thread_get_recent_cpu (void) {
 	/* TODO: Your implementation goes here */
-	return 0;
+	struct thread *cur = thread_current ();
+	int recent = cur->recent_cpu;
+
+	int result = multiple_f_n (recent, 100);
+
+	return result;
 }
 
 /* Idle thread.  Executes when no other thread is ready to run.
@@ -469,6 +482,9 @@ init_thread (struct thread *t, const char *name, int priority) {
 	t->tf.rsp = (uint64_t) t + PGSIZE - sizeof (void *);
 	t->priority = priority;
 	t->magic = THREAD_MAGIC;
+
+	t->recent_cpu = 0;
+	t->nice = 0;
 }
 
 /* Chooses and returns the next thread to be scheduled.  Should
