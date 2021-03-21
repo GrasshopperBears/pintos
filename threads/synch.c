@@ -37,6 +37,7 @@ void add_donate_list(struct lock* lock);
 void update_donate_list(struct lock* lock);
 struct list_elem* find_donate_elem_by_lock(struct list* list, struct lock* lock);
 bool donate_elem_compare (const struct list_elem *e1, const struct list_elem *e2, void *aux UNUSED);
+bool print_waiters (struct semaphore *sema);
 
 /* Initializes semaphore SEMA to VALUE.  A semaphore is a
    nonnegative integer along with two atomic operators for
@@ -254,7 +255,8 @@ lock_acquire (struct lock *lock) {
 			printf("(ACQ) %s to prior %d\n", lock->holder->name, lock->holder->priority);
 		}
 		printf("SEMA WAITERS EMPTY?: %d\n", list_empty(&sema->waiters));
-		printf("SEMA WAITERS FIRST ELEM NAME?: %s\n", list_entry(list_begin(&sema->waiters), struct thread, elem)->name);
+		//printf("SEMA WAITERS FIRST ELEM NAME?: %s\n", list_entry(list_begin(&sema->waiters), struct thread, elem)->name);
+		//print_waiters(sema);
 		list_push_front(&sema->waiters, &thread_current ()->elem);
 		// list_insert_ordered(&sema->waiters, &thread_current ()->elem, thread_compare, NULL);
 		// printf("INSERTED\n");
@@ -555,4 +557,25 @@ donate_elem_compare (const struct list_elem *e1, const struct list_elem *e2, voi
 		return true;
 	else
 		return false;
+}
+
+bool
+print_waiters (struct semaphore *sema) {
+
+	if (!list_empty(&sema->waiters)) {
+
+		struct list_elem *e = list_begin(&sema->waiters);
+
+		while (e != list_end(&sema->waiters)) {
+
+			struct thread *t = list_entry(e, struct thread, elem);
+
+			printf("name : %s, priority %d", t->name, t->priority);
+
+			e = list_next (e);
+
+		}
+
+	}
+
 }
