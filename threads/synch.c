@@ -202,10 +202,10 @@ lock_init (struct lock *lock) {
 void
 lock_acquire (struct lock *lock) {
 	bool success = false;
+	struct donate_elem* el;
 	enum intr_level old_level;
 	struct semaphore* sema = &lock->semaphore;
 	int prev;
-	struct donate_elem* el;
 
 	ASSERT (lock != NULL);
 	ASSERT (!intr_context ());
@@ -228,12 +228,13 @@ lock_acquire (struct lock *lock) {
 			lock->holder = thread_current ();
 			break;
 		}
-		printf("FAILED SEMA DOWN\n");
+		// printf("FAILED SEMA DOWN\n");
 		// printf("original: %d, to: %d\n", lock->holder->priority, thread_current()->priority);
 		old_level = intr_disable ();
+		list_push_front(&sema->waiters, &thread_current ()->elem);
 		if (lock->holder->priority < thread_current()->priority) {
 			printf("START DONATION\n");
-			printf("CURRENT LOCK NAME: %s\n", lock->holder->name);
+			// printf("CURRENT LOCK NAME: %s\n", lock->holder->name);
 
 			// printf("SIZE IN WHILE: %d\n", list_size(&lock->holder->donation_list));
 			// printf("EMPTY: %d\n", list_size(&lock->holder->donation_list));
@@ -242,20 +243,22 @@ lock_acquire (struct lock *lock) {
 			if (!lock->donated) {
 				lock->original_priority = prev;
 				lock->donated = true;
-			
 				el->lock = lock;
+				printf("HI\n");
 				el->priority_after_donation = thread_current()->priority;
 				list_push_front(&lock->holder->donation_list, &el->elem);
 				// printf("SIZE IN WHILE: %d\n", list_size(&lock->holder->donation_list));
+				// printf("PUSHED\n");
 			} else {	
 				update_donate_list(lock);
 			}
 			// printf("%s to prior %d\n", lock->holder->name, lock->holder->priority);
-			printf("(ACQ) %s to prior %d\n", lock->holder->name, lock->holder->priority);
+			// printf("(ACQ) %s to prior %d\n", lock->holder->name, lock->holder->priority);
 		}
-		printf("SEMA WAITERS EMPTY?: %d\n", list_empty(&sema->waiters));
-		printf("SEMA WAITERS FIRST ELEM NAME?: %s\n", list_entry(list_begin(&sema->waiters), struct thread, elem)->name);
-		list_push_front(&sema->waiters, &thread_current ()->elem);
+		
+		// printf("SEMA WAITERS EMPTY?: %d\n", list_empty(&sema->waiters));
+		// printf("SEMA WAITERS FIRST ELEM NAME?: %s\n", list_entry(list_begin(&sema->waiters), struct thread, elem)->name);
+		
 		// list_insert_ordered(&sema->waiters, &thread_current ()->elem, thread_compare, NULL);
 		// printf("INSERTED\n");
 		thread_block();
