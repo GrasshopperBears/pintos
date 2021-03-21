@@ -455,9 +455,6 @@ kernel_thread (thread_func *function, void *aux) {
    NAME. */
 static void
 init_thread (struct thread *t, const char *name, int priority) {
-	// struct list donation_list;
-	// struct donate_elem el;
-
 	ASSERT (t != NULL);
 	ASSERT (PRI_MIN <= priority && priority <= PRI_MAX);
 	ASSERT (name != NULL);
@@ -468,16 +465,7 @@ init_thread (struct thread *t, const char *name, int priority) {
 	t->tf.rsp = (uint64_t) t + PGSIZE - sizeof (void *);
 	t->priority = priority;
 	t->magic = THREAD_MAGIC;
-	// list_init(&donation_list);
 	list_init(&t->donation_list);
-	// t->donation_list = donation_list;
-
-	// el.priority_after_donation = 31;
-	// list_push_front(&t->donation_list, &el.elem);
-
-	// printf("INITIALIZED1: %d\n", list_size(&donation_list));
-	// printf("INITIALIZED?: %d\n", list_size(&t->donation_list));
-	// printf("%s THREAD DONATION LIST ADDR: %p\n", t->name, t->donation_list);
 }
 
 /* Chooses and returns the next thread to be scheduled.  Should
