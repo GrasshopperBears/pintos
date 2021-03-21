@@ -153,7 +153,7 @@ void do_iret (struct intr_frame *tf);
 bool thread_compare (const struct list_elem *e1, const struct list_elem *e2, void *aux UNUSED);
 struct donate_elem {
 	struct lock* lock;
-	int original_priority;
+	int priority_after_donation;
 	struct list_elem elem;
 };
 
