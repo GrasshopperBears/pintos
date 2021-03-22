@@ -216,6 +216,8 @@ lock_acquire (struct lock *lock) {
 		if (lock->holder->priority < thread_current()->priority) {
 			prev = lock->holder->priority;
 			lock->holder->priority = thread_current()->priority;
+			if (lock->holder->original_priority == NULL)
+				lock->holder->original_priority = prev;
 			if (!lock->donated) {
 				lock->original_priority = prev;
 				lock->donated = true;
@@ -293,8 +295,11 @@ lock_release (struct lock *lock) {
 
 		list_remove(&donate_el->elem);
 		lock->donated = false;
-		t->priority = lock->original_priority;
-		lock->donated = false;
+		if (list_empty(&t->donation_list)) {
+			t->priority = t->original_priority;
+			t->original_priority = NULL;
+		} else if (t->priority <= donate_el->priority_after_donation)
+			t->priority = lock->original_priority;
 	}
 
 	if (!list_empty (&sema->waiters)) {
