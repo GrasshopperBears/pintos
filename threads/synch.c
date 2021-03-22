@@ -200,9 +200,9 @@ lock_acquire (struct lock *lock) {
 	enum intr_level old_level;
 	struct semaphore* sema = &lock->semaphore;
 	struct list_elem *list_el;
-	// enum intr_level old_level;
 	struct donate_elem new_el;
 	struct donate_elem* donate_el;
+	struct lock_list_elem new_lock_elem;
 	int prev;
 
 	ASSERT (lock != NULL);
@@ -216,7 +216,7 @@ lock_acquire (struct lock *lock) {
 			if (!list_empty(&thread_current()->waiting_list)) {
 				el = list_begin(&thread_current()->waiting_list);
 				while (el != list_end(&thread_current()->waiting_list)) {
-					lock_ptr = list_entry(el, struct lock, elem);
+					lock_ptr = list_entry(el, struct lock_list_elem, elem)->lock;
 					if (lock_ptr == lock) {
 						list_remove(el);
 						break;
@@ -226,8 +226,9 @@ lock_acquire (struct lock *lock) {
 			}
 			break;
 		}
-		// old_level = intr_disable ();
-		list_push_front(&thread_current()->waiting_list, &lock->elem);
+
+		new_lock_elem.lock = lock;
+		list_push_front(&thread_current()->waiting_list, &new_lock_elem.elem);
 		list_push_front(&sema->waiters, &thread_current ()->elem);
 
 		if (lock->holder->priority < thread_current()->priority) {
@@ -252,8 +253,8 @@ lock_acquire (struct lock *lock) {
 				donate_el->priority_after_donation = lock->holder->priority;
 			}
 			donation_propagation(lock, 0);
-			// printf("FINISHED\n");
 		}
+		
 		old_level = intr_disable ();
 		thread_block();
 		intr_set_level(old_level);
@@ -273,7 +274,7 @@ donation_propagation(struct lock* lock, int depth) {
 		return;
 	el = list_begin(&lock->holder->waiting_list);
 	while (el != list_end(&lock->holder->waiting_list)) {
-		lock_ptr = list_entry(el, struct lock, elem);
+		lock_ptr = list_entry(el, struct lock_list_elem, elem)->lock;
 
 		if (lock_ptr->holder->priority < thread_current()->priority) {
 			prev = lock_ptr->holder->priority;
@@ -352,7 +353,7 @@ lock_release (struct lock *lock) {
 			el = el->next;
 		}
 
-		list_remove(&donate_el->elem);
+		list_remove(el);
 		lock->donated = false;
 		if (list_empty(&t->donation_list)) {
 			t->priority = t->original_priority;
