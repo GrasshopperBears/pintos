@@ -46,7 +46,7 @@ static void
 acquire1_thread_func (void *lock_) 
 {
   struct lock *lock = lock_;
-  printf("ACQ1 STARTED\n");
+  // printf("ACQ1 STARTED\n");
   lock_acquire (lock);
   msg ("acquire1: got the lock");
   lock_release (lock);
