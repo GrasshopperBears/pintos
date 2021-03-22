@@ -58,7 +58,7 @@ static void
 a_thread_func (void *lock_) 
 {
   struct lock *lock = lock_;
-//   printf("ACQ1 STARTED\n");
+
   lock_acquire (lock);
   msg ("Thread a acquired lock a.");
   lock_release (lock);
@@ -69,7 +69,7 @@ static void
 b_thread_func (void *lock_) 
 {
   struct lock *lock = lock_;
-  // printf("ACQ2 STARTED\n");
+
   lock_acquire (lock);
   msg ("Thread b acquired lock b.");
   lock_release (lock);
