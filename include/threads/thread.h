@@ -94,6 +94,7 @@ struct thread {
 	int original_priority;
 	int64_t sleep_until;
 	struct list donation_list;
+	struct list waiting_list;
 
 	/* Shared between thread.c and synch.c. */
 	struct list_elem elem;              /* List element. */
