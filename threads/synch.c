@@ -32,10 +32,8 @@
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 
-void recover_priority(struct lock *lock);
-void add_donate_list(struct lock* lock);
-void update_donate_list(struct lock* lock);
-struct list_elem* find_donate_elem_by_lock(struct list* list, struct lock* lock);
+void donation(struct lock* lock);
+void donation_propagation(struct lock* lock, int depth);
 bool donate_elem_compare (const struct list_elem *e1, const struct list_elem *e2, void *aux UNUSED);
 bool print_waiters (struct semaphore *sema);
 
@@ -125,6 +123,7 @@ sema_up (struct semaphore *sema) {
 	}
 
 	sema->value++;
+	thread_kick();
 	intr_set_level (old_level);
 }
 
@@ -198,76 +197,112 @@ lock_init (struct lock *lock) {
 void
 lock_acquire (struct lock *lock) {
 	bool success = false;
-	struct donate_elem* el;
+	struct list_elem* el;
+	struct lock* lock_ptr;
 	enum intr_level old_level;
 	struct semaphore* sema = &lock->semaphore;
+	struct list_elem *list_el;
+	struct donate_elem new_el;
+	struct donate_elem* donate_el;
+	struct lock_list_elem new_lock_elem;
 	int prev;
 
 	ASSERT (lock != NULL);
 	ASSERT (!intr_context ());
 	ASSERT (!lock_held_by_current_thread (lock));
-	
+
 	while (!success) {
 		success = sema_try_down(&lock->semaphore);
 		if (success) {
 			lock->holder = thread_current ();
+			if (!list_empty(&thread_current()->waiting_list)) {
+				el = list_begin(&thread_current()->waiting_list);
+				while (el != list_end(&thread_current()->waiting_list)) {
+					lock_ptr = list_entry(el, struct lock_list_elem, elem)->lock;
+					if (lock_ptr == lock) {
+						list_remove(el);
+						break;
+					}
+					el = el->next;
+				}
+			}
 			break;
 		}
-		old_level = intr_disable ();
+
+		new_lock_elem.lock = lock;
+		list_push_front(&thread_current()->waiting_list, &new_lock_elem.elem);
 		list_push_front(&sema->waiters, &thread_current ()->elem);
+
 		if (lock->holder->priority < thread_current()->priority) {
 			prev = lock->holder->priority;
 			lock->holder->priority = thread_current()->priority;
+			if (lock->holder->original_priority == -1)
+				lock->holder->original_priority = prev;
 			if (!lock->donated) {
 				lock->original_priority = prev;
 				lock->donated = true;
-				el->lock = lock;
-				el->priority_after_donation = thread_current()->priority;
-				list_push_front(&lock->holder->donation_list, &el->elem);
-			} else {	
-				update_donate_list(lock);
+				new_el.lock = lock;
+				new_el.priority_after_donation = thread_current()->priority;
+				list_insert_ordered(&lock->holder->donation_list, &new_el.elem, donate_elem_compare, NULL);
+			} else {
+				list_el = list_begin(&lock->holder->donation_list);
+				while (list_el != list_end(&lock->holder->donation_list)) {
+					donate_el = list_entry(list_el, struct donate_elem, elem);
+					if (donate_el->lock == lock)
+						break;
+					list_el = list_el->next;
+				}
+				donate_el->priority_after_donation = lock->holder->priority;
 			}
+			donation_propagation(lock, 0);
 		}
+		
+		old_level = intr_disable ();
 		thread_block();
 		intr_set_level(old_level);
 	}
 }
 
 void
-add_donate_list(struct lock* lock) {
-	struct thread* lock_holder = lock->holder;
-	struct donate_elem* el;
-	// printf("CHECK 1\n");
-	el->lock = lock;
-	el->priority_after_donation = thread_current()->priority;
-	list_push_front(&lock_holder->donation_list, &el->elem);
-}
-
-void
-update_donate_list(struct lock* lock) {
-	struct thread* lock_holder = lock->holder;
-	struct list_elem *found_el;
-	struct donate_elem *el;
-
-	ASSERT(!list_empty(&lock_holder->donation_list));
-	// printf("CHECK 2\n");
-	found_el = find_donate_elem_by_lock(&lock_holder->donation_list, lock);
-	el = list_entry(found_el, struct donate_elem, elem);
-	el->priority_after_donation = thread_current()->priority;
-}
-
-struct list_elem* find_donate_elem_by_lock(struct list* list, struct lock* lock) {
-	struct list_elem *el = list_begin(list);
+donation_propagation(struct lock* lock, int depth) {
+	struct lock* lock_ptr;
+	struct list_elem* el;
+	int prev;
+	struct donate_elem new_el;
 	struct donate_elem* donate_el;
-	// printf("CHECK 3\n");
-	while (el != NULL) {
-		donate_el = list_entry(el, struct donate_elem, elem);
-		if (donate_el->lock == lock) {
-			return el;
+	struct list_elem* list_el;
+
+	if (depth > 6 || lock->holder == NULL || list_empty(&lock->holder->waiting_list))
+		return;
+	el = list_begin(&lock->holder->waiting_list);
+	while (el != list_end(&lock->holder->waiting_list)) {
+		lock_ptr = list_entry(el, struct lock_list_elem, elem)->lock;
+
+		if (lock_ptr->holder->priority < thread_current()->priority) {
+			prev = lock_ptr->holder->priority;
+			lock_ptr->holder->priority = thread_current()->priority;
+			if (lock_ptr->holder->original_priority == -1)
+				lock_ptr->holder->original_priority = prev;
+			if (!lock_ptr->donated) {
+				lock_ptr->original_priority = prev;
+				lock_ptr->donated = true;
+				new_el.lock = lock;
+				new_el.priority_after_donation = thread_current()->priority;
+				list_insert_ordered(&lock_ptr->holder->donation_list, &new_el.elem, donate_elem_compare, NULL);
+			} else {
+				list_el = list_front(&lock_ptr->holder->donation_list);
+				while (list_el != list_end(&lock->holder->waiting_list)) {
+					donate_el = list_entry(list_el, struct donate_elem, elem);
+					if (donate_el->lock == lock_ptr)
+						break;
+					list_el = list_el->next;
+				}
+				donate_el->priority_after_donation = lock_ptr->holder->priority;
+			}
 		}
+		donation_propagation(lock_ptr, depth + 1);
 		el = el->next;
 	}
-	return NULL;
 }
 
 /* Tries to acquires LOCK and returns true if successful or false
@@ -299,50 +334,44 @@ void
 lock_release (struct lock *lock) {
 	enum intr_level old_level;
 	struct semaphore* sema = &lock->semaphore;
-	struct thread * t;
+	struct thread* t = thread_current();
+	struct donate_elem* donate_el;
+	struct list_elem *el;
 
 	ASSERT (lock != NULL);
 	ASSERT (lock_held_by_current_thread (lock));
 	ASSERT (sema != NULL);
-	// printf("CHECK 4\n");
-
-	lock->holder = NULL;
-	sema_up(sema);
 
 	old_level = intr_disable ();
-	if (lock->donated) {
-		recover_priority(lock);
-		lock->donated = false;
-	}
-	
-	if (!list_empty (&sema->waiters)) {
-		list_sort(&sema->waiters, thread_compare, NULL); // Before unblock thread, some threads in waiters list could be changed their priority.
-		t = list_entry (list_pop_front (&sema->waiters), struct thread, elem);
-		thread_unblock (t);
-	}
-	thread_kick();
-	intr_set_level (old_level);
-}
-
-void
-recover_priority(struct lock *lock) {
-	struct thread* t = thread_current();
-	struct list_elem* el;
-	struct donate_elem* donate_el;
+	lock->holder = NULL;
 
 	if (lock->donated) {
-		el = find_donate_elem_by_lock(&t->donation_list, lock);
+		el = list_begin(&t->donation_list);
+		while (el != list_end(&t->donation_list)) {
+			donate_el = list_entry(el, struct donate_elem, elem);
+			if (donate_el->lock == lock) {
+				break;
+			}
+			el = el->next;
+		}
+
 		list_remove(el);
 		lock->donated = false;
-		t->priority = lock->original_priority;
+		if (list_empty(&t->donation_list)) {
+			t->priority = t->original_priority;
+			t->original_priority = -1;
+		} else if (t->priority <= donate_el->priority_after_donation)
+			t->priority = lock->original_priority;
 	}
-	if (!list_empty(&t->donation_list)) {
-		list_sort(&t->donation_list, donate_elem_compare, NULL);
-		donate_el = list_entry(list_begin(&t->donation_list), struct donate_elem, elem);
-		if (donate_el->priority_after_donation > t->priority) {
-			t->priority = donate_el->priority_after_donation;
-		}
+
+	if (!list_empty (&sema->waiters)) {
+		list_sort(&sema->waiters, thread_compare, NULL);
+		thread_unblock (list_entry (list_pop_front (&sema->waiters), struct thread, elem));
 	}
+
+	sema->value++;
+	thread_kick();
+	intr_set_level (old_level);
 }
 
 /* Returns true if the current thread holds LOCK, false

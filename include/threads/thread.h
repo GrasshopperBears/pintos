@@ -91,10 +91,13 @@ struct thread {
 	enum thread_status status;          /* Thread state. */
 	char name[16];                      /* Name (for debugging purposes). */
 	int priority;                       /* Priority. */
-	int64_t sleep_until; // Time to wake-up.
-	int nice; // Nice of thread.
-	int recent_cpu; // Recent CPU of thread.
+	int original_priority;
+	int64_t sleep_until;
 	struct list donation_list;
+	struct list waiting_list;
+
+		int nice; // Nice of thread.
+	int recent_cpu; // Recent CPU of thread.
 
 	/* Shared between thread.c and synch.c. */
 	struct list_elem elem;              /* List element. */
