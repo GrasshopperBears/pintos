@@ -16,6 +16,8 @@ int add_f_n (int, int);
 
 int sub_f_n (int, int);
 
+int sub_n_f (int ,int);
+
 int multiple_f_f (int, int);
 
 int multiple_f_n (int f, int n);
@@ -74,6 +76,13 @@ add_f_n (int f, int n) {
 int
 sub_f_n (int f, int n) {
     int f_result = f - int_to_fixed_point (n);
+
+    return f_result;
+}
+
+int
+sub_n_f (int n, int f) {
+    int f_result = int_to_fixed_point (n) - f;
 
     return f_result;
 }

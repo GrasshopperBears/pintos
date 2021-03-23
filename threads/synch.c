@@ -35,7 +35,6 @@
 void donation(struct lock* lock);
 void donation_propagation(struct lock* lock, int depth);
 bool donate_elem_compare (const struct list_elem *e1, const struct list_elem *e2, void *aux UNUSED);
-bool print_waiters (struct semaphore *sema);
 
 /* Initializes semaphore SEMA to VALUE.  A semaphore is a
    nonnegative integer along with two atomic operators for
@@ -513,25 +512,4 @@ donate_elem_compare (const struct list_elem *e1, const struct list_elem *e2, voi
 		return true;
 	else
 		return false;
-}
-
-bool
-print_waiters (struct semaphore *sema) {
-
-	if (!list_empty(&sema->waiters)) {
-
-		struct list_elem *e = list_begin(&sema->waiters);
-
-		while (e != list_end(&sema->waiters)) {
-
-			struct thread *t = list_entry(e, struct thread, elem);
-
-			printf("name : %s, priority %d", t->name, t->priority);
-
-			e = list_next (e);
-
-		}
-
-	}
-
 }
