@@ -273,7 +273,7 @@ lock_acquire (struct lock *lock) {
 		new_lock_elem.lock = lock;
 		list_push_front(&thread_current()->waiting_list, &new_lock_elem.elem);
 		list_push_front(&sema->waiters, &thread_current ()->elem);
-		if (lock->holder->priority < thread_current()->priority) {
+		if (lock->holder->priority < thread_current()->priority && thread_mlfqs == false) {
 			donate(lock, &new_el);
 			donation_propagation(lock, 0);
 		}
@@ -368,7 +368,7 @@ lock_release (struct lock *lock) {
 	old_level = intr_disable ();
 	lock->holder = NULL;
 
-	if (lock->donated)
+	if (lock->donated && thread_mlfqs == false)
 		recover_priority(lock);
 
 	if (!list_empty (&sema->waiters)) {

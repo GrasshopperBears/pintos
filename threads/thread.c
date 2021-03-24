@@ -131,6 +131,7 @@ thread_init (void) {
 
 	initial_thread->nice = 0; //Initialize nice of thread to 0.
 	initial_thread->recent_cpu = 0; //Initialize nice of thread to 0.
+	thread_calculate_priority (initial_thread);
 }
 
 /* Starts preemptive thread scheduling by enabling interrupts.
@@ -209,8 +210,10 @@ thread_create (const char *name, int priority,
 	/* Initialize thread. */
 	init_thread (t, name, priority);
 
-	t->recent_cpu = running_thread ()->recent_cpu;
-	t->nice = running_thread ()->nice;
+	if (thread_mlfqs == true) {
+		t->recent_cpu = thread_current ()->recent_cpu;
+		t->nice = thread_current ()->nice;
+	}
 
 	tid = t->tid = allocate_tid ();
 
@@ -344,7 +347,7 @@ thread_exit (void) {
 
 	/* Just set our status to dying and schedule another process.
 	   We will be destroyed during the call to schedule_tail(). */
-	list_remove (&thread_current ()->elem);
+	list_remove (&thread_current ()->t_elem); // 이게 문제일수도???
 	intr_disable ();
 	do_schedule (THREAD_DYING);
 	NOT_REACHED ();
@@ -369,27 +372,27 @@ thread_yield (void) {
 /* Sets the current thread's priority to NEW_PRIORITY. */
 void
 thread_set_priority (int new_priority) {
-	if (thread_mlfqs == true) 
-		return;
+	if (thread_mlfqs == false) {
 
-	struct thread* t = thread_current();
-	struct list_elem* el;
-	struct thread* donator;
-	int curr_priority;
+		struct thread* t = thread_current();
+		struct list_elem* el;
+		struct thread* donator;
+		int curr_priority;
 
-	if (t->original_priority > 0 && new_priority < t->original_priority)
-		t->original_priority = new_priority;
-	if (!list_empty(&t->donation_list)) {
-		el = list_begin(&t->donation_list);
-		while (el != list_end(&t->donation_list)) {
-			curr_priority = list_entry(el, struct donate_elem, elem)->priority_after_donation;
-			if (curr_priority > new_priority)
-				new_priority = curr_priority;
-			el = el->next;
+		if (t->original_priority > 0)
+			t->original_priority = new_priority;
+		if (!list_empty(&t->donation_list)) {
+			el = list_begin(&t->donation_list);
+			while (el != list_end(&t->donation_list)) {
+				curr_priority = list_entry(el, struct donate_elem, elem)->priority_after_donation;
+				if (curr_priority > new_priority)
+					new_priority = curr_priority;
+				el = el->next;
+			}
 		}
+		t->priority = new_priority;
+		thread_kick ();
 	}
-	t->priority = new_priority;
-	thread_kick ();
 }
 
 void
@@ -403,6 +406,7 @@ thread_calculate_priority (struct thread *t) {
 		new_priority = PRI_MIN;
 
 	t->priority = new_priority;
+	//thread_kick ();
 
 }
 
@@ -432,21 +436,27 @@ thread_set_nice (int nice) {
 	/* TODO: Your implementation goes here */
 	struct thread *cur = thread_current ();
 
+	enum intr_level old_level;
+
+	old_level = intr_disable ();
 	cur->nice = nice;
 
-	thread_calculate_priority (cur);
-	thread_kick ();
+	//thread_calculate_priority (cur);
+	//thread_kick ();
+	intr_set_level (old_level);
 }
 
 /* Returns the current thread's nice value. */
 int
 thread_get_nice (void) {
 	/* TODO: Your implementation goes here */
-	intr_disable();
 	struct thread *cur = thread_current ();
+	enum intr_level old_level;
+
+	old_level = intr_disable ();
 	int nice = cur->nice;
-	intr_enable();
-	
+	intr_set_level (old_level);
+
 	return nice;
 }
 
@@ -467,9 +477,11 @@ thread_calculate_load_avg (void) {
 int
 thread_get_load_avg (void) {
 	/* TODO: Your implementation goes here */
-	intr_disable();
+	enum intr_level old_level;
+	old_level = intr_disable ();
 	int load = round_to_nearest (multiple_f_n (load_avg, 100));
-	intr_enable();
+	intr_set_level (old_level);
+
 	return load;
 }
 
@@ -478,11 +490,12 @@ int
 thread_get_recent_cpu (void) {
 	/* TODO: Your implementation goes here */
 
-	intr_disable();
+	enum intr_level old_level;
+	old_level = intr_disable ();
 	struct thread *cur = thread_current ();
 	int recent = cur->recent_cpu;
 	int result = round_to_nearest (multiple_f_n (recent, 100));
-	intr_enable();
+	intr_set_level (old_level);
 
 	return result;
 }
@@ -490,7 +503,8 @@ thread_get_recent_cpu (void) {
 void
 thread_calculate_recent_cpu (struct thread *t) {
 
-	t->recent_cpu = add_f_n (multiple_f_f (divide_f_f(multiple_f_n (load_avg, 2), add_f_n (multiple_f_n (load_avg, 2), 1)), t->recent_cpu), t->nice);
+	if (t != idle_thread)
+		t->recent_cpu = add_f_n (multiple_f_f (divide_f_f(multiple_f_n (load_avg, 2), add_f_n (multiple_f_n (load_avg, 2), 1)), t->recent_cpu), t->nice);
 
 }
 
@@ -499,15 +513,15 @@ thread_calculate_all_recent_cpu (void) {
 
 	struct list_elem *e = list_begin(&total_list);
 	struct thread *temp;
-	
-	while (e != list_end (&total_list)) {
+	if (list_empty(&total_list) == false) {
+		while (e != list_end (&total_list)) {
 
-		temp = list_entry (e, struct thread, elem);
-		thread_calculate_recent_cpu (temp);
-		e = list_next (e);
+			temp = list_entry (e, struct thread, t_elem);
+			thread_calculate_recent_cpu (temp);
+			e = list_next (e);
 
+		}
 	}
-
 }
 
 /* Idle thread.  Executes when no other thread is ready to run.
@@ -575,11 +589,14 @@ init_thread (struct thread *t, const char *name, int priority) {
 	list_init(&t->donation_list);
 	list_init(&t->waiting_list);
 	t->original_priority = -1;
+	
+	if (thread_mlfqs == true && t != initial_thread) {
+		t->recent_cpu = thread_current ()->recent_cpu;
+		t->nice = thread_current ()->nice;
+		thread_calculate_priority (t);	// 확인 필요
+	}
 
-	t->recent_cpu = 0;
-	t->nice = 0;
-
-	list_push_back(&total_list, &t->elem);
+	list_push_back(&total_list, &t->t_elem);
 }
 
 /* Chooses and returns the next thread to be scheduled.  Should
@@ -776,5 +793,12 @@ thread_compare (const struct list_elem *e1, const struct list_elem *e2, void *au
 		return true;
 	else
 		return false;
+
+}
+
+void
+print_total_status (void) {
+
+	printf("%d", (int) list_size(&total_list));
 
 }

@@ -127,18 +127,20 @@ timer_interrupt (struct intr_frame *args UNUSED) {
 	ticks++;
 	thread_tick ();
 	thread_wake_up (ticks);
-
+	
 	if (thread_mlfqs == true) {
 		thread_current ()->recent_cpu = add_f_n (thread_current ()->recent_cpu, 1);
 
+		if (timer_ticks () % TIMER_FREQ == 0) {
+			thread_calculate_load_avg ();
+			thread_calculate_all_recent_cpu ();
+	
+		}
+
 		if (timer_ticks () % 4 == 0) {
 			thread_calculate_priority (thread_current ());
-
-			if (timer_ticks () % TIMER_FREQ == 0) {
-				thread_calculate_load_avg ();
-				thread_calculate_all_recent_cpu ();
-		
-			}
+			thread_kick ();
+			
 		}
 	}
 }
