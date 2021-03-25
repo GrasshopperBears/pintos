@@ -45,9 +45,9 @@ round_to_nearest (int f) {
     int n;
 
     if (f >= 0 )
-        n = ((f + fraction) / 2) / fraction;
+        n = (f + (fraction / 2)) / fraction;
     else
-        n = ((f - fraction) / 2) / fraction;
+        n = (f - (fraction / 2)) / fraction;
         
     return n;
 }
