@@ -11,7 +11,6 @@
 #include "threads/synch.h"
 #include "threads/vaddr.h"
 #include "intrinsic.h"
-//#include "threads/fixed-point.h"
 #include "fixed-point.c"
 #ifdef USERPROG
 #include "userprog/process.h"
@@ -134,7 +133,7 @@ thread_init (void) {
 	if (thread_mlfqs == true) {
 		initial_thread->nice = 0; //Initialize nice of thread to 0.
 		initial_thread->recent_cpu = 0; //Initialize nice of thread to 0.
-		thread_calculate_priority (initial_thread); //여기서 문제가 생겼음.
+		thread_calculate_priority (initial_thread); //calculate priority after setting two variables.
 	}
 }
 
@@ -145,7 +144,6 @@ thread_start (void) {
 	/* Create the idle thread. */
 	struct semaphore idle_started;
 	sema_init (&idle_started, 0);
-	//load_avg = 0; //initialize load_avg into 0.
 	thread_create ("idle", PRI_MIN, idle, &idle_started);
 
 	/* Start preemptive thread scheduling. */
@@ -213,12 +211,6 @@ thread_create (const char *name, int priority,
 
 	/* Initialize thread. */
 	init_thread (t, name, priority);
-
-	// if (thread_mlfqs == true) {
-	// 	t->recent_cpu = thread_current ()->recent_cpu;
-	// 	t->nice = thread_current ()->nice;
-	// }
-	// init_thread랑 겹쳐서 제거함
 
 	tid = t->tid = allocate_tid ();
 
@@ -352,7 +344,7 @@ thread_exit (void) {
 
 	/* Just set our status to dying and schedule another process.
 	   We will be destroyed during the call to schedule_tail(). */
-	list_remove (&thread_current ()->t_elem); // 이게 문제일수도???
+	list_remove (&thread_current ()->t_elem); // remove element of total list.
 	intr_disable ();
 	do_schedule (THREAD_DYING);
 	NOT_REACHED ();
@@ -411,7 +403,6 @@ thread_calculate_priority (struct thread *t) {
 		new_priority = PRI_MIN;
 
 	t->priority = new_priority;
-	//thread_kick ();
 
 }
 
@@ -460,7 +451,6 @@ thread_set_nice (int nice) {
 	cur->nice = nice;
 
 	thread_calculate_priority (cur);
-	//thread_kick ();
 	intr_set_level (old_level);
 }
 
@@ -498,10 +488,7 @@ thread_calculate_load_avg (void) {
 int
 thread_get_load_avg (void) {
 	/* TODO: Your implementation goes here */
-	//enum intr_level old_level;
-	//old_level = intr_disable ();
 	int load = round_to_nearest (multiple_f_n (load_avg, 100));
-	//intr_set_level (old_level);
 
 	return load;
 }
@@ -511,12 +498,9 @@ int
 thread_get_recent_cpu (void) {
 	/* TODO: Your implementation goes here */
 
-	//enum intr_level old_level;
-	//old_level = intr_disable ();
 	struct thread *cur = thread_current ();
 	int recent = cur->recent_cpu;
 	int result = round_to_nearest (multiple_f_n (recent, 100));
-	//intr_set_level (old_level);
 
 	return result;
 }
@@ -614,7 +598,7 @@ init_thread (struct thread *t, const char *name, int priority) {
 	if (thread_mlfqs == true && t != initial_thread) {
 		t->recent_cpu = thread_current ()->recent_cpu;
 		t->nice = thread_current ()->nice;
-		thread_calculate_priority (t);	// 확인 필요
+		thread_calculate_priority (t);
 	}
 
 	list_push_back(&total_list, &t->t_elem);
