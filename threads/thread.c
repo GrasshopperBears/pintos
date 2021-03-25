@@ -123,15 +123,19 @@ thread_init (void) {
 	list_init (&total_list);
 	list_init (&destruction_req);
 
+	load_avg = 0;
+
 	/* Set up a thread structure for the running thread. */
 	initial_thread = running_thread ();
 	init_thread (initial_thread, "main", PRI_DEFAULT);
 	initial_thread->status = THREAD_RUNNING;
 	initial_thread->tid = allocate_tid ();
 
-	initial_thread->nice = 0; //Initialize nice of thread to 0.
-	initial_thread->recent_cpu = 0; //Initialize nice of thread to 0.
-	thread_calculate_priority (initial_thread);
+	if (thread_mlfqs == true) {
+		initial_thread->nice = 0; //Initialize nice of thread to 0.
+		initial_thread->recent_cpu = 0; //Initialize nice of thread to 0.
+		thread_calculate_priority (initial_thread); //여기서 문제가 생겼음.
+	}
 }
 
 /* Starts preemptive thread scheduling by enabling interrupts.
@@ -141,7 +145,7 @@ thread_start (void) {
 	/* Create the idle thread. */
 	struct semaphore idle_started;
 	sema_init (&idle_started, 0);
-	load_avg = 0; //initialize load_avg into 0.
+	//load_avg = 0; //initialize load_avg into 0.
 	thread_create ("idle", PRI_MIN, idle, &idle_started);
 
 	/* Start preemptive thread scheduling. */
@@ -210,10 +214,11 @@ thread_create (const char *name, int priority,
 	/* Initialize thread. */
 	init_thread (t, name, priority);
 
-	if (thread_mlfqs == true) {
-		t->recent_cpu = thread_current ()->recent_cpu;
-		t->nice = thread_current ()->nice;
-	}
+	// if (thread_mlfqs == true) {
+	// 	t->recent_cpu = thread_current ()->recent_cpu;
+	// 	t->nice = thread_current ()->nice;
+	// }
+	// init_thread랑 겹쳐서 제거함
 
 	tid = t->tid = allocate_tid ();
 
@@ -423,6 +428,19 @@ thread_kick (void) {
 	}
 }
 
+void
+thread_intr_kick (void) {
+	struct thread *curr = thread_current ();
+	struct thread *high;
+
+	if (!list_empty(&ready_list)) {
+		list_sort(&ready_list, &thread_compare, NULL);
+		high = list_entry (list_begin(&ready_list), struct thread, elem);
+		if (curr->priority < high->priority)
+			intr_yield_on_return ();
+	}
+}
+
 /* Returns the current thread's priority. */
 int
 thread_get_priority (void) {
@@ -441,7 +459,7 @@ thread_set_nice (int nice) {
 	old_level = intr_disable ();
 	cur->nice = nice;
 
-	//thread_calculate_priority (cur);
+	thread_calculate_priority (cur);
 	//thread_kick ();
 	intr_set_level (old_level);
 }
@@ -469,7 +487,10 @@ thread_calculate_load_avg (void) {
 	else
 		ready_threads = list_size (&ready_list) + 1;
 
-	load_avg = multiple_f_f (divide_f_n (int_to_fixed_point(59), 60), load_avg) + multiple_f_n (divide_f_n (int_to_fixed_point(1), 60), ready_threads);
+	load_avg = add_f_f (multiple_f_f (divide_f_n (int_to_fixed_point(59), 60), load_avg), multiple_f_n (divide_f_n (int_to_fixed_point(1), 60), ready_threads));
+
+	if (load_avg < 0)
+		load_avg = 0;
 
 }
 
@@ -477,10 +498,10 @@ thread_calculate_load_avg (void) {
 int
 thread_get_load_avg (void) {
 	/* TODO: Your implementation goes here */
-	enum intr_level old_level;
-	old_level = intr_disable ();
+	//enum intr_level old_level;
+	//old_level = intr_disable ();
 	int load = round_to_nearest (multiple_f_n (load_avg, 100));
-	intr_set_level (old_level);
+	//intr_set_level (old_level);
 
 	return load;
 }
@@ -490,12 +511,12 @@ int
 thread_get_recent_cpu (void) {
 	/* TODO: Your implementation goes here */
 
-	enum intr_level old_level;
-	old_level = intr_disable ();
+	//enum intr_level old_level;
+	//old_level = intr_disable ();
 	struct thread *cur = thread_current ();
 	int recent = cur->recent_cpu;
 	int result = round_to_nearest (multiple_f_n (recent, 100));
-	intr_set_level (old_level);
+	//intr_set_level (old_level);
 
 	return result;
 }
@@ -589,7 +610,7 @@ init_thread (struct thread *t, const char *name, int priority) {
 	list_init(&t->donation_list);
 	list_init(&t->waiting_list);
 	t->original_priority = -1;
-	
+
 	if (thread_mlfqs == true && t != initial_thread) {
 		t->recent_cpu = thread_current ()->recent_cpu;
 		t->nice = thread_current ()->nice;

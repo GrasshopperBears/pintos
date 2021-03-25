@@ -91,7 +91,7 @@ int
 multiple_f_f (int f1, int f2) {
     int f_result = (int64_t) f1 * f2 / fraction;
 
-    return (int) f_result;
+    return f_result;
 }
 
 int
@@ -105,7 +105,7 @@ int
 divide_f_f (int f1, int f2) {
     int f_result = (int64_t) f1 * fraction / f2;
 
-    return (int) f_result;
+    return f_result;
 }
 
 int

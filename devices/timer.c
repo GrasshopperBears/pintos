@@ -139,8 +139,9 @@ timer_interrupt (struct intr_frame *args UNUSED) {
 
 		if (timer_ticks () % 4 == 0) {
 			thread_calculate_priority (thread_current ());
-			thread_kick ();
-			
+			//thread_kick ();
+			thread_intr_kick ();
+
 		}
 	}
 }
