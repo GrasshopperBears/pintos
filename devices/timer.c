@@ -138,7 +138,8 @@ timer_interrupt (struct intr_frame *args UNUSED) {
 		}
 
 		if (timer_ticks () % 4 == 3) {
-			thread_calculate_priority (thread_current ());
+			// thread_calculate_priority (thread_current ());
+			thread_calculate_all_priority();
 			thread_intr_kick ();
 
 		}

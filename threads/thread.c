@@ -406,6 +406,20 @@ thread_calculate_priority (struct thread *t) {
 
 }
 
+void thread_calculate_all_priority (void) {
+	struct list_elem *e = list_begin(&total_list);
+	struct thread *temp;
+	if (list_empty(&total_list) == false) {
+		while (e != list_end (&total_list)) {
+
+			temp = list_entry (e, struct thread, t_elem);
+			thread_calculate_priority (temp);
+			e = list_next (e);
+
+		}
+	}
+}
+
 void
 thread_kick (void) {
 	struct thread *curr = thread_current ();
