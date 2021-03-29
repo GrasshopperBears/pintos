@@ -324,13 +324,18 @@ static bool load_segment (struct file *file, off_t ofs, uint8_t *upage,
  * Returns true if successful, false otherwise. */
 static bool
 load (const char *file_name, struct intr_frame *if_) {
+	static int PTR_SIZE = 8;
 	struct thread *t = thread_current ();
 	struct ELF ehdr;
 	struct file *file = NULL;
 	off_t file_ofs;
 	bool success = false;
-	int i;
-	char *save_ptr, *token;
+	int i, addr, arg_len, word_align = 0;
+	char *save_ptr, *token, *tmp[9];
+	struct list args_list;
+	struct list_elem* el;
+	struct arg_elem* arg_el;
+	char hex_string[8];
 
 	/* Allocate and activate page directory. */
 	t->pml4 = pml4_create ();
@@ -421,6 +426,42 @@ load (const char *file_name, struct intr_frame *if_) {
 
 	/* TODO: Your code goes here.
 	 * TODO: Implement argument passing (see project2/argument_passing.html). */
+
+	// if_->rsp = USER_POINTER?
+	list_init(&args_list);
+	addr = if_->rsp;
+	while(token != NULL) {
+		arg_len = strlen(token);
+		memcpy(addr - strlen(token) - 1, token, arg_len + 1);
+		addr -= (arg_len + 1);
+		arg_el = (struct arg_elem*)malloc(sizeof(struct arg_elem));
+		arg_el->addr = addr;
+		list_push_front(&args_list, &arg_el->elem);
+		token = strtok_r (NULL, " ", &save_ptr);
+	}
+	while ((addr - word_align) % PTR_SIZE != 0) {
+		word_align++;
+	}
+	if (word_align != 0) {
+		memset(addr - word_align, (uint8_t)0, word_align);
+		addr -= word_align;
+	}
+	memset(addr - PTR_SIZE, 0, PTR_SIZE);
+	addr -= PTR_SIZE;
+	arg_len = list_size(&args_list);
+
+	while (!list_empty(&args_list)) {
+		arg_el = list_entry(list_pop_front(&args_list), struct arg_elem, elem);
+		snprintf(tmp, PTR_SIZE+1, "%08x", arg_el->addr);
+		memcpy(addr - PTR_SIZE, tmp, PTR_SIZE);
+		addr -= PTR_SIZE;
+		free(arg_el);
+	}
+	memset(addr - PTR_SIZE, 0, PTR_SIZE);
+	addr -= PTR_SIZE;
+	if_->R.rdi = arg_len;
+	if_->R.rsi = addr + PTR_SIZE;
+	hex_dump ((uintptr_t)addr, addr, if_->rsp - addr, true);
 
 	success = true;
 
