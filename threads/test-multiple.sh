@@ -1,11 +1,11 @@
-cd build
-cnt=0
-for iteration in {1..50}
+for iteration in {1}
 do
-  output=$(pintos -- -q run alarm-multiple)
+  make clean && make && cd build
+  output=$(make check)
   case "$output" in
-    *"(alarm-multiple) end"*) echo "PASSED" ;;
-    *) cnt=($cnt + 1) ;;
+    *"All 27 tests passed"*) echo "PASSED" ;;
+    *) cnt=$((cnt+1)) ;;
   esac
+  cd ..
 done
 echo "RESULT: $cnt test failed"
