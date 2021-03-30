@@ -77,8 +77,11 @@ initd (void *f_name) {
 tid_t
 process_fork (const char *name, struct intr_frame *if_ UNUSED) {
 	/* Clone current thread to new thread.*/
+	struct parent_info p_info;
+	p_info.t = thread_current();
+	p_info.if_ = if_;
 	return thread_create (name,
-			PRI_DEFAULT, __do_fork, thread_current ());
+			PRI_DEFAULT, __do_fork, &p_info);
 }
 
 #ifndef VM
@@ -120,10 +123,11 @@ duplicate_pte (uint64_t *pte, void *va, void *aux) {
 static void
 __do_fork (void *aux) {
 	struct intr_frame if_;
-	struct thread *parent = (struct thread *) aux;
+	struct parent_info* p_info = (struct parent_info *) aux;
+	struct thread *parent = p_info->t;
 	struct thread *current = thread_current ();
 	/* TODO: somehow pass the parent_if. (i.e. process_fork()'s if_) */
-	struct intr_frame *parent_if;
+	struct intr_frame *parent_if = p_info->if_;
 	bool succ = true;
 
 	/* 1. Read the cpu context to local stack. */

@@ -15,4 +15,9 @@ struct arg_elem {
   int addr;
 };
 
+struct parent_info {
+  struct thread* t;
+  struct intr_frame* if_;
+};
+
 #endif /* userprog/process.h */
