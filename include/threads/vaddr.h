@@ -56,4 +56,12 @@
 	((uint64_t) (vaddr) - (uint64_t) KERN_BASE);\
 })
 
+// Check if user addr is kernel addr.
+// 근데 'block partially in one of those regions' 이 부분을 구현해야 할듯
+#define is_valid_uaddr(uaddr) \
+({ \
+	if (is_kernel_vaddr(uaddr)) \
+		exit(-1); \
+})
+
 #endif /* threads/vaddr.h */
