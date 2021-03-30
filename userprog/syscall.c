@@ -51,12 +51,16 @@ exit (int status) {
 pid_t
 fork (const char *thread_name) {
 	struct intr_frame *if_;
+
+	// TODO 1: __do_fork에서 file copy => file이 어디있지?
+	// TODO 2: duplicate_pte 구현
+	// TODO 3: register 복사하지 말아야 할 것 확인
 	pid_t child_pid = process_fork(thread_name, if_);
 
 	if (child_pid == TID_ERROR)
 		return TID_ERROR;
 	
-	// TODO: child의 경우 0을 return해야 함
+	// TODO 4: child의 경우 0을 return해야 함
 	return child_pid;
 }
 
