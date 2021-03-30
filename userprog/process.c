@@ -205,7 +205,10 @@ process_wait (tid_t child_tid UNUSED) {
 	/* XXX: Hint) The pintos exit if process_wait (initd), we recommend you
 	 * XXX:       to add infinite loop here before
 	 * XXX:       implementing the process_wait. */
-	while(true){}
+	int i = 0;
+	while(i < 1000000000){
+		i++;
+	}
 	return -1;
 }
 
@@ -452,8 +455,9 @@ load (const char *file_name, struct intr_frame *if_) {
 
 	while (!list_empty(&args_list)) {
 		arg_el = list_entry(list_pop_front(&args_list), struct arg_elem, elem);
-		snprintf(tmp, PTR_SIZE+1, "%08x", arg_el->addr);
-		memcpy(addr - PTR_SIZE, tmp, PTR_SIZE);
+		memcpy(addr - PTR_SIZE, &arg_el->addr, PTR_SIZE);
+		// snprintf(tmp, PTR_SIZE+1, "%08x", &arg_el->addr);
+		// memcpy(addr - PTR_SIZE, tmp, PTR_SIZE);
 		addr -= PTR_SIZE;
 		free(arg_el);
 	}
