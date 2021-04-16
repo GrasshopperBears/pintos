@@ -1,9 +1,9 @@
 
-TEST_NAME="args-multiple"
+TEST_NAME="args-single"
 FILES=""
 # FILES="-p tests/userprog/child-rox:child-rox"
-# ARGS="15"
-ARGS="a b c d e f g h i j k l m n o p q r s t u v"
+ARGS="arg"
+# ARGS="a b c d e f g h i j k l m n o p q r s t u v"
 DEBUGGING=""
 # DEBUGGING="--gdb"
 

@@ -96,12 +96,16 @@ struct thread {
 	struct list donation_list;
 	struct list waiting_list;
 
-		int nice; // Nice of thread.
+	int nice; // Nice of thread.
 	int recent_cpu; // Recent CPU of thread.
 
 	/* Shared between thread.c and synch.c. */
 	struct list_elem elem;              /* List element. */
 	struct list_elem t_elem; //total element.
+
+	struct thread* parent;
+	struct lock *filesys_lock;
+	struct file *running_file;
 
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */

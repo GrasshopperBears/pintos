@@ -1,4 +1,5 @@
 #include "userprog/process.h"
+#include "threads/synch.h"
 #include <debug.h>
 #include <inttypes.h>
 #include <round.h>
@@ -178,7 +179,9 @@ process_exec (void *f_name) {
 	process_cleanup ();
 
 	/* And then load the binary */
+	lock_acquire(thread_current()->filesys_lock);
 	success = load (file_name, &_if);
+	lock_release(thread_current()->filesys_lock);
 
 	/* If load failed, quit. */
 	palloc_free_page (file_name);
@@ -205,7 +208,10 @@ process_wait (tid_t child_tid UNUSED) {
 	/* XXX: Hint) The pintos exit if process_wait (initd), we recommend you
 	 * XXX:       to add infinite loop here before
 	 * XXX:       implementing the process_wait. */
-	while(true){}
+	int i = 0;
+	while(i < 1000000000){
+		i++;
+	}
 	return -1;
 }
 
@@ -329,7 +335,9 @@ load (const char *file_name, struct intr_frame *if_) {
 	struct file *file = NULL;
 	off_t file_ofs;
 	bool success = false;
-	int i;
+	int i, argc, arg_len, idx, word_align, PTR_SIZE = 8;
+	char *token, *save_ptr, *copied_file_name = palloc_get_page(PAL_ZERO);
+	int64_t* args_addr_list;
 
 	/* Allocate and activate page directory. */
 	t->pml4 = pml4_create ();
@@ -337,12 +345,17 @@ load (const char *file_name, struct intr_frame *if_) {
 		goto done;
 	process_activate (thread_current ());
 
+	strlcpy(copied_file_name, file_name, strlen(file_name) + 1);
+
 	/* Open executable file. */
-	file = filesys_open (file_name);
+	file = filesys_open (t->name);
 	if (file == NULL) {
 		printf ("load: %s: open failed\n", file_name);
 		goto done;
 	}
+
+	t->running_file = file;
+	file_deny_write(file);
 
 	/* Read and verify executable header. */
 	if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
@@ -418,12 +431,57 @@ load (const char *file_name, struct intr_frame *if_) {
 
 	/* TODO: Your code goes here.
 	 * TODO: Implement argument passing (see project2/argument_passing.html). */
+	token = strtok_r (file_name, " ", &save_ptr);
+	argc = 0;
+	while (token != NULL) {
+		argc++;
+		token = strtok_r (NULL, " ", &save_ptr);
+	}
+	args_addr_list = (int64_t *)malloc(sizeof(int64_t) * argc);
+
+	token = strtok_r (copied_file_name, " ", &save_ptr);
+	idx = 0;
+	while(token != NULL) {
+		arg_len = strlen(token);
+		if_->rsp -= (arg_len + 1);
+		memcpy(if_->rsp, token, arg_len + 1);
+		args_addr_list[idx] = if_->rsp;
+		token = strtok_r (NULL, " ", &save_ptr);
+		idx++;
+	}
+
+	word_align = 0;
+	while ((if_->rsp - word_align) % PTR_SIZE != 0) {
+		word_align++;
+	}
+	if (word_align != 0) {
+		if_->rsp -= word_align;
+		memset(if_->rsp, 0, word_align);
+	}
+
+	if_->rsp -= PTR_SIZE;
+	memset(if_->rsp, 0, PTR_SIZE);
+
+	for (i = argc - 1; i >= 0; i--) {
+		if_->rsp -= PTR_SIZE;
+		memcpy(if_->rsp, &args_addr_list[i], PTR_SIZE);
+	}
+
+	if_->R.rdi = argc;
+	if_->R.rsi = if_->rsp;
+	if_->rsp -= PTR_SIZE;
+	memset(if_->rsp, 0, PTR_SIZE);
+	hex_dump ((uintptr_t)if_->rsp, if_->rsp, USER_STACK - if_->rsp, true);
 
 	success = true;
 
 done:
 	/* We arrive here whether the load is successful or not. */
-	file_close (file);
+	free(args_addr_list);
+	palloc_free_page(copied_file_name);
+	if (!success)
+		file_close (file);
+
 	return success;
 }
 
