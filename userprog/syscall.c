@@ -160,7 +160,7 @@ read (int fd, void *buffer, unsigned size) {
 
 	if(fd == 0) {
 		read_size = input_getc();
-	} else if(fd == 1 || fd < 0) {
+	} else if(fd == 1) {
 		exit(-1);
 	}	else {
 		f_el = file_elem_by_fd(fd);
@@ -173,11 +173,20 @@ read (int fd, void *buffer, unsigned size) {
 
 int
 write (int fd, const void *buffer, unsigned size) {
+	struct thread* curr = thread_current();
+	struct file_elem* f_el;
 	int written_size;
 
 	if (fd == 1) {
 		putbuf(buffer, size);
-	} 
+	} else if (fd == 0) {
+		exit(-1);
+	} else {
+		f_el = file_elem_by_fd(fd);
+		lock_acquire(curr->filesys_lock);
+		written_size = file_write(f_el->file, buffer, size);
+		lock_release(curr->filesys_lock);
+	}
 	return written_size;
 }
 
@@ -269,7 +278,7 @@ syscall_handler (struct intr_frame *f UNUSED) {
 		close (f->R.rdi);
 		break;
 	default:
-		// thread_exit ();
+		thread_exit ();
 		break;
 	}
 }
