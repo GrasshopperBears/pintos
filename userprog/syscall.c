@@ -75,6 +75,24 @@ exit(int status) {
 	thread_exit();
 }
 
+pid_t
+fork (const char *thread_name) {
+	struct thread* parent = thread_current();
+	int parent_lock = 0;
+	pid_t child_pid;
+	enum intr_level old_level;
+	
+	child_pid = process_fork(thread_name, &parent->tf, &parent_lock);
+	while (parent_lock == 0) {
+		old_level = intr_disable();
+		thread_block();
+		intr_set_level(old_level);
+	}
+	if (child_pid == TID_ERROR)
+		return TID_ERROR;
+	return running_thread()->status == THREAD_RUNNING ? (parent_lock > 0 ? child_pid : TID_ERROR) : 0;
+}
+
 int
 exec (const char *cmd_line) {
 	int result;
@@ -97,6 +115,13 @@ create (const char *file, unsigned initial_size) {
 	}
 	ret = filesys_create(file, initial_size);
 	return ret;
+}
+
+int
+wait (pid_t pid) {
+	int result = process_wait(pid);
+
+	return result;
 }
 
 bool
@@ -236,14 +261,14 @@ syscall_handler (struct intr_frame *f UNUSED) {
 		break;
 	case SYS_FORK:	// 2
 		is_valid_user_ptr(f->R.rdi);
-		// f->R.rax = fork(f->R.rdi);
+		f->R.rax = fork(f->R.rdi);
 		break;
 	case SYS_EXEC:	// 3
 		is_valid_user_ptr(f->R.rdi);
 		f->R.rax = exec(f->R.rdi);
 		break;
 	case SYS_WAIT:	// 4
-		// f->R.rax = wait(f->R.rdi);
+		f->R.rax = wait(f->R.rdi);
 		break;
 	case SYS_CREATE:	// 5
 		is_valid_user_ptr(f->R.rdi);
