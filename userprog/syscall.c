@@ -42,6 +42,28 @@ syscall_init (void) {
 			FLAG_IF | FLAG_TF | FLAG_DF | FLAG_IOPL | FLAG_AC | FLAG_NT);
 }
 
+struct file_elem*
+file_elem_by_fd(int fd) {
+	struct thread* curr = thread_current();
+	struct list_elem* el;
+	struct file_elem* f_el;
+
+	if (fd == NULL || fd < 0 || list_empty(&curr->files_list)) {
+		exit(-1);
+	}
+	if (fd <= 1) {
+		return NULL;
+	}
+	el = list_begin(&curr->files_list);
+	while (el != list_end(&curr->files_list)) {
+		f_el = list_entry(el, struct file_elem, elem);
+		if (f_el->fd == fd)
+			return f_el;
+		el = el->next;
+	}
+	exit(-1);
+}
+
 void
 halt(void) {
 	power_off();
@@ -74,6 +96,15 @@ create (const char *file, unsigned initial_size) {
 		exit(-1);
 	}
 	ret = filesys_create(file, initial_size);
+	return ret;
+}
+
+bool
+remove (const char *file) {
+	// TODO: 열려 있는 파일의 remove 처리
+	bool ret;
+
+	ret = filesys_remove(file);
 	return ret;
 }
 
@@ -123,6 +154,30 @@ write (int fd, const void *buffer, unsigned size) {
 }
 
 void
+seek (int fd, unsigned position) {
+	struct file_elem* f_el = file_elem_by_fd(fd);
+
+	file_seek(f_el->file, position);
+}
+
+unsigned
+tell (int fd) {
+	struct file_elem* f_el = file_elem_by_fd(fd);
+
+	return f_el->file->pos;
+}
+
+void
+close (int fd) {
+	struct list_elem* el;
+	struct file_elem* f_el = file_elem_by_fd(fd);
+
+	file_close(f_el->file);
+	list_remove(&f_el->elem);
+	palloc_free_page(f_el);
+}
+
+void
 is_valid_user_ptr(void* ptr) {
 	if (is_kernel_vaddr(ptr) || !pml4_get_page(thread_current()->pml4, ptr)) {
 		exit(-1);
@@ -159,7 +214,7 @@ syscall_handler (struct intr_frame *f UNUSED) {
 		break;
 	case SYS_REMOVE:	// 6
 		is_valid_user_ptr(f->R.rdi);
-		// f->R.rax = remove(f->R.rdi);
+		f->R.rax = remove(f->R.rdi);
 		break;
 	case SYS_OPEN:	// 7
 		is_valid_user_ptr(f->R.rdi);
@@ -177,13 +232,13 @@ syscall_handler (struct intr_frame *f UNUSED) {
 		f->R.rax = write (f->R.rdi, f->R.rsi, f->R.rdx);
 		break;
 	case SYS_SEEK:	// 11
-		// seek (f->R.rdi, f->R.rsi);
+		seek (f->R.rdi, f->R.rsi);
 		break;
 	case SYS_TELL:	// 12
-		// f->R.rax = tell (f->R.rdi);
+		f->R.rax = tell (f->R.rdi);
 		break;
 	case SYS_CLOSE:	// 13
-		// close (f->R.rdi);
+		close (f->R.rdi);
 		break;
 	default:
 		// thread_exit ();
