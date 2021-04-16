@@ -241,7 +241,7 @@ close (int fd) {
 
 void
 is_valid_user_ptr(void* ptr) {
-	if (is_kernel_vaddr(ptr) || !pml4_get_page(thread_current()->pml4, ptr)) {
+	if (is_kernel_vaddr(ptr) || !pml4_get_page(thread_current()->pml4, ptr) || ptr == NULL) {
 		exit(-1);
 	}
 }
