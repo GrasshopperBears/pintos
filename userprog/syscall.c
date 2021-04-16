@@ -144,6 +144,34 @@ open (const char *file) {
 }
 
 int
+filesize (int fd) {
+	int size;
+	struct file_elem* f_el = file_elem_by_fd(fd);
+
+	size = file_length(f_el->file);
+	return size;
+}
+
+int
+read (int fd, void *buffer, unsigned size) {
+	struct thread* curr = thread_current();
+	struct file_elem* f_el;
+	int read_size;
+
+	if(fd == 0) {
+		read_size = input_getc();
+	} else if(fd == 1 || fd < 0) {
+		exit(-1);
+	}	else {
+		f_el = file_elem_by_fd(fd);
+		lock_acquire(curr->filesys_lock);
+		read_size = file_read(f_el->file, buffer, size);
+		lock_release(curr->filesys_lock);
+	}
+	return read_size;
+}
+
+int
 write (int fd, const void *buffer, unsigned size) {
 	int written_size;
 
@@ -221,11 +249,11 @@ syscall_handler (struct intr_frame *f UNUSED) {
 		f->R.rax = open(f->R.rdi);
 		break;
 	case SYS_FILESIZE:	// 8
-		// f->R.rax = filesize(f->R.rdi);
+		f->R.rax = filesize(f->R.rdi);
 		break;
 	case SYS_READ:	// 9
 		is_valid_user_ptr(f->R.rsi);
-		// f->R.rax = read (f->R.rdi, f->R.rsi, f->R.rdx);
+		f->R.rax = read (f->R.rdi, f->R.rsi, f->R.rdx);
 		break;
 	case SYS_WRITE:	// 10
 		is_valid_user_ptr(f->R.rsi);
