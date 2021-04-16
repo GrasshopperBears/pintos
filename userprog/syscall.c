@@ -1,7 +1,9 @@
 #include "userprog/syscall.h"
+#include "include/lib/user/syscall.h"
 #include <stdio.h>
 #include <syscall-nr.h>
 #include "threads/interrupt.h"
+#include "threads/palloc.h"
 #include "threads/thread.h"
 #include "threads/loader.h"
 #include "userprog/gdt.h"
@@ -37,10 +39,116 @@ syscall_init (void) {
 			FLAG_IF | FLAG_TF | FLAG_DF | FLAG_IOPL | FLAG_AC | FLAG_NT);
 }
 
+void
+halt(void) {
+	power_off();
+}
+
+void
+exit(int status) {
+	thread_current()->exit_status = status;
+	thread_exit();
+}
+
+int
+exec (const char *cmd_line) {
+	int result;
+	char* fn_copy = palloc_get_page(0);
+	if (fn_copy == NULL) {
+		exit(-1);
+	}
+	
+	strlcpy(fn_copy, cmd_line, PGSIZE);
+	result = process_exec(fn_copy);
+	return result;
+}
+
+bool
+create (const char *file, unsigned initial_size) {
+	bool ret;
+
+	if (file == NULL) {
+		exit(-1);
+	}
+	ret = filesys_create(file, initial_size);
+	return ret;
+}
+
+int
+write (int fd, const void *buffer, unsigned size) {
+	int written_size;
+
+	if (fd == 1) {
+		putbuf(buffer, size);
+	} 
+	return written_size;
+}
+
+void
+is_valid_user_ptr(void* ptr) {
+	if (is_kernel_vaddr(ptr) || !pml4_get_page(thread_current()->pml4, ptr)) {
+		exit(-1);
+	}
+}
+
 /* The main system call interface */
 void
 syscall_handler (struct intr_frame *f UNUSED) {
 	// TODO: Your implementation goes here.
-	printf ("system call!\n");
-	thread_exit ();
+	// printf ("system call at %s TYPE: %d\n", thread_current()->name, f->R.rax);
+	switch (f->R.rax)
+	{
+	case SYS_HALT:	// 0
+		halt();
+		break;
+	case SYS_EXIT:	// 1
+		exit(f->R.rdi);
+		break;
+	case SYS_FORK:	// 2
+		is_valid_user_ptr(f->R.rdi);
+		// f->R.rax = fork(f->R.rdi);
+		break;
+	case SYS_EXEC:	// 3
+		is_valid_user_ptr(f->R.rdi);
+		f->R.rax = exec(f->R.rdi);
+		break;
+	case SYS_WAIT:	// 4
+		// f->R.rax = wait(f->R.rdi);
+		break;
+	case SYS_CREATE:	// 5
+		is_valid_user_ptr(f->R.rdi);
+		f->R.rax = create(f->R.rdi, f->R.rsi);
+		break;
+	case SYS_REMOVE:	// 6
+		is_valid_user_ptr(f->R.rdi);
+		// f->R.rax = remove(f->R.rdi);
+		break;
+	case SYS_OPEN:	// 7
+		is_valid_user_ptr(f->R.rdi);
+		// f->R.rax = open(f->R.rdi);
+		break;
+	case SYS_FILESIZE:	// 8
+		// f->R.rax = filesize(f->R.rdi);
+		break;
+	case SYS_READ:	// 9
+		is_valid_user_ptr(f->R.rsi);
+		// f->R.rax = read (f->R.rdi, f->R.rsi, f->R.rdx);
+		break;
+	case SYS_WRITE:	// 10
+		is_valid_user_ptr(f->R.rsi);
+		f->R.rax = write (f->R.rdi, f->R.rsi, f->R.rdx);
+		break;
+	case SYS_SEEK:	// 11
+		// seek (f->R.rdi, f->R.rsi);
+		break;
+	case SYS_TELL:	// 12
+		// f->R.rax = tell (f->R.rdi);
+		break;
+	case SYS_CLOSE:	// 13
+		// close (f->R.rdi);
+		break;
+	default:
+		// thread_exit ();
+		break;
+	}
 }

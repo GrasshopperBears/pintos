@@ -103,6 +103,7 @@ struct thread {
 	struct list_elem elem;              /* List element. */
 	struct list_elem t_elem; //total element.
 
+	int exit_status;
 	struct thread* parent;
 	struct lock *filesys_lock;
 	struct file *running_file;

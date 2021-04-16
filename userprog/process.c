@@ -223,7 +223,7 @@ process_exit (void) {
 	 * TODO: Implement process termination message (see
 	 * TODO: project2/process_termination.html).
 	 * TODO: We recommend you to implement process resource cleanup here. */
-
+	printf ("%s: exit(%d)\n", curr->name, curr->exit_status);
 	process_cleanup ();
 }
 
@@ -467,11 +467,11 @@ load (const char *file_name, struct intr_frame *if_) {
 		memcpy(if_->rsp, &args_addr_list[i], PTR_SIZE);
 	}
 
-	if_->R.rdi = argc;
-	if_->R.rsi = if_->rsp;
 	if_->rsp -= PTR_SIZE;
 	memset(if_->rsp, 0, PTR_SIZE);
-	hex_dump ((uintptr_t)if_->rsp, if_->rsp, USER_STACK - if_->rsp, true);
+	if_->R.rdi = argc;
+	if_->R.rsi = if_->rsp + 8;
+	// hex_dump ((uintptr_t)if_->rsp, if_->rsp, USER_STACK - if_->rsp, true);
 
 	success = true;
 
