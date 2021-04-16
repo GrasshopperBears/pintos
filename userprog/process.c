@@ -32,6 +32,7 @@ static void __do_fork (void *);
 static void
 process_init (void) {
 	struct thread *current = thread_current ();
+	current->is_process = true;
 }
 
 /* Starts the first userland program, called "initd", loaded from FILE_NAME.
@@ -223,6 +224,9 @@ process_exit (void) {
 	 * TODO: Implement process termination message (see
 	 * TODO: project2/process_termination.html).
 	 * TODO: We recommend you to implement process resource cleanup here. */
+	if (!curr->is_process)
+		return;
+	
 	printf ("%s: exit(%d)\n", curr->name, curr->exit_status);
 	process_cleanup ();
 }

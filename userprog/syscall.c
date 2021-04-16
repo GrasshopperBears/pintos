@@ -1,17 +1,20 @@
 #include "userprog/syscall.h"
 #include "include/lib/user/syscall.h"
+#include "userprog/process.h"
 #include <stdio.h>
 #include <syscall-nr.h>
 #include "threads/interrupt.h"
 #include "threads/palloc.h"
 #include "threads/thread.h"
 #include "threads/loader.h"
+#include "filesys/filesys.h"
 #include "userprog/gdt.h"
 #include "threads/flags.h"
 #include "intrinsic.h"
 
 void syscall_entry (void);
 void syscall_handler (struct intr_frame *);
+bool compare_file_elem (const struct list_elem *e1, const struct list_elem *e2);
 
 /* System call.
  *
@@ -75,6 +78,41 @@ create (const char *file, unsigned initial_size) {
 }
 
 int
+open (const char *file) {
+	struct thread* curr = thread_current();
+	struct file* opened_file;
+	struct file_elem* new_f_el = palloc_get_page(PAL_ZERO);
+	int new_fd = 2;
+	struct list_elem* el;
+	struct file_elem* f_el;
+
+	if (file == NULL) {
+		exit(-1);
+	}
+	lock_acquire(curr->filesys_lock);
+	opened_file = filesys_open(file);
+	lock_release(curr->filesys_lock);
+
+	if (opened_file == NULL) {
+		return -1;
+	}
+	if (!list_empty(&curr->files_list)) {
+		el = list_front(&curr->files_list);
+		while (el != list_end(&curr->files_list)) {
+			f_el = list_entry(el, struct file_elem, elem);
+			el = el->next;
+			if (new_fd < f_el->fd)
+				break;
+			new_fd++;
+		}
+	}
+	new_f_el->file = opened_file;
+	new_f_el->fd = new_fd;
+	list_insert_ordered(&curr->files_list, &new_f_el->elem, compare_file_elem, NULL);
+	return new_fd;
+}
+
+int
 write (int fd, const void *buffer, unsigned size) {
 	int written_size;
 
@@ -125,7 +163,7 @@ syscall_handler (struct intr_frame *f UNUSED) {
 		break;
 	case SYS_OPEN:	// 7
 		is_valid_user_ptr(f->R.rdi);
-		// f->R.rax = open(f->R.rdi);
+		f->R.rax = open(f->R.rdi);
 		break;
 	case SYS_FILESIZE:	// 8
 		// f->R.rax = filesize(f->R.rdi);
@@ -151,4 +189,17 @@ syscall_handler (struct intr_frame *f UNUSED) {
 		// thread_exit ();
 		break;
 	}
+}
+
+bool
+compare_file_elem (const struct list_elem *e1, const struct list_elem *e2) {
+	struct file_elem *t1 = list_entry(e1, struct file_elem, elem);
+	struct file_elem *t2 = list_entry(e2, struct file_elem, elem);
+	
+	int decsriptor1 = t1->fd;
+	int decsriptor2 = t2->fd;
+	if (decsriptor1 < decsriptor2)
+		return true;
+	else
+		return false;
 }

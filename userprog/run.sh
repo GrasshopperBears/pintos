@@ -1,8 +1,8 @@
 
-TEST_NAME="args-single"
+TEST_NAME="open-twice"
 FILES=""
-# FILES="-p tests/userprog/child-rox:child-rox"
-ARGS="arg"
+FILES="-p ../../tests/userprog/sample.txt:sample.txt"
+ARGS=""
 # ARGS="a b c d e f g h i j k l m n o p q r s t u v"
 DEBUGGING=""
 # DEBUGGING="--gdb"
