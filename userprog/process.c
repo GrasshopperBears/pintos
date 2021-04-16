@@ -33,6 +33,8 @@ static void
 process_init (void) {
 	struct thread *current = thread_current ();
 	current->is_process = true;
+	current->files_list = palloc_get_page(PAL_ZERO);
+	list_init(current->files_list);
 }
 
 /* Starts the first userland program, called "initd", loaded from FILE_NAME.

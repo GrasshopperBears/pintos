@@ -616,7 +616,6 @@ init_thread (struct thread *t, const char *name, int priority) {
 	t->filesys_lock = &filesys_lock;
 	t->running_file = NULL;
 	t->is_process = false;
-	list_init(&t->files_list);
 
 	if (thread_mlfqs == true && t != initial_thread) {
 		t->recent_cpu = thread_current ()->recent_cpu;

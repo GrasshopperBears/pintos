@@ -109,7 +109,7 @@ struct thread {
 	struct lock *filesys_lock;
 	struct file *running_file;
 
-	struct list files_list;
+	struct list* files_list;
 
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */
