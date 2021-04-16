@@ -271,6 +271,7 @@ lock_acquire (struct lock *lock) {
 			break;
 		}
 
+		old_level = intr_disable ();
 		new_lock_elem.lock = lock;
 		list_push_front(&thread_current()->waiting_list, &new_lock_elem.elem);
 		list_push_front(&sema->waiters, &thread_current ()->elem);
@@ -278,7 +279,6 @@ lock_acquire (struct lock *lock) {
 			donate(lock, &new_el);
 			donation_propagation(lock, 0);
 		}
-		old_level = intr_disable ();
 		thread_block();
 		intr_set_level(old_level);
 	}

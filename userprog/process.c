@@ -60,9 +60,10 @@ process_create_initd (const char *file_name) {
 
 	/* Create a new thread to execute FILE_NAME. */
 	tid = thread_create (strtok_r (file_name, " ", &save_ptr), PRI_DEFAULT, initd, fn_copy);
-	if (tid == TID_ERROR)
+	if (tid == TID_ERROR) {
+		palloc_free_page(c_el);
 		palloc_free_page (fn_copy);
-	else {
+	} else {
 		c_el->tid = tid;
 		c_el->terminated = false;
 		c_el->waiting = false;
@@ -250,7 +251,6 @@ error:
 	if (parent->status == THREAD_BLOCKED)
 		thread_unblock(parent);
 	palloc_free_page(aux);
-	// printf("error\n");
 	thread_exit ();
 }
 
@@ -343,7 +343,6 @@ process_exit (void) {
 
 	if (!curr->is_process)
 		return;
-	// printf("start exit\n");	
 	if (curr->parent != NULL) {
 		el = list_begin(&curr->parent->children_list);
 		while (el != list_end(&curr->parent->children_list)) {
@@ -368,7 +367,6 @@ process_exit (void) {
 		}
 	}
 	file_close(curr->running_file);
-	printf ("%s: exit(%d)\n", curr->name, curr->exit_status);
 	process_cleanup ();
 }
 

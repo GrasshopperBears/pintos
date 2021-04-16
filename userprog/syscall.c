@@ -90,10 +90,13 @@ close_all_files(void) {
 
 void
 exit(int status) {
-	thread_current()->exit_status = status;
+	struct thread* curr = thread_current();
+
+	curr->exit_status = status;
+	printf ("%s: exit(%d)\n", curr->name, curr->exit_status);
 	close_all_files();
-	if (thread_current()->filesys_lock->holder == thread_current())
-		lock_release(&thread_current()->filesys_lock);
+	// if (thread_current()->filesys_lock->holder == thread_current())
+	// 	lock_release(&thread_current()->filesys_lock);
 	thread_exit();
 }
 
@@ -108,11 +111,11 @@ fork (const char *thread_name) {
 		return TID_ERROR;
 
 	child_pid = process_fork(thread_name, &parent->tf, &parent_lock);
+	old_level = intr_disable();
 	while (parent_lock == 0) {
-		old_level = intr_disable();
 		thread_block();
-		intr_set_level(old_level);
 	}
+	intr_set_level(old_level);
 	if (child_pid == TID_ERROR)
 		return TID_ERROR;
 	return running_thread()->status == THREAD_RUNNING ? (parent_lock > 0 ? child_pid : TID_ERROR) : 0;
