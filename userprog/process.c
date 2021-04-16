@@ -474,7 +474,7 @@ load (const char *file_name, struct intr_frame *if_) {
 	file = filesys_open (token);
 	if (file == NULL) {
 		printf ("load: %s: open failed\n", file_name);
-		goto done;
+		exit(-1);
 	}
 
 	t->running_file = file;
