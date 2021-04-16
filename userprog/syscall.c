@@ -70,8 +70,27 @@ halt(void) {
 }
 
 void
+close_all_files(void) {
+	struct thread* curr = thread_current();
+	struct list_elem* el;
+	struct file_elem *f_el;
+
+	if (list_empty(&curr->files_list))
+		return;
+	el = list_begin(&curr->files_list);
+	while (el != list_end(&curr->files_list)) {
+		f_el = list_entry(el, struct file_elem, elem);
+		el = el->next;
+		file_close(f_el->file);
+		list_remove(&f_el->elem);
+		palloc_free_page(f_el);
+	}
+}
+
+void
 exit(int status) {
 	thread_current()->exit_status = status;
+	close_all_files();
 	thread_exit();
 }
 
@@ -82,6 +101,10 @@ fork (const char *thread_name) {
 	pid_t child_pid;
 	enum intr_level old_level;
 	
+	// int MAX_CHILDREN = 20;
+	// if (list_size(&parent->children_list) > MAX_CHILDREN)
+	// 	exit(-1);
+
 	child_pid = process_fork(thread_name, &parent->tf, &parent_lock);
 	while (parent_lock == 0) {
 		old_level = intr_disable();
@@ -142,7 +165,7 @@ open (const char *file) {
 	struct list_elem* el;
 	struct file_elem* f_el;
 
-	if (file == NULL) {
+	if (file == NULL || new_f_el == NULL) {
 		exit(-1);
 	}
 	lock_acquire(curr->filesys_lock);

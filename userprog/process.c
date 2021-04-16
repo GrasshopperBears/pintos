@@ -47,6 +47,9 @@ process_create_initd (const char *file_name) {
 	char *save_ptr;
 	struct child_elem* c_el = palloc_get_page(PAL_ZERO);
 
+	if (c_el == NULL)
+		exit(-1);
+
 	/* Make a copy of FILE_NAME.
 	 * Otherwise there's a race between the caller and load(). */
 	fn_copy = palloc_get_page (0);
@@ -103,8 +106,12 @@ copy_file_list(struct thread* parent, struct thread* child) {
 			return false;
 		
 		new_f_el = palloc_get_page(PAL_ZERO);
+		if (new_f_el == NULL)
+			exit(-1);
 		new_f_el->fd = f_el->fd;
+		// lock_acquire(&child->filesys_lock);
 		new_f_el->file = file_duplicate(f_el->file);
+		// lock_release(&child->filesys_lock);
 		if (new_f_el->file == NULL) {
 			palloc_free_page(new_f_el);
 			return false;
@@ -122,6 +129,9 @@ tid_t
 process_fork (const char *name, struct intr_frame *if_ UNUSED, int* parent_lock) {
 	/* Clone current thread to new thread.*/
 	struct parent_info* p_info = palloc_get_page(PAL_ZERO);
+
+	if (p_info == NULL)
+		exit(-1);
 
 	p_info->t = thread_current();
 	p_info->if_ = if_;
@@ -215,6 +225,9 @@ __do_fork (void *aux) {
 		goto error;
 
 	c_el = palloc_get_page(PAL_ZERO);
+	if (c_el == NULL)
+		exit(-1);
+
 	current->parent = parent;
 	current->is_process = true;
 	c_el->tid = current->tid;
@@ -344,6 +357,14 @@ process_exit (void) {
 			el = el->next;
 		}
 	}
+	if (!list_empty(&curr->children_list)) {
+		el = list_begin(&curr->children_list);
+		while (el != list_end(&curr->children_list)) {
+			c_el = list_entry(el, struct child_elem, elem);
+			el = el->next;
+			palloc_free_page(c_el);
+		}
+	}
 	file_close(curr->running_file);
 	printf ("%s: exit(%d)\n", curr->name, curr->exit_status);
 	process_cleanup ();
@@ -460,6 +481,9 @@ load (const char *file_name, struct intr_frame *if_) {
 	int i, argc, arg_len, idx, word_align, PTR_SIZE = 8;
 	char *token, *save_ptr, *copied_file_name = palloc_get_page(PAL_ZERO);
 	int64_t* args_addr_list;
+
+	if (copied_file_name == NULL)
+		exit(-1);
 
 	/* Allocate and activate page directory. */
 	t->pml4 = pml4_create ();
