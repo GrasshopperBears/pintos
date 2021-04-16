@@ -1,5 +1,6 @@
 #include "userprog/syscall.h"
 #include "include/lib/user/syscall.h"
+#include "threads/synch.h"
 #include "userprog/process.h"
 #include <stdio.h>
 #include <syscall-nr.h>
@@ -83,7 +84,7 @@ close_all_files(void) {
 		el = el->next;
 		file_close(f_el->file);
 		list_remove(&f_el->elem);
-		palloc_free_page(f_el);
+		free(f_el);
 	}
 }
 
@@ -91,6 +92,8 @@ void
 exit(int status) {
 	thread_current()->exit_status = status;
 	close_all_files();
+	if (thread_current()->filesys_lock->holder == thread_current())
+		lock_release(&thread_current()->filesys_lock);
 	thread_exit();
 }
 
@@ -100,10 +103,9 @@ fork (const char *thread_name) {
 	int parent_lock = 0;
 	pid_t child_pid;
 	enum intr_level old_level;
-	
-	// int MAX_CHILDREN = 20;
-	// if (list_size(&parent->children_list) > MAX_CHILDREN)
-	// 	exit(-1);
+
+	if (parent->depth > 30)
+		return TID_ERROR;
 
 	child_pid = process_fork(thread_name, &parent->tf, &parent_lock);
 	while (parent_lock == 0) {
@@ -160,7 +162,7 @@ int
 open (const char *file) {
 	struct thread* curr = thread_current();
 	struct file* opened_file;
-	struct file_elem* new_f_el = palloc_get_page(PAL_ZERO);
+	struct file_elem* new_f_el = malloc(sizeof(struct file_elem));
 	int new_fd = 2;
 	struct list_elem* el;
 	struct file_elem* f_el;
@@ -259,7 +261,7 @@ close (int fd) {
 
 	file_close(f_el->file);
 	list_remove(&f_el->elem);
-	palloc_free_page(f_el);
+	free(f_el);
 }
 
 void

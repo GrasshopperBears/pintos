@@ -1,3 +1,11 @@
+gcc -c ../../userprog/syscall.c -o userprog/syscall.o -g -msoft-float -O0 -fno-omit-frame-pointer -mno-red-zone -mcmodel=large -fno-plt -fno-pic -mno-sse -fno-stack-protector -nostdinc -I../.. -I../../include/lib -I../../include -I../../include/lib/kernel -I../../lib/kernel -Wall -W -Wstrict-prototypes -Wmissing-prototypes -Wsystem-headers -DUSERPROG -DFILESYS -MMD -MF userprog/syscall.d
+ld --no-relax -T threads/kernel.lds.s -o kernel.o threads/init.o threads/thread.o threads/interrupt.o threads/intr-stubs.o threads/synch.o threads/palloc.o threads/malloc.o threads/start.o threads/mmu.o tests/threads/tests.o tests/threads/alarm-wait.o tests/threads/alarm-simultaneous.o tests/threads/alarm-priority.o tests/threads/alarm-zero.o tests/threads/alarm-negative.o tests/threads/priority-change.o tests/threads/priority-donate-one.o tests/threads/priority-donate-multiple.o tests/threads/priority-donate-multiple2.o tests/threads/priority-donate-nest.o tests/threads/priority-donate-sema.o tests/threads/priority-donate-lower.o tests/threads/priority-fifo.o tests/threads/priority-preempt.o tests/threads/priority-sema.o tests/threads/priority-condvar.o tests/threads/priority-donate-chain.o tests/threads/mlfqs/mlfqs-load-1.o tests/threads/mlfqs/mlfqs-load-60.o tests/threads/mlfqs/mlfqs-load-avg.o tests/threads/mlfqs/mlfqs-recent-1.o tests/threads/mlfqs/mlfqs-fair.o tests/threads/mlfqs/mlfqs-block.o devices/timer.o devices/kbd.o devices/vga.o devices/serial.o devices/disk.o devices/input.o devices/intq.o lib/debug.o lib/random.o lib/stdio.o lib/stdlib.o lib/string.o lib/arithmetic.o lib/kernel/debug.o lib/kernel/list.o lib/kernel/bitmap.o lib/kernel/hash.o lib/kernel/console.o userprog/process.o userprog/exception.o userprog/syscall-entry.o userprog/syscall.o userprog/gdt.o userprog/tss.o filesys/filesys.o filesys/fat.o filesys/free-map.o filesys/file.o filesys/directory.o filesys/inode.o filesys/fsutil.o filesys/page_cache.o
+objcopy -O binary -R .note -R .comment -S kernel.o kernel.bin.tmp
+dd if=kernel.bin.tmp of=kernel.bin bs=4096 conv=sync
+rm kernel.bin.tmp
+gcc -c ../../threads/loader.S -o threads/loader.o -Wa,--gstabs -mcmodel=large -nostdinc -I../.. -I../../include/lib -I../../include -I../../include/lib/kernel -I../../lib/kernel -DUSERPROG -DFILESYS -DKERNEL_LOAD_PAGES=`perl -e 'print +(-s "kernel.bin") / 4096;'`
+ld --no-relax -N -e start -Ttext 0x7c00 --oformat binary -o loader.bin threads/loader.o
+cat loader.bin kernel.bin > os.dsk
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-none:args-none -- -q   -f run args-none < /dev/null 2> tests/userprog/args-none.errors > tests/userprog/args-none.output
 perl -I../.. ../../tests/userprog/args-none.ck tests/userprog/args-none tests/userprog/args-none.result
 pass tests/userprog/args-none
@@ -111,24 +119,7 @@ perl -I../.. ../../tests/userprog/fork-once.ck tests/userprog/fork-once tests/us
 pass tests/userprog/fork-once
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-multiple:fork-multiple -- -q   -f run fork-multiple < /dev/null 2> tests/userprog/fork-multiple.errors > tests/userprog/fork-multiple.output
 perl -I../.. ../../tests/userprog/fork-multiple.ck tests/userprog/fork-multiple tests/userprog/fork-multiple.result
-FAIL tests/userprog/fork-multiple
-Kernel panic in run: PANIC at ../../threads/thread.c:327 in thread_current(): assertion `t->status == THREAD_RUNNING' failed.
-Call stack: 0x8004218d02 0x80042074f9 0x8004206e3e 0x8004212a9c 0x8004209631 0x8004209a4f 0x80042087a4 0x800421e3af 0x800421ea39 0x800421e06a 0x400121 0x4001bf 0x400229 0x400cca
-Translation of call stack:
-0x0000008004218d02: debug_panic (lib/kernel/debug.c:32)
-0x00000080042074f9: thread_current (threads/thread.c:329)
-0x0000008004206e3e: thread_tick (threads/thread.c:163)
-0x0000008004212a9c: timer_interrupt (devices/timer.c:129)
-0x0000008004209631: intr_handler (threads/interrupt.c:352)
-0x0000008004209a4f: intr_entry (threads/intr-stubs.o:?)
-0x00000080042087a4: intr_set_level (threads/interrupt.c:131 (discriminator 1))
-0x000000800421e3af: fork (userprog/syscall.c:105)
-0x000000800421ea39: syscall_handler (userprog/syscall.c:283)
-0x000000800421e06a: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400121: (unknown)
-0x00000000004001bf: (unknown)
-0x0000000000400229: (unknown)
-0x0000000000400cca: (unknown)
+pass tests/userprog/fork-multiple
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-recursive:fork-recursive -- -q   -f run fork-recursive < /dev/null 2> tests/userprog/fork-recursive.errors > tests/userprog/fork-recursive.output
 perl -I../.. ../../tests/userprog/fork-recursive.ck tests/userprog/fork-recursive tests/userprog/fork-recursive.result
 pass tests/userprog/fork-recursive
@@ -152,7 +143,18 @@ perl -I../.. ../../tests/userprog/exec-boundary.ck tests/userprog/exec-boundary 
 pass tests/userprog/exec-boundary
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/exec-missing:exec-missing -- -q   -f run exec-missing < /dev/null 2> tests/userprog/exec-missing.errors > tests/userprog/exec-missing.output
 perl -I../.. ../../tests/userprog/exec-missing.ck tests/userprog/exec-missing tests/userprog/exec-missing.result
-pass tests/userprog/exec-missing
+FAIL tests/userprog/exec-missing
+Kernel panic in run: PANIC at ../../threads/synch.c:366 in lock_release(): assertion `lock_held_by_current_thread (lock)' failed.
+Call stack: 0x8004218d2c 0x800420b2bc 0x800421e40f 0x800421d064 0x800421ca7a 0x800421e560 0x800421eb5b 0x800421e105
+Translation of call stack:
+0x0000008004218d2c: debug_panic (lib/kernel/debug.c:32)
+0x000000800420b2bc: lock_release (threads/synch.c:367)
+0x000000800421e40f: exit (userprog/syscall.c:97)
+0x000000800421d064: load (userprog/process.c:506)
+0x000000800421ca7a: process_exec (userprog/process.c:277)
+0x000000800421e560: exec (userprog/syscall.c:130)
+0x000000800421eb5b: syscall_handler (userprog/syscall.c:293)
+0x000000800421e105: no_sti (userprog/syscall-entry.o:?)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/exec-bad-ptr:exec-bad-ptr -- -q   -f run exec-bad-ptr < /dev/null 2> tests/userprog/exec-bad-ptr.errors > tests/userprog/exec-bad-ptr.output
 perl -I../.. ../../tests/userprog/exec-bad-ptr.ck tests/userprog/exec-bad-ptr tests/userprog/exec-bad-ptr.result
 pass tests/userprog/exec-bad-ptr
@@ -167,109 +169,20 @@ perl -I../.. ../../tests/userprog/wait-twice.ck tests/userprog/wait-twice tests/
 pass tests/userprog/wait-twice
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/wait-killed:wait-killed -p tests/userprog/child-bad:child-bad -- -q   -f run wait-killed < /dev/null 2> tests/userprog/wait-killed.errors > tests/userprog/wait-killed.output
 perl -I../.. ../../tests/userprog/wait-killed.ck tests/userprog/wait-killed tests/userprog/wait-killed.result
-pass tests/userprog/wait-killed
+FAIL tests/userprog/wait-killed
+Kernel panic in run: PANIC at ../../threads/synch.c:366 in lock_release(): assertion `lock_held_by_current_thread (lock)' failed.
+Call stack: 0x8004218d2c 0x800420b2bc 0x800421e40f 0x800421d064 0x800421ca7a 0x800421e560 0x800421eb5b 0x800421e105
+Translation of call stack:
+0x0000008004218d2c: debug_panic (lib/kernel/debug.c:32)
+0x000000800420b2bc: lock_release (threads/synch.c:367)
+0x000000800421e40f: exit (userprog/syscall.c:97)
+0x000000800421d064: load (userprog/process.c:506)
+0x000000800421ca7a: process_exec (userprog/process.c:277)
+0x000000800421e560: exec (userprog/syscall.c:130)
+0x000000800421eb5b: syscall_handler (userprog/syscall.c:293)
+0x000000800421e105: no_sti (userprog/syscall-entry.o:?)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/wait-bad-pid:wait-bad-pid -- -q   -f run wait-bad-pid < /dev/null 2> tests/userprog/wait-bad-pid.errors > tests/userprog/wait-bad-pid.output
 perl -I../.. ../../tests/userprog/wait-bad-pid.ck tests/userprog/wait-bad-pid tests/userprog/wait-bad-pid.result
 pass tests/userprog/wait-bad-pid
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/multi-recurse:multi-recurse -- -q   -f run 'multi-recurse 15' < /dev/null 2> tests/userprog/multi-recurse.errors > tests/userprog/multi-recurse.output
-perl -I../.. ../../tests/userprog/multi-recurse.ck tests/userprog/multi-recurse tests/userprog/multi-recurse.result
-pass tests/userprog/multi-recurse
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/multi-child-fd:multi-child-fd -p ../../tests/userprog/sample.txt:sample.txt -p tests/userprog/child-close:child-close -- -q   -f run multi-child-fd < /dev/null 2> tests/userprog/multi-child-fd.errors > tests/userprog/multi-child-fd.output
-perl -I../.. ../../tests/userprog/multi-child-fd.ck tests/userprog/multi-child-fd tests/userprog/multi-child-fd.result
-pass tests/userprog/multi-child-fd
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/rox-simple:rox-simple -- -q   -f run rox-simple < /dev/null 2> tests/userprog/rox-simple.errors > tests/userprog/rox-simple.output
-perl -I../.. ../../tests/userprog/rox-simple.ck tests/userprog/rox-simple tests/userprog/rox-simple.result
-pass tests/userprog/rox-simple
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/rox-child:rox-child -p tests/userprog/child-rox:child-rox -- -q   -f run rox-child < /dev/null 2> tests/userprog/rox-child.errors > tests/userprog/rox-child.output
-perl -I../.. ../../tests/userprog/rox-child.ck tests/userprog/rox-child tests/userprog/rox-child.result
-pass tests/userprog/rox-child
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/rox-multichild:rox-multichild -p tests/userprog/child-rox:child-rox -- -q   -f run rox-multichild < /dev/null 2> tests/userprog/rox-multichild.errors > tests/userprog/rox-multichild.output
-perl -I../.. ../../tests/userprog/rox-multichild.ck tests/userprog/rox-multichild tests/userprog/rox-multichild.result
-pass tests/userprog/rox-multichild
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/bad-read:bad-read -- -q   -f run bad-read < /dev/null 2> tests/userprog/bad-read.errors > tests/userprog/bad-read.output
-perl -I../.. ../../tests/userprog/bad-read.ck tests/userprog/bad-read tests/userprog/bad-read.result
-pass tests/userprog/bad-read
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/bad-write:bad-write -- -q   -f run bad-write < /dev/null 2> tests/userprog/bad-write.errors > tests/userprog/bad-write.output
-perl -I../.. ../../tests/userprog/bad-write.ck tests/userprog/bad-write tests/userprog/bad-write.result
-pass tests/userprog/bad-write
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/bad-read2:bad-read2 -- -q   -f run bad-read2 < /dev/null 2> tests/userprog/bad-read2.errors > tests/userprog/bad-read2.output
-perl -I../.. ../../tests/userprog/bad-read2.ck tests/userprog/bad-read2 tests/userprog/bad-read2.result
-pass tests/userprog/bad-read2
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/bad-write2:bad-write2 -- -q   -f run bad-write2 < /dev/null 2> tests/userprog/bad-write2.errors > tests/userprog/bad-write2.output
-perl -I../.. ../../tests/userprog/bad-write2.ck tests/userprog/bad-write2 tests/userprog/bad-write2.result
-pass tests/userprog/bad-write2
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/bad-jump:bad-jump -- -q   -f run bad-jump < /dev/null 2> tests/userprog/bad-jump.errors > tests/userprog/bad-jump.output
-perl -I../.. ../../tests/userprog/bad-jump.ck tests/userprog/bad-jump tests/userprog/bad-jump.result
-pass tests/userprog/bad-jump
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/bad-jump2:bad-jump2 -- -q   -f run bad-jump2 < /dev/null 2> tests/userprog/bad-jump2.errors > tests/userprog/bad-jump2.output
-perl -I../.. ../../tests/userprog/bad-jump2.ck tests/userprog/bad-jump2 tests/userprog/bad-jump2.result
-pass tests/userprog/bad-jump2
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/lg-create:lg-create -- -q   -f run lg-create < /dev/null 2> tests/filesys/base/lg-create.errors > tests/filesys/base/lg-create.output
-perl -I../.. ../../tests/filesys/base/lg-create.ck tests/filesys/base/lg-create tests/filesys/base/lg-create.result
-pass tests/filesys/base/lg-create
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/lg-full:lg-full -- -q   -f run lg-full < /dev/null 2> tests/filesys/base/lg-full.errors > tests/filesys/base/lg-full.output
-perl -I../.. ../../tests/filesys/base/lg-full.ck tests/filesys/base/lg-full tests/filesys/base/lg-full.result
-pass tests/filesys/base/lg-full
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/lg-random:lg-random -- -q   -f run lg-random < /dev/null 2> tests/filesys/base/lg-random.errors > tests/filesys/base/lg-random.output
-perl -I../.. ../../tests/filesys/base/lg-random.ck tests/filesys/base/lg-random tests/filesys/base/lg-random.result
-pass tests/filesys/base/lg-random
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/lg-seq-block:lg-seq-block -- -q   -f run lg-seq-block < /dev/null 2> tests/filesys/base/lg-seq-block.errors > tests/filesys/base/lg-seq-block.output
-perl -I../.. ../../tests/filesys/base/lg-seq-block.ck tests/filesys/base/lg-seq-block tests/filesys/base/lg-seq-block.result
-pass tests/filesys/base/lg-seq-block
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/lg-seq-random:lg-seq-random -- -q   -f run lg-seq-random < /dev/null 2> tests/filesys/base/lg-seq-random.errors > tests/filesys/base/lg-seq-random.output
-perl -I../.. ../../tests/filesys/base/lg-seq-random.ck tests/filesys/base/lg-seq-random tests/filesys/base/lg-seq-random.result
-pass tests/filesys/base/lg-seq-random
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/sm-create:sm-create -- -q   -f run sm-create < /dev/null 2> tests/filesys/base/sm-create.errors > tests/filesys/base/sm-create.output
-perl -I../.. ../../tests/filesys/base/sm-create.ck tests/filesys/base/sm-create tests/filesys/base/sm-create.result
-pass tests/filesys/base/sm-create
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/sm-full:sm-full -- -q   -f run sm-full < /dev/null 2> tests/filesys/base/sm-full.errors > tests/filesys/base/sm-full.output
-perl -I../.. ../../tests/filesys/base/sm-full.ck tests/filesys/base/sm-full tests/filesys/base/sm-full.result
-pass tests/filesys/base/sm-full
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/sm-random:sm-random -- -q   -f run sm-random < /dev/null 2> tests/filesys/base/sm-random.errors > tests/filesys/base/sm-random.output
-perl -I../.. ../../tests/filesys/base/sm-random.ck tests/filesys/base/sm-random tests/filesys/base/sm-random.result
-pass tests/filesys/base/sm-random
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/sm-seq-block:sm-seq-block -- -q   -f run sm-seq-block < /dev/null 2> tests/filesys/base/sm-seq-block.errors > tests/filesys/base/sm-seq-block.output
-perl -I../.. ../../tests/filesys/base/sm-seq-block.ck tests/filesys/base/sm-seq-block tests/filesys/base/sm-seq-block.result
-pass tests/filesys/base/sm-seq-block
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/sm-seq-random:sm-seq-random -- -q   -f run sm-seq-random < /dev/null 2> tests/filesys/base/sm-seq-random.errors > tests/filesys/base/sm-seq-random.output
-perl -I../.. ../../tests/filesys/base/sm-seq-random.ck tests/filesys/base/sm-seq-random tests/filesys/base/sm-seq-random.result
-pass tests/filesys/base/sm-seq-random
-pintos -v -k -T 300 -m 20   --fs-disk=10 -p tests/filesys/base/syn-read:syn-read -p tests/filesys/base/child-syn-read:child-syn-read -- -q   -f run syn-read < /dev/null 2> tests/filesys/base/syn-read.errors > tests/filesys/base/syn-read.output
-perl -I../.. ../../tests/filesys/base/syn-read.ck tests/filesys/base/syn-read tests/filesys/base/syn-read.result
-FAIL tests/filesys/base/syn-read
-Kernel panic in run: PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
-Call stack: 0x8004218d02 0x800421de4f 0x8004209631 0x8004209a4f 0x800420add9 0x800421bf58 0x800421c03f 0x8004216205 0x80042097f4 0x800421de1a 0x8004209631 0x8004209a4f 0x800420add9 0x800420c3ac 0x800420c4b0 0x8004206fb9 0x800421c60c 0x800421e37e 0x800421ea39 0x800421e06a 0x4006a9 0x4002a6 0x400fa7 0x400ff0
-Translation of call stack:
-0x0000008004218d02: debug_panic (lib/kernel/debug.c:32)
-0x000000800421de4f: kill (userprog/exception.c:103)
-0x0000008004209631: intr_handler (threads/interrupt.c:352)
-0x0000008004209a4f: intr_entry (threads/intr-stubs.o:?)
-0x000000800420add9: lock_acquire (threads/synch.c:271)
-0x000000800421bf58: acquire_console (lib/kernel/console.c:92)
-0x000000800421c03f: vprintf (lib/kernel/console.c:122)
-0x0000008004216205: printf (lib/stdio.c:80)
-0x00000080042097f4: intr_dump_frame (threads/interrupt.c:387)
-0x000000800421de1a: kill (userprog/exception.c:97)
-0x0000008004209631: intr_handler (threads/interrupt.c:352)
-0x0000008004209a4f: intr_entry (threads/intr-stubs.o:?)
-0x000000800420add9: lock_acquire (threads/synch.c:271)
-0x000000800420c3ac: palloc_get_multiple (threads/palloc.c:267 (discriminator 4))
-0x000000800420c4b0: palloc_get_page (threads/palloc.c:297)
-0x0000008004206fb9: thread_create (threads/thread.c:211)
-0x000000800421c60c: process_fork (userprog/process.c:132)
-0x000000800421e37e: fork (userprog/syscall.c:104)
-0x000000800421ea39: syscall_handler (userprog/syscall.c:283)
-0x000000800421e06a: no_sti (userprog/syscall-entry.o:?)
-0x00000000004006a9: (unknown)
-0x00000000004002a6: (unknown)
-0x0000000000400fa7: (unknown)
-0x0000000000400ff0: (unknown)
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/syn-remove:syn-remove -- -q   -f run syn-remove < /dev/null 2> tests/filesys/base/syn-remove.errors > tests/filesys/base/syn-remove.output
-perl -I../.. ../../tests/filesys/base/syn-remove.ck tests/filesys/base/syn-remove tests/filesys/base/syn-remove.result
-pass tests/filesys/base/syn-remove
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/syn-write:syn-write -p tests/filesys/base/child-syn-wrt:child-syn-wrt -- -q   -f run syn-write < /dev/null 2> tests/filesys/base/syn-write.errors > tests/filesys/base/syn-write.output
-perl -I../.. ../../tests/filesys/base/syn-write.ck tests/filesys/base/syn-write tests/filesys/base/syn-write.result
-FAIL tests/filesys/base/syn-write
-run: wait for child 1 of 10 returned -1 (expected 0): FAILED
-pintos -v -k -T 600 -m 20 -m 20   --fs-disk=10 -p tests/userprog/no-vm/multi-oom:multi-oom -- -q   -f run multi-oom < /dev/null 2> tests/userprog/no-vm/multi-oom.errors > tests/userprog/no-vm/multi-oom.output
-../../tests/Make.tests:75: recipe for target 'tests/userprog/no-vm/multi-oom.output' failed
+../../tests/Make.tests:75: recipe for target 'tests/userprog/multi-recurse.output' failed

@@ -105,15 +105,16 @@ copy_file_list(struct thread* parent, struct thread* child) {
 		if (f_el->fd < 0)
 			return false;
 		
-		new_f_el = palloc_get_page(PAL_ZERO);
+		new_f_el = malloc(sizeof(struct file_elem));
 		if (new_f_el == NULL)
-			exit(-1);
+			return false;
+		
 		new_f_el->fd = f_el->fd;
 		// lock_acquire(&child->filesys_lock);
 		new_f_el->file = file_duplicate(f_el->file);
 		// lock_release(&child->filesys_lock);
 		if (new_f_el->file == NULL) {
-			palloc_free_page(new_f_el);
+			free(new_f_el);
 			return false;
 		}
 		list_push_back(&child->files_list, &new_f_el->elem);
@@ -196,7 +197,7 @@ __do_fork (void *aux) {
 	struct intr_frame *parent_if = p_info->if_;
 	bool succ = true;
 	struct child_elem* c_el;
-
+	// printf("start fork\n");
 	/* 1. Read the cpu context to local stack. */
 	memcpy (&if_, parent_if, sizeof (struct intr_frame));
 
@@ -249,6 +250,7 @@ error:
 	if (parent->status == THREAD_BLOCKED)
 		thread_unblock(parent);
 	palloc_free_page(aux);
+	// printf("error\n");
 	thread_exit ();
 }
 
@@ -341,7 +343,7 @@ process_exit (void) {
 
 	if (!curr->is_process)
 		return;
-	
+	// printf("start exit\n");	
 	if (curr->parent != NULL) {
 		el = list_begin(&curr->parent->children_list);
 		while (el != list_end(&curr->parent->children_list)) {

@@ -98,6 +98,7 @@ struct thread {
 
 	int nice; // Nice of thread.
 	int recent_cpu; // Recent CPU of thread.
+	int depth;
 
 	/* Shared between thread.c and synch.c. */
 	struct list_elem elem;              /* List element. */
@@ -105,7 +106,7 @@ struct thread {
 
 	struct list files_list;
 	struct list children_list;
-	
+
 	bool is_process;
 	int exit_status;
 	struct thread* parent;
