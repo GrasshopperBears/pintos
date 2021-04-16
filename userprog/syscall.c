@@ -48,14 +48,14 @@ file_elem_by_fd(int fd) {
 	struct list_elem* el;
 	struct file_elem* f_el;
 
-	if (fd == NULL || fd < 0 || list_empty(curr->files_list)) {
+	if (fd == NULL || fd < 0 || list_empty(&curr->files_list)) {
 		exit(-1);
 	}
 	if (fd <= 1) {
 		return NULL;
 	}
-	el = list_begin(curr->files_list);
-	while (el != list_end(curr->files_list)) {
+	el = list_begin(&curr->files_list);
+	while (el != list_end(&curr->files_list)) {
 		f_el = list_entry(el, struct file_elem, elem);
 		if (f_el->fd == fd)
 			return f_el;
@@ -127,9 +127,9 @@ open (const char *file) {
 	if (opened_file == NULL) {
 		return -1;
 	}
-	if (!list_empty(curr->files_list)) {
-		el = list_front(curr->files_list);
-		while (el != list_end(curr->files_list)) {
+	if (!list_empty(&curr->files_list)) {
+		el = list_front(&curr->files_list);
+		while (el != list_end(&curr->files_list)) {
 			f_el = list_entry(el, struct file_elem, elem);
 			el = el->next;
 			if (new_fd < f_el->fd)
@@ -139,7 +139,7 @@ open (const char *file) {
 	}
 	new_f_el->file = opened_file;
 	new_f_el->fd = new_fd;
-	list_insert_ordered(curr->files_list, &new_f_el->elem, compare_file_elem, NULL);
+	list_insert_ordered(&curr->files_list, &new_f_el->elem, compare_file_elem, NULL);
 	return new_fd;
 }
 

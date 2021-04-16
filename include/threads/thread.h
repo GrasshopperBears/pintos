@@ -109,7 +109,8 @@ struct thread {
 	struct lock *filesys_lock;
 	struct file *running_file;
 
-	struct list* files_list;
+	struct list files_list;
+	struct list children_list;
 
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */
@@ -177,6 +178,13 @@ struct donate_elem {
 	struct list_elem elem;
 };
 
-void print_total_status (void);
+struct child_elem {
+	bool waiting;
+	int exit_status;
+	bool terminated;
+	tid_t tid;
+	struct semaphore* waiting_sema;
+	struct list_elem elem;
+};
 
 #endif /* threads/thread.h */

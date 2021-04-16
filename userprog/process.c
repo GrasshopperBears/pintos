@@ -33,8 +33,6 @@ static void
 process_init (void) {
 	struct thread *current = thread_current ();
 	current->is_process = true;
-	current->files_list = palloc_get_page(PAL_ZERO);
-	list_init(current->files_list);
 }
 
 /* Starts the first userland program, called "initd", loaded from FILE_NAME.
@@ -47,6 +45,7 @@ process_create_initd (const char *file_name) {
 	char *fn_copy;
 	tid_t tid;
 	char **save_ptr;
+	struct child_elem* c_el = palloc_get_page(PAL_ZERO);
 
 	/* Make a copy of FILE_NAME.
 	 * Otherwise there's a race between the caller and load(). */
@@ -59,6 +58,12 @@ process_create_initd (const char *file_name) {
 	tid = thread_create (strtok_r (file_name, " ", save_ptr), PRI_DEFAULT, initd, fn_copy);
 	if (tid == TID_ERROR)
 		palloc_free_page (fn_copy);
+	else {
+		c_el->tid = tid;
+		c_el->terminated = false;
+		c_el->waiting = false;
+		list_push_front(&thread_current()->children_list, &c_el->elem);
+	}
 	return tid;
 }
 
