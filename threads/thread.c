@@ -612,7 +612,8 @@ init_thread (struct thread *t, const char *name, int priority) {
 	list_init(&t->waiting_list);
 	t->original_priority = -1;
 
-	t->parent = NULL;
+	if (t != initial_thread)
+		t->parent = thread_current();
 	t->filesys_lock = &filesys_lock;
 	t->running_file = NULL;
 	t->is_process = false;

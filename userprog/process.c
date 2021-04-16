@@ -45,7 +45,7 @@ process_create_initd (const char *file_name) {
 	char *fn_copy;
 	tid_t tid;
 	char **save_ptr;
-	struct child_elem* c_el = palloc_get_page(PAL_ZERO);
+	struct child_elem c_el;
 
 	/* Make a copy of FILE_NAME.
 	 * Otherwise there's a race between the caller and load(). */
@@ -53,16 +53,17 @@ process_create_initd (const char *file_name) {
 	if (fn_copy == NULL)
 		return TID_ERROR;
 	strlcpy (fn_copy, file_name, PGSIZE);
+	thread_current()->parent = NULL;
 
 	/* Create a new thread to execute FILE_NAME. */
 	tid = thread_create (strtok_r (file_name, " ", save_ptr), PRI_DEFAULT, initd, fn_copy);
 	if (tid == TID_ERROR)
 		palloc_free_page (fn_copy);
 	else {
-		c_el->tid = tid;
-		c_el->terminated = false;
-		c_el->waiting = false;
-		list_push_front(&thread_current()->children_list, &c_el->elem);
+		c_el.tid = tid;
+		c_el.terminated = false;
+		c_el.waiting = false;
+		list_push_front(&thread_current()->children_list, &c_el.elem);
 	}
 	return tid;
 }
@@ -227,13 +228,28 @@ process_wait (tid_t child_tid UNUSED) {
 void
 process_exit (void) {
 	struct thread *curr = thread_current ();
-	/* TODO: Your code goes here.
-	 * TODO: Implement process termination message (see
-	 * TODO: project2/process_termination.html).
-	 * TODO: We recommend you to implement process resource cleanup here. */
+	struct list_elem* el;
+	struct child_elem* c_el;
+
 	if (!curr->is_process)
 		return;
 	
+	if (curr->parent != NULL) {
+		el = list_begin(&curr->parent->children_list);
+		while (el != list_end(&curr->parent->children_list)) {
+			c_el = list_entry(el, struct child_elem, elem);
+			if (c_el->tid == curr->tid) {
+				c_el->exit_status = curr->exit_status;
+				c_el->terminated = true;
+				// if (c_el->waiting) {
+				// 	sema_up(c_el->waiting_sema);
+				// }
+				break;
+			}
+			el = el->next;
+		}
+	}
+	file_close(curr->running_file);
 	printf ("%s: exit(%d)\n", curr->name, curr->exit_status);
 	process_cleanup ();
 }
