@@ -103,14 +103,15 @@ struct thread {
 	struct list_elem elem;              /* List element. */
 	struct list_elem t_elem; //total element.
 
+	struct list files_list;
+	struct list children_list;
+	
 	bool is_process;
 	int exit_status;
 	struct thread* parent;
 	struct lock *filesys_lock;
 	struct file *running_file;
 
-	struct list files_list;
-	struct list children_list;
 
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */

@@ -44,8 +44,8 @@ tid_t
 process_create_initd (const char *file_name) {
 	char *fn_copy;
 	tid_t tid;
-	char **save_ptr;
-	struct child_elem c_el;
+	char *save_ptr;
+	struct child_elem* c_el = palloc_get_page(PAL_ZERO);
 
 	/* Make a copy of FILE_NAME.
 	 * Otherwise there's a race between the caller and load(). */
@@ -56,14 +56,15 @@ process_create_initd (const char *file_name) {
 	thread_current()->parent = NULL;
 
 	/* Create a new thread to execute FILE_NAME. */
-	tid = thread_create (strtok_r (file_name, " ", save_ptr), PRI_DEFAULT, initd, fn_copy);
+	tid = thread_create (strtok_r (file_name, " ", &save_ptr), PRI_DEFAULT, initd, fn_copy);
 	if (tid == TID_ERROR)
 		palloc_free_page (fn_copy);
 	else {
-		c_el.tid = tid;
-		c_el.terminated = false;
-		c_el.waiting = false;
-		list_push_front(&thread_current()->children_list, &c_el.elem);
+		c_el->tid = tid;
+		c_el->terminated = false;
+		c_el->waiting = false;
+		c_el->waiting_sema = NULL;
+		list_push_front(&thread_current()->children_list, &c_el->elem);
 	}
 	return tid;
 }
@@ -214,12 +215,37 @@ process_exec (void *f_name) {
  * does nothing. */
 int
 process_wait (tid_t child_tid UNUSED) {
-	/* XXX: Hint) The pintos exit if process_wait (initd), we recommend you
-	 * XXX:       to add infinite loop here before
-	 * XXX:       implementing the process_wait. */
-	int i = 0;
-	while(i < 450000000){
-		i++;
+	struct thread *curr = thread_current ();
+	struct semaphore sema;
+	struct list_elem* el;
+	struct child_elem* c_el;
+	int returned_status;
+
+	if (list_empty(&curr->children_list))
+		return -1;
+
+	el = list_front(&curr->children_list);
+	while (el != list_end(&curr->children_list)) {
+		c_el = list_entry(el, struct child_elem, elem);
+		if (c_el->tid == child_tid) {
+			if (c_el->waiting)
+				return -1;
+			
+			if (!c_el->terminated) {
+				c_el->waiting = true;
+				sema_init(&sema, 0);
+				c_el->waiting_sema = &sema;
+				sema_down(&sema);
+			}
+			returned_status = c_el->exit_status;
+			if (curr->parent != NULL) {
+				list_remove(&c_el->elem);
+				palloc_free_page(c_el);
+			}
+			return returned_status;
+		}
+		el = el->next;
+		break;
 	}
 	return -1;
 }
@@ -241,9 +267,9 @@ process_exit (void) {
 			if (c_el->tid == curr->tid) {
 				c_el->exit_status = curr->exit_status;
 				c_el->terminated = true;
-				// if (c_el->waiting) {
-				// 	sema_up(c_el->waiting_sema);
-				// }
+				if (c_el->waiting) {
+					sema_up(c_el->waiting_sema);
+				}
 				break;
 			}
 			el = el->next;
@@ -373,9 +399,10 @@ load (const char *file_name, struct intr_frame *if_) {
 	process_activate (thread_current ());
 
 	strlcpy(copied_file_name, file_name, strlen(file_name) + 1);
+	token = strtok_r (file_name, " ", &save_ptr);
 
 	/* Open executable file. */
-	file = filesys_open (t->name);
+	file = filesys_open (token);
 	if (file == NULL) {
 		printf ("load: %s: open failed\n", file_name);
 		goto done;
@@ -458,7 +485,6 @@ load (const char *file_name, struct intr_frame *if_) {
 
 	/* TODO: Your code goes here.
 	 * TODO: Implement argument passing (see project2/argument_passing.html). */
-	token = strtok_r (file_name, " ", &save_ptr);
 	argc = 0;
 	while (token != NULL) {
 		argc++;
