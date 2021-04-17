@@ -95,8 +95,6 @@ exit(int status) {
 	curr->exit_status = status;
 	printf ("%s: exit(%d)\n", curr->name, curr->exit_status);
 	close_all_files();
-	// if (thread_current()->filesys_lock->holder == thread_current())
-	// 	lock_release(&thread_current()->filesys_lock);
 	thread_exit();
 }
 

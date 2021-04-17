@@ -367,6 +367,8 @@ process_exit (void) {
 		}
 	}
 	file_close(curr->running_file);
+	// if (curr->filesys_lock->holder == curr)
+	// 	lock_release(&curr->filesys_lock);
 	process_cleanup ();
 }
 
