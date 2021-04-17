@@ -230,7 +230,8 @@ thread_create (const char *name, int priority,
 
 	/* Add to run queue. */
 	thread_unblock (t);
-	thread_kick ();
+	if (thread_current()->status == THREAD_RUNNING)
+		thread_kick ();
 	
 	return tid;
 }

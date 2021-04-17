@@ -198,7 +198,7 @@ __do_fork (void *aux) {
 	struct intr_frame *parent_if = p_info->if_;
 	bool succ = true;
 	struct child_elem* c_el;
-	// printf("start fork\n");
+
 	/* 1. Read the cpu context to local stack. */
 	memcpy (&if_, parent_if, sizeof (struct intr_frame));
 

@@ -90,7 +90,7 @@ close_all_files(void) {
 
 void
 exit(int status) {
-	struct thread* curr = running_thread();
+	struct thread* curr = thread_current();
 
 	curr->exit_status = status;
 	printf ("%s: exit(%d)\n", curr->name, curr->exit_status);
@@ -107,7 +107,7 @@ fork (const char *thread_name) {
 	pid_t child_pid;
 	enum intr_level old_level;
 
-	if (parent->depth > 30)
+	if (parent->depth > 20)
 		return TID_ERROR;
 
 	child_pid = process_fork(thread_name, &parent->tf, &parent_lock);
