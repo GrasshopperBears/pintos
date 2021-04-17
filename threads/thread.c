@@ -42,6 +42,8 @@ static struct thread *initial_thread;
 /* Lock used by allocate_tid(). */
 static struct lock tid_lock;
 
+// static struct lock filesys_lock;
+
 /* Thread destruction requests */
 static struct list destruction_req;
 
@@ -117,6 +119,7 @@ thread_init (void) {
 
 	/* Init the globla thread context */
 	lock_init (&tid_lock);
+	// lock_init (&filesys_lock);
 	list_init (&ready_list);
 	list_init (&sleeping_list);
 	list_init (&total_list);
@@ -609,6 +612,18 @@ init_thread (struct thread *t, const char *name, int priority) {
 	list_init(&t->waiting_list);
 	t->original_priority = -1;
 
+	// t->filesys_lock = &filesys_lock;
+	t->running_file = NULL;
+	t->is_process = false;
+	list_init(&t->files_list);
+	list_init(&t->children_list);
+	if (t != initial_thread) {
+		t->parent = thread_current();
+		t->depth = thread_current()->depth + 1;
+	} else {
+		t->depth = 0;
+	}
+
 	if (thread_mlfqs == true && t != initial_thread) {
 		t->recent_cpu = thread_current ()->recent_cpu;
 		t->nice = thread_current ()->nice;
@@ -812,12 +827,5 @@ thread_compare (const struct list_elem *e1, const struct list_elem *e2, void *au
 		return true;
 	else
 		return false;
-
-}
-
-void
-print_total_status (void) {
-
-	printf("%d", (int) list_size(&total_list));
 
 }

@@ -98,10 +98,21 @@ struct thread {
 
 	int nice; // Nice of thread.
 	int recent_cpu; // Recent CPU of thread.
+	int depth;
 
 	/* Shared between thread.c and synch.c. */
 	struct list_elem elem;              /* List element. */
 	struct list_elem t_elem; //total element.
+
+	struct list files_list;
+	struct list children_list;
+
+	bool is_process;
+	int exit_status;
+	struct thread* parent;
+	// struct lock *filesys_lock;
+	struct file *running_file;
+
 
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */
@@ -169,6 +180,13 @@ struct donate_elem {
 	struct list_elem elem;
 };
 
-void print_total_status (void);
+struct child_elem {
+	bool waiting;
+	int exit_status;
+	bool terminated;
+	tid_t tid;
+	struct semaphore* waiting_sema;
+	struct list_elem elem;
+};
 
 #endif /* threads/thread.h */

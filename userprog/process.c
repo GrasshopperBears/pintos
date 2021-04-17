@@ -1,4 +1,5 @@
 #include "userprog/process.h"
+#include "threads/synch.h"
 #include <debug.h>
 #include <inttypes.h>
 #include <round.h>
@@ -27,10 +28,14 @@ static bool load (const char *file_name, struct intr_frame *if_);
 static void initd (void *f_name);
 static void __do_fork (void *);
 
+extern struct lock filesys_lock;
+
 /* General process initializer for initd and other process. */
 static void
 process_init (void) {
 	struct thread *current = thread_current ();
+	current->is_process = true;
+	// printf("init tid-%d, is_process-%d\n", current->tid, current->is_process);
 }
 
 /* Starts the first userland program, called "initd", loaded from FILE_NAME.
@@ -43,6 +48,10 @@ process_create_initd (const char *file_name) {
 	char *fn_copy;
 	tid_t tid;
 	char *save_ptr;
+	struct child_elem* c_el = palloc_get_page(PAL_ZERO);
+
+	if (c_el == NULL)
+		exit(-1);
 
 	/* Make a copy of FILE_NAME.
 	 * Otherwise there's a race between the caller and load(). */
@@ -50,11 +59,20 @@ process_create_initd (const char *file_name) {
 	if (fn_copy == NULL)
 		return TID_ERROR;
 	strlcpy (fn_copy, file_name, PGSIZE);
+	thread_current()->parent = NULL;
 
 	/* Create a new thread to execute FILE_NAME. */
 	tid = thread_create (strtok_r (file_name, " ", &save_ptr), PRI_DEFAULT, initd, fn_copy);
-	if (tid == TID_ERROR)
+	if (tid == TID_ERROR) {
+		palloc_free_page(c_el);
 		palloc_free_page (fn_copy);
+	} else {
+		c_el->tid = tid;
+		c_el->terminated = false;
+		c_el->waiting = false;
+		c_el->waiting_sema = NULL;
+		list_push_front(&thread_current()->children_list, &c_el->elem);
+	}
 	return tid;
 }
 
@@ -72,16 +90,60 @@ initd (void *f_name) {
 	NOT_REACHED ();
 }
 
+bool
+copy_file_list(struct thread* parent, struct thread* child) {
+	struct list_elem *el;
+	struct file_elem *f_el;
+	struct file_elem* new_f_el;
+
+	/* 4. TODO: Duplicate parent's page to the new page and
+	 *    TODO: check whether parent's page is writable or not (set WRITABLE
+	 *    TODO: according to the result). */
+	if (list_empty(&parent->files_list)) {
+		return true;
+	}
+
+	el = list_begin(&parent->files_list);
+	while (el != list_end(&parent->files_list)) {
+		f_el = list_entry(el, struct file_elem, elem);
+		if (f_el->fd < 0)
+			return false;
+		
+		new_f_el = malloc(sizeof(struct file_elem));
+		if (new_f_el == NULL)
+			return false;
+		
+		new_f_el->fd = f_el->fd;
+		// lock_acquire(&child->filesys_lock);
+		new_f_el->file = file_duplicate(f_el->file);
+		// lock_release(&child->filesys_lock);
+		if (new_f_el->file == NULL) {
+			free(new_f_el);
+			return false;
+		}
+		list_push_back(&child->files_list, &new_f_el->elem);
+		new_f_el = NULL;
+		el = el->next;
+	}
+	return true;
+}
+
 /* Clones the current process as `name`. Returns the new process's thread id, or
  * TID_ERROR if the thread cannot be created. */
 tid_t
-process_fork (const char *name, struct intr_frame *if_ UNUSED) {
+process_fork (const char *name, struct intr_frame *if_ UNUSED, int* parent_lock) {
 	/* Clone current thread to new thread.*/
-	struct parent_info p_info;
-	p_info.t = thread_current();
-	p_info.if_ = if_;
+	struct parent_info* p_info = palloc_get_page(PAL_ZERO);
+
+	if (p_info == NULL)
+		exit(-1);
+
+	p_info->t = thread_current();
+	p_info->if_ = if_;
+	p_info->parent_lock = parent_lock;
+
 	return thread_create (name,
-			PRI_DEFAULT, __do_fork, &p_info);
+			PRI_DEFAULT, __do_fork, p_info);
 }
 
 #ifndef VM
@@ -96,21 +158,30 @@ duplicate_pte (uint64_t *pte, void *va, void *aux) {
 	bool writable;
 
 	/* 1. TODO: If the parent_page is kernel page, then return immediately. */
+	if(is_kern_pte(pte))
+		return true;
 
 	/* 2. Resolve VA from the parent's page map level 4. */
 	parent_page = pml4_get_page (parent->pml4, va);
 
 	/* 3. TODO: Allocate new PAL_USER page for the child and set result to
 	 *    TODO: NEWPAGE. */
+	newpage = palloc_get_page(PAL_USER | PAL_ZERO);
+	if (newpage == NULL)
+		return false;
 
 	/* 4. TODO: Duplicate parent's page to the new page and
 	 *    TODO: check whether parent's page is writable or not (set WRITABLE
 	 *    TODO: according to the result). */
+	memcpy(newpage, parent_page, PGSIZE);
+	writable = is_writable(pte);
 
 	/* 5. Add new page to child's page table at address VA with WRITABLE
 	 *    permission. */
 	if (!pml4_set_page (current->pml4, va, newpage, writable)) {
 		/* 6. TODO: if fail to insert page, do error handling. */
+		palloc_free_page (newpage);
+		return false;
 	}
 	return true;
 }
@@ -123,12 +194,13 @@ duplicate_pte (uint64_t *pte, void *va, void *aux) {
 static void
 __do_fork (void *aux) {
 	struct intr_frame if_;
-	struct parent_info* p_info = (struct parent_info *) aux;
-	struct thread *parent = p_info->t;
 	struct thread *current = thread_current ();
 	/* TODO: somehow pass the parent_if. (i.e. process_fork()'s if_) */
+	struct parent_info* p_info = (struct parent_info *) aux;
+	struct thread *parent = p_info->t;
 	struct intr_frame *parent_if = p_info->if_;
 	bool succ = true;
+	struct child_elem* c_el;
 
 	/* 1. Read the cpu context to local stack. */
 	memcpy (&if_, parent_if, sizeof (struct intr_frame));
@@ -137,7 +209,6 @@ __do_fork (void *aux) {
 	current->pml4 = pml4_create();
 	if (current->pml4 == NULL)
 		goto error;
-
 	process_activate (current);
 #ifdef VM
 	supplemental_page_table_init (&current->spt);
@@ -155,11 +226,34 @@ __do_fork (void *aux) {
 	 * TODO:       the resources of parent.*/
 
 	process_init ();
+	if (!copy_file_list(parent, current))
+		goto error;
+
+	c_el = palloc_get_page(PAL_ZERO);
+	if (c_el == NULL)
+		exit(-1);
+
+	current->parent = parent;
+	current->is_process = true;
+	c_el->tid = current->tid;
+	c_el->terminated = false;
+	c_el->waiting = false;
+	c_el->waiting_sema = NULL;
+	list_push_front(&parent->children_list, &c_el->elem);
+	*p_info->parent_lock += 1;
 
 	/* Finally, switch to the newly created process. */
-	if (succ)
+	if (succ) {
+		if (parent->status == THREAD_BLOCKED)
+			thread_unblock(parent);
+		palloc_free_page(aux);
 		do_iret (&if_);
+	}
 error:
+	*p_info->parent_lock -= 1;
+	if (parent->status == THREAD_BLOCKED)
+		thread_unblock(parent);
+	palloc_free_page(aux);
 	thread_exit ();
 }
 
@@ -206,12 +300,36 @@ process_exec (void *f_name) {
  * does nothing. */
 int
 process_wait (tid_t child_tid UNUSED) {
-	/* XXX: Hint) The pintos exit if process_wait (initd), we recommend you
-	 * XXX:       to add infinite loop here before
-	 * XXX:       implementing the process_wait. */
-	int i = 0;
-	while(i < 1000000000){
-		i++;
+	struct thread *curr = thread_current ();
+	struct semaphore sema;
+	struct list_elem* el;
+	struct child_elem* c_el;
+	int returned_status;
+
+	if (list_empty(&curr->children_list))
+		return -1;
+
+	el = list_begin(&curr->children_list);
+	while (el != list_end(&curr->children_list)) {
+		c_el = list_entry(el, struct child_elem, elem);
+		if (c_el->tid == child_tid) {
+			if (c_el->waiting)
+				return -1;
+			
+			if (!c_el->terminated) {
+				c_el->waiting = true;
+				sema_init(&sema, 0);
+				c_el->waiting_sema = &sema;
+				sema_down(&sema);
+			}
+			returned_status = c_el->exit_status;
+			// if (curr->parent != NULL) {
+			list_remove(&c_el->elem);
+			palloc_free_page(c_el);
+			// }
+			return returned_status;
+		}
+		el = el->next;
 	}
 	return -1;
 }
@@ -220,11 +338,37 @@ process_wait (tid_t child_tid UNUSED) {
 void
 process_exit (void) {
 	struct thread *curr = thread_current ();
-	/* TODO: Your code goes here.
-	 * TODO: Implement process termination message (see
-	 * TODO: project2/process_termination.html).
-	 * TODO: We recommend you to implement process resource cleanup here. */
+	struct list_elem* el;
+	struct child_elem* c_el;
 
+	if (!curr->is_process)
+		return;
+	printf ("%s: exit(%d)\n", curr->name, curr->exit_status);
+
+	if (curr->parent != NULL) {
+		el = list_begin(&curr->parent->children_list);
+		while (el != list_end(&curr->parent->children_list)) {
+			c_el = list_entry(el, struct child_elem, elem);
+			if (c_el->tid == curr->tid) {
+				c_el->exit_status = curr->exit_status;
+				c_el->terminated = true;
+				if (c_el->waiting) {
+					sema_up(c_el->waiting_sema);
+				}
+				break;
+			}
+			el = el->next;
+		}
+	}
+	if (!list_empty(&curr->children_list)) {
+		el = list_begin(&curr->children_list);
+		while (el != list_end(&curr->children_list)) {
+			c_el = list_entry(el, struct child_elem, elem);
+			el = el->next;
+			palloc_free_page(c_el);
+		}
+	}
+	file_close(curr->running_file);
 	process_cleanup ();
 }
 
@@ -337,12 +481,12 @@ load (const char *file_name, struct intr_frame *if_) {
 	struct file *file = NULL;
 	off_t file_ofs;
 	bool success = false;
-	int i, addr, arg_len, word_align = 0;
-	char *save_ptr, *token, *tmp[9];
-	struct list args_list;
-	struct list_elem* el;
-	struct arg_elem* arg_el;
-	char hex_string[8];
+	int i, argc, arg_len, idx, word_align, PTR_SIZE = 8;
+	char *token, *save_ptr, *copied_file_name = palloc_get_page(PAL_ZERO);
+	int64_t* args_addr_list;
+
+	if (copied_file_name == NULL)
+		exit(-1);
 
 	/* Allocate and activate page directory. */
 	t->pml4 = pml4_create ();
@@ -350,14 +494,20 @@ load (const char *file_name, struct intr_frame *if_) {
 		goto done;
 	process_activate (thread_current ());
 
+	strlcpy(copied_file_name, file_name, strlen(file_name) + 1);
 	token = strtok_r (file_name, " ", &save_ptr);
 
 	/* Open executable file. */
+	lock_acquire(&filesys_lock);
 	file = filesys_open (token);
+	lock_release(&filesys_lock);
 	if (file == NULL) {
 		printf ("load: %s: open failed\n", file_name);
-		goto done;
+		exit(-1);
 	}
+	lock_acquire(&filesys_lock);
+	t->running_file = file;
+	file_deny_write(file);
 
 	/* Read and verify executable header. */
 	if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
@@ -368,20 +518,27 @@ load (const char *file_name, struct intr_frame *if_) {
 			|| ehdr.e_phentsize != sizeof (struct Phdr)
 			|| ehdr.e_phnum > 1024) {
 		printf ("load: %s: error loading executable\n", file_name);
+		lock_release(&filesys_lock);
 		goto done;
 	}
+	lock_release(&filesys_lock);
 
 	/* Read program headers. */
 	file_ofs = ehdr.e_phoff;
 	for (i = 0; i < ehdr.e_phnum; i++) {
 		struct Phdr phdr;
 
-		if (file_ofs < 0 || file_ofs > file_length (file))
+		lock_acquire(&filesys_lock);
+		if (file_ofs < 0 || file_ofs > file_length (file)) {
+			lock_release(&filesys_lock);
 			goto done;
+		}
 		file_seek (file, file_ofs);
-
-		if (file_read (file, &phdr, sizeof phdr) != sizeof phdr)
+		if (file_read (file, &phdr, sizeof phdr) != sizeof phdr) {
+			lock_release(&filesys_lock);
 			goto done;
+		}
+		lock_release(&filesys_lock);
 		file_ofs += sizeof phdr;
 		switch (phdr.p_type) {
 			case PT_NULL:
@@ -433,49 +590,56 @@ load (const char *file_name, struct intr_frame *if_) {
 
 	/* TODO: Your code goes here.
 	 * TODO: Implement argument passing (see project2/argument_passing.html). */
-
-	// if_->rsp = USER_POINTER?
-	list_init(&args_list);
-	addr = if_->rsp;
-	while(token != NULL) {
-		arg_len = strlen(token);
-		memcpy(addr - strlen(token) - 1, token, arg_len + 1);
-		addr -= (arg_len + 1);
-		arg_el = (struct arg_elem*)malloc(sizeof(struct arg_elem));
-		arg_el->addr = addr;
-		list_push_front(&args_list, &arg_el->elem);
+	argc = 0;
+	while (token != NULL) {
+		argc++;
 		token = strtok_r (NULL, " ", &save_ptr);
 	}
-	while ((addr - word_align) % PTR_SIZE != 0) {
+	args_addr_list = (int64_t *)malloc(sizeof(int64_t) * argc);
+
+	token = strtok_r (copied_file_name, " ", &save_ptr);
+	idx = 0;
+	while(token != NULL) {
+		arg_len = strlen(token);
+		if_->rsp -= (arg_len + 1);
+		memcpy(if_->rsp, token, arg_len + 1);
+		args_addr_list[idx] = if_->rsp;
+		token = strtok_r (NULL, " ", &save_ptr);
+		idx++;
+	}
+
+	word_align = 0;
+	while ((if_->rsp - word_align) % PTR_SIZE != 0) {
 		word_align++;
 	}
 	if (word_align != 0) {
-		memset(addr - word_align, (uint8_t)0, word_align);
-		addr -= word_align;
+		if_->rsp -= word_align;
+		memset(if_->rsp, 0, word_align);
 	}
-	memset(addr - PTR_SIZE, 0, PTR_SIZE);
-	addr -= PTR_SIZE;
-	arg_len = list_size(&args_list);
 
-	while (!list_empty(&args_list)) {
-		arg_el = list_entry(list_pop_front(&args_list), struct arg_elem, elem);
-		memcpy(addr - PTR_SIZE, &arg_el->addr, PTR_SIZE);
-		// snprintf(tmp, PTR_SIZE+1, "%08x", &arg_el->addr);
-		// memcpy(addr - PTR_SIZE, tmp, PTR_SIZE);
-		addr -= PTR_SIZE;
-		free(arg_el);
+	if_->rsp -= PTR_SIZE;
+	memset(if_->rsp, 0, PTR_SIZE);
+
+	for (i = argc - 1; i >= 0; i--) {
+		if_->rsp -= PTR_SIZE;
+		memcpy(if_->rsp, &args_addr_list[i], PTR_SIZE);
 	}
-	memset(addr - PTR_SIZE, 0, PTR_SIZE);
-	addr -= PTR_SIZE;
-	if_->R.rdi = arg_len;
-	if_->R.rsi = addr + PTR_SIZE;
-	hex_dump ((uintptr_t)addr, addr, if_->rsp - addr, true);
 
+	if_->rsp -= PTR_SIZE;
+	memset(if_->rsp, 0, PTR_SIZE);
+	if_->R.rdi = argc;
+	if_->R.rsi = if_->rsp + 8;
+	// hex_dump ((uintptr_t)if_->rsp, if_->rsp, USER_STACK - if_->rsp, true);
+	
 	success = true;
 
 done:
 	/* We arrive here whether the load is successful or not. */
-	file_close (file);
+	free(args_addr_list);
+	palloc_free_page(copied_file_name);
+	if (!success)
+		file_close (file);
+
 	return success;
 }
 
