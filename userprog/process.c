@@ -475,7 +475,6 @@ static bool load_segment (struct file *file, off_t ofs, uint8_t *upage,
  * Returns true if successful, false otherwise. */
 static bool
 load (const char *file_name, struct intr_frame *if_) {
-	static int PTR_SIZE = 8;
 	struct thread *t = thread_current ();
 	struct ELF ehdr;
 	struct file *file = NULL;
@@ -628,9 +627,9 @@ load (const char *file_name, struct intr_frame *if_) {
 	if_->rsp -= PTR_SIZE;
 	memset(if_->rsp, 0, PTR_SIZE);
 	if_->R.rdi = argc;
-	if_->R.rsi = if_->rsp + 8;
+	if_->R.rsi = if_->rsp + PTR_SIZE;
 	// hex_dump ((uintptr_t)if_->rsp, if_->rsp, USER_STACK - if_->rsp, true);
-	
+
 	success = true;
 
 done:
