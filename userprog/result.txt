@@ -168,7 +168,17 @@ perl -I../.. ../../tests/userprog/rox-child.ck tests/userprog/rox-child tests/us
 pass tests/userprog/rox-child
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/rox-multichild:rox-multichild -p tests/userprog/child-rox:child-rox -- -q   -f run rox-multichild < /dev/null 2> tests/userprog/rox-multichild.errors > tests/userprog/rox-multichild.output
 perl -I../.. ../../tests/userprog/rox-multichild.ck tests/userprog/rox-multichild tests/userprog/rox-multichild.result
-pass tests/userprog/rox-multichild
+FAIL tests/userprog/rox-multichild
+Kernel panic in run: PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0x8004218ced 0x800421dff0 0x80042095f6 0x8004209a14 0x800421c5e0 0x800421c916 0x8004207ea5
+Translation of call stack:
+0x0000008004218ced: debug_panic (lib/kernel/debug.c:32)
+0x000000800421dff0: kill (userprog/exception.c:103)
+0x00000080042095f6: intr_handler (threads/interrupt.c:352)
+0x0000008004209a14: intr_entry (threads/intr-stubs.o:?)
+0x000000800421c5e0: copy_file_list (userprog/process.c:129)
+0x000000800421c916: __do_fork (userprog/process.c:240)
+0x0000008004207ea5: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/bad-read:bad-read -- -q   -f run bad-read < /dev/null 2> tests/userprog/bad-read.errors > tests/userprog/bad-read.output
 perl -I../.. ../../tests/userprog/bad-read.ck tests/userprog/bad-read tests/userprog/bad-read.result
 pass tests/userprog/bad-read
@@ -228,7 +238,17 @@ perl -I../.. ../../tests/filesys/base/syn-write.ck tests/filesys/base/syn-write 
 pass tests/filesys/base/syn-write
 pintos -v -k -T 600 -m 20 -m 20   --fs-disk=10 -p tests/userprog/no-vm/multi-oom:multi-oom -- -q   -f run multi-oom < /dev/null 2> tests/userprog/no-vm/multi-oom.errors > tests/userprog/no-vm/multi-oom.output
 perl -I../.. ../../tests/userprog/no-vm/multi-oom.ck tests/userprog/no-vm/multi-oom tests/userprog/no-vm/multi-oom.result
-pass tests/userprog/no-vm/multi-oom
+FAIL tests/userprog/no-vm/multi-oom
+Kernel panic in run: PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0x8004218ced 0x800421dff0 0x80042095f6 0x8004209a14 0x800421c5e0 0x800421c916 0x8004207ea5
+Translation of call stack:
+0x0000008004218ced: debug_panic (lib/kernel/debug.c:32)
+0x000000800421dff0: kill (userprog/exception.c:103)
+0x00000080042095f6: intr_handler (threads/interrupt.c:352)
+0x0000008004209a14: intr_entry (threads/intr-stubs.o:?)
+0x000000800421c5e0: copy_file_list (userprog/process.c:129)
+0x000000800421c916: __do_fork (userprog/process.c:240)
+0x0000008004207ea5: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 60 -m 20   --fs-disk=10  -- -q  -threads-tests -f run alarm-single < /dev/null 2> tests/threads/alarm-single.errors > tests/threads/alarm-single.output
 perl -I../.. ../../tests/threads/alarm-single.ck tests/threads/alarm-single tests/threads/alarm-single.result
 pass tests/threads/alarm-single
@@ -283,6 +303,44 @@ pass tests/threads/priority-condvar
 pintos -v -k -T 60 -m 20   --fs-disk=10  -- -q  -threads-tests -f run priority-donate-chain < /dev/null 2> tests/threads/priority-donate-chain.errors > tests/threads/priority-donate-chain.output
 perl -I../.. ../../tests/threads/priority-donate-chain.ck tests/threads/priority-donate-chain tests/threads/priority-donate-chain.result
 pass tests/threads/priority-donate-chain
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/dup2/dup2-complex:dup2-complex -p ../../tests/userprog/dup2/sample.txt:sample.txt -- -q   -f run dup2-complex < /dev/null 2> tests/userprog/dup2/dup2-complex.errors > tests/userprog/dup2/dup2-complex.output
+perl -I../.. ../../tests/userprog/dup2/dup2-complex.ck tests/userprog/dup2/dup2-complex tests/userprog/dup2/dup2-complex.result
+FAIL tests/userprog/dup2/dup2-complex
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (dup2-complex) open "sample.txt"
+  (dup2-complex) open "sample.txt"
+  (dup2-complex) first dup2()
+  Pintos is funny
+  child: exit(110)
+  (dup2-complex) Parent success
+  dup2-complex: exit(0)
+Differences in `diff -u' format:
+- (dup2-complex) open "sample.txt"
+- (dup2-complex) open "sample.txt"
+- (dup2-complex) first dup2()
+- Pintos is funny
+- child: exit(110)
+- (dup2-complex) Parent success
+- dup2-complex: exit(0)
++ dup2-complex: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/dup2/dup2-simple:dup2-simple -p ../../tests/userprog/dup2/sample.txt:sample.txt -- -q   -f run dup2-simple < /dev/null 2> tests/userprog/dup2/dup2-simple.errors > tests/userprog/dup2/dup2-simple.output
+perl -I../.. ../../tests/userprog/dup2/dup2-simple.ck tests/userprog/dup2/dup2-simple tests/userprog/dup2/dup2-simple.result
+FAIL tests/userprog/dup2/dup2-simple
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (dup2-simple) open "sample.txt"
+  (dup2-simple) first dup2()
+  (dup2-simple) Parent success
+  dup2-simple: exit(0)
+Differences in `diff -u' format:
+- (dup2-simple) open "sample.txt"
+- (dup2-simple) first dup2()
+- (dup2-simple) Parent success
+- dup2-simple: exit(0)
++ dup2-simple: exit(-1)
 pass tests/userprog/args-none
 pass tests/userprog/args-single
 pass tests/userprog/args-multiple
@@ -339,7 +397,7 @@ pass tests/userprog/multi-recurse
 pass tests/userprog/multi-child-fd
 pass tests/userprog/rox-simple
 pass tests/userprog/rox-child
-pass tests/userprog/rox-multichild
+FAIL tests/userprog/rox-multichild
 pass tests/userprog/bad-read
 pass tests/userprog/bad-write
 pass tests/userprog/bad-read2
@@ -359,7 +417,7 @@ pass tests/filesys/base/sm-seq-random
 pass tests/filesys/base/syn-read
 pass tests/filesys/base/syn-remove
 pass tests/filesys/base/syn-write
-pass tests/userprog/no-vm/multi-oom
+FAIL tests/userprog/no-vm/multi-oom
 pass tests/threads/alarm-single
 pass tests/threads/alarm-multiple
 pass tests/threads/alarm-simultaneous
@@ -378,4 +436,6 @@ pass tests/threads/priority-preempt
 pass tests/threads/priority-sema
 pass tests/threads/priority-condvar
 pass tests/threads/priority-donate-chain
-All 95 tests passed.
+FAIL tests/userprog/dup2/dup2-complex
+FAIL tests/userprog/dup2/dup2-simple
+4 of 97 tests failed.

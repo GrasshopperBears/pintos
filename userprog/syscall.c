@@ -11,6 +11,7 @@
 #include "filesys/filesys.h"
 #include "userprog/gdt.h"
 #include "threads/flags.h"
+#include "filesys/inode.h"
 #include "intrinsic.h"
 
 void syscall_entry (void);
@@ -18,6 +19,22 @@ void syscall_handler (struct intr_frame *);
 bool compare_file_elem (const struct list_elem *e1, const struct list_elem *e2);
 
 struct lock filesys_lock;
+
+struct inode_disk {
+	disk_sector_t start;                /* First data sector. */
+	off_t length;                       /* File size in bytes. */
+	unsigned magic;                     /* Magic number. */
+	uint32_t unused[125];               /* Not used. */
+};
+
+struct inode {
+	struct list_elem elem;              /* Element in inode list. */
+	disk_sector_t sector;               /* Sector number of disk location. */
+	int open_cnt;                       /* Number of openers. */
+	bool removed;                       /* True if deleted, false otherwise. */
+	int deny_write_cnt;                 /* 0: writes ok, >0: deny writes. */
+	struct inode_disk data;             /* Inode content. */
+};
 
 /* System call.
  *
@@ -52,11 +69,8 @@ file_elem_by_fd(int fd) {
 	struct list_elem* el;
 	struct file_elem* f_el;
 
-	if (fd == NULL || fd < 0 || list_empty(&curr->files_list)) {
+	if (fd < 0 || list_empty(&curr->files_list)) {
 		exit(-1);
-	}
-	if (fd <= 1) {
-		return NULL;
 	}
 	el = list_begin(&curr->files_list);
 	while (el != list_end(&curr->files_list)) {
@@ -65,7 +79,7 @@ file_elem_by_fd(int fd) {
 			return f_el;
 		el = el->next;
 	}
-	exit(-1);
+	return NULL;
 }
 
 void
@@ -82,10 +96,12 @@ close_all_files(void) {
 	if (list_empty(&curr->files_list))
 		return;
 	el = list_begin(&curr->files_list);
+	// printf("files list of %d size: %d\n", curr->tid, list_size(&curr->files_list));
 	while (el != list_end(&curr->files_list)) {
 		f_el = list_entry(el, struct file_elem, elem);
 		el = el->next;
-		file_close(f_el->file);
+		if (f_el->fd > 1 && f_el->file != NULL && f_el->file->inode->deny_write_cnt > 0)
+			file_close(f_el->file);
 		list_remove(&f_el->elem);
 		free(f_el);
 	}
@@ -96,8 +112,6 @@ exit(int status) {
 	struct thread* curr = thread_current();
 
 	curr->exit_status = status;
-	// if (curr->is_process)
-	// 	printf ("%s: exit(%d)\n", curr->name, curr->exit_status);
 	close_all_files();
 	thread_exit();
 }
@@ -204,6 +218,9 @@ filesize (int fd) {
 	int size;
 	struct file_elem* f_el = file_elem_by_fd(fd);
 
+	if (f_el == NULL)
+		exit(-1);
+
 	size = file_length(f_el->file);
 	return size;
 }
@@ -211,16 +228,22 @@ filesize (int fd) {
 int
 read (int fd, void *buffer, unsigned size) {
 	struct thread* curr = thread_current();
-	struct file_elem* f_el;
+	struct file_elem* f_el = file_elem_by_fd(fd);
 	int read_size;
+	// printf("start\n");
+	if (f_el == NULL)
+		exit(-1);
+	// printf("found\n");
 
 	lock_acquire(&filesys_lock);
 	if(fd == 0) {
-		read_size = input_getc();
+		if (f_el->valid)
+			read_size = input_getc();
+		else
+			read_size = 0;
 	} else if(fd == 1) {
 		exit(-1);
 	}	else {
-		f_el = file_elem_by_fd(fd);
 		read_size = file_read(f_el->file, buffer, size);
 	}
 	lock_release(&filesys_lock);
@@ -230,16 +253,21 @@ read (int fd, void *buffer, unsigned size) {
 int
 write (int fd, const void *buffer, unsigned size) {
 	struct thread* curr = thread_current();
-	struct file_elem* f_el;
+	struct file_elem* f_el = file_elem_by_fd(fd);
 	int written_size;
+
+	if (f_el == NULL)
+		exit(-1);
 
 	lock_acquire(&filesys_lock);
 	if (fd == 1) {
-		putbuf(buffer, size);
+		if (f_el->valid)
+			putbuf(buffer, size);
+		else
+			written_size = 0;
 	} else if (fd == 0) {
 		exit(-1);
 	} else {
-		f_el = file_elem_by_fd(fd);
 		written_size = file_write(f_el->file, buffer, size);
 	}
 	lock_release(&filesys_lock);
@@ -250,6 +278,9 @@ void
 seek (int fd, unsigned position) {
 	struct file_elem* f_el = file_elem_by_fd(fd);
 
+	if (f_el == NULL)
+		exit(-1);
+
 	lock_acquire(&filesys_lock);
 	file_seek(f_el->file, position);
 	lock_release(&filesys_lock);
@@ -259,6 +290,9 @@ unsigned
 tell (int fd) {
 	struct file_elem* f_el = file_elem_by_fd(fd);
 
+	if (f_el == NULL)
+		exit(-1);
+
 	return f_el->file->pos;
 }
 
@@ -267,9 +301,48 @@ close (int fd) {
 	struct list_elem* el;
 	struct file_elem* f_el = file_elem_by_fd(fd);
 
-	file_close(f_el->file);
-	list_remove(&f_el->elem);
-	free(f_el);
+	if (f_el == NULL)
+		exit(-1);
+
+	if (fd == 0 || fd == 1) {
+		f_el->valid = false;
+	} else {
+		file_close(f_el->file);
+		list_remove(&f_el->elem);
+		free(f_el);
+	}
+}
+
+int
+dup2(int oldfd, int newfd) {
+	struct thread* curr = thread_current();
+	struct file_elem *old_f_el, *new_f_el;
+
+	if (oldfd == NULL || newfd == NULL)
+		return -1;
+	if (oldfd == newfd)
+		return newfd;
+
+	old_f_el = file_elem_by_fd(oldfd);
+	new_f_el = file_elem_by_fd(newfd);
+	if (old_f_el == NULL)
+		return NULL;
+	if (new_f_el != NULL) {
+		lock_acquire(&filesys_lock);
+		file_close(new_f_el->file);
+		lock_release(&filesys_lock);
+		new_f_el->file = old_f_el->file;
+	}	else {
+		// printf("new\n");
+		new_f_el = malloc(sizeof(struct file_elem));
+		if (new_f_el == NULL)
+			return -1;
+		new_f_el->fd = newfd;
+		new_f_el->file = old_f_el->file;
+		list_insert_ordered(&curr->files_list, &new_f_el->elem, compare_file_elem, NULL);
+		// printf("new size: %d\n", list_size(&curr->files_list));
+	}
+	return newfd;
 }
 
 void
@@ -334,6 +407,9 @@ syscall_handler (struct intr_frame *f UNUSED) {
 		break;
 	case SYS_CLOSE:	// 13
 		close (f->R.rdi);
+		break;
+	case SYS_DUP2:
+		f->R.rax = dup2(f->R.rdi, f->R.rsi);
 		break;
 	default:
 		thread_exit ();

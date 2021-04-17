@@ -35,7 +35,6 @@ static void
 process_init (void) {
 	struct thread *current = thread_current ();
 	current->is_process = true;
-	// printf("init tid-%d, is_process-%d\n", current->tid, current->is_process);
 }
 
 /* Starts the first userland program, called "initd", loaded from FILE_NAME.
@@ -79,11 +78,20 @@ process_create_initd (const char *file_name) {
 /* A thread function that launches first user process. */
 static void
 initd (void *f_name) {
+	struct thread* current = thread_current();
+	struct file_elem* f_el_stdin = malloc(sizeof(struct file_elem));
+	struct file_elem* f_el_stdout = malloc(sizeof(struct file_elem));
 #ifdef VM
 	supplemental_page_table_init (&thread_current ()->spt);
 #endif
 
 	process_init ();
+	f_el_stdin->fd = 0;
+	f_el_stdin->valid = true;
+	f_el_stdout->fd = 1;
+	f_el_stdout->valid = true;
+	list_push_back(&current->files_list, &f_el_stdin->elem);
+	list_push_back(&current->files_list, &f_el_stdout->elem);
 
 	if (process_exec (f_name) < 0)
 		PANIC("Fail to launch initd\n");
@@ -108,20 +116,29 @@ copy_file_list(struct thread* parent, struct thread* child) {
 		f_el = list_entry(el, struct file_elem, elem);
 		if (f_el->fd < 0)
 			return false;
-		
 		new_f_el = malloc(sizeof(struct file_elem));
 		if (new_f_el == NULL)
 			return false;
 		
 		new_f_el->fd = f_el->fd;
-		// lock_acquire(&child->filesys_lock);
-		new_f_el->file = file_duplicate(f_el->file);
-		// lock_release(&child->filesys_lock);
-		if (new_f_el->file == NULL) {
-			free(new_f_el);
-			return false;
+		new_f_el->valid = f_el->valid;
+		// printf("check 1\n");
+
+		if (f_el->file != NULL && f_el->fd > 1) {
+			// printf("check 2 of %d: fd %d\n", child->tid, f_el->fd);
+			lock_acquire(&filesys_lock);
+			new_f_el->file = file_duplicate(f_el->file);
+			lock_release(&filesys_lock);
+			// printf("check 2-1\n");
+			if (new_f_el->file == NULL) {
+				// printf("check 2-2\n");
+				free(new_f_el);
+				return false;
+			}
 		}
+		// printf("check 3\n");
 		list_push_back(&child->files_list, &new_f_el->elem);
+		// printf("check 4\n");
 		new_f_el = NULL;
 		el = el->next;
 	}

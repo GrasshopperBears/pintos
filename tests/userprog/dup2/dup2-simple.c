@@ -23,10 +23,12 @@ main (int argc UNUSED, char *argv[] UNUSED) {
   int fd1, fd2 = 0x1CE;
 
   close (0);
+  msg("start");
   CHECK ((fd1 = open ("sample.txt")) > -1, "open \"sample.txt\"");
+  msg("open done");
   buffer = get_boundary_area () - sizeof sample / 2;
   byte_cnt += read (fd1, buffer + byte_cnt, 10);
-
+  msg("read done");
   CHECK (dup2 (fd1, fd2) > 1, "first dup2()");
 
   byte_cnt += read (fd2, buffer + byte_cnt , sizeof sample - byte_cnt);

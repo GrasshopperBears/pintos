@@ -28,6 +28,7 @@ struct file_elem {
   struct list_elem elem;
   struct file* file;
   unsigned int fd;
+  bool valid;
 };
 
 struct file {
