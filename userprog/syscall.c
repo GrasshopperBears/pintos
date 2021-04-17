@@ -93,7 +93,8 @@ exit(int status) {
 	struct thread* curr = thread_current();
 
 	curr->exit_status = status;
-	printf ("%s: exit(%d)\n", curr->name, curr->exit_status);
+	// if (curr->is_process)
+	// 	printf ("%s: exit(%d)\n", curr->name, curr->exit_status);
 	close_all_files();
 	thread_exit();
 }

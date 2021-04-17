@@ -33,6 +33,7 @@ static void
 process_init (void) {
 	struct thread *current = thread_current ();
 	current->is_process = true;
+	// printf("init tid-%d, is_process-%d\n", current->tid, current->is_process);
 }
 
 /* Starts the first userland program, called "initd", loaded from FILE_NAME.
@@ -273,9 +274,9 @@ process_exec (void *f_name) {
 	process_cleanup ();
 
 	/* And then load the binary */
-	lock_acquire(thread_current()->filesys_lock);
+	// lock_acquire(thread_current()->filesys_lock);
 	success = load (file_name, &_if);
-	lock_release(thread_current()->filesys_lock);
+	// lock_release(thread_current()->filesys_lock);
 
 	/* If load failed, quit. */
 	palloc_free_page (file_name);
@@ -308,7 +309,7 @@ process_wait (tid_t child_tid UNUSED) {
 	if (list_empty(&curr->children_list))
 		return -1;
 
-	el = list_front(&curr->children_list);
+	el = list_begin(&curr->children_list);
 	while (el != list_end(&curr->children_list)) {
 		c_el = list_entry(el, struct child_elem, elem);
 		if (c_el->tid == child_tid) {
@@ -322,14 +323,13 @@ process_wait (tid_t child_tid UNUSED) {
 				sema_down(&sema);
 			}
 			returned_status = c_el->exit_status;
-			if (curr->parent != NULL) {
-				list_remove(&c_el->elem);
-				palloc_free_page(c_el);
-			}
+			// if (curr->parent != NULL) {
+			list_remove(&c_el->elem);
+			palloc_free_page(c_el);
+			// }
 			return returned_status;
 		}
 		el = el->next;
-		break;
 	}
 	return -1;
 }
@@ -343,6 +343,8 @@ process_exit (void) {
 
 	if (!curr->is_process)
 		return;
+	printf ("%s: exit(%d)\n", curr->name, curr->exit_status);
+
 	if (curr->parent != NULL) {
 		el = list_begin(&curr->parent->children_list);
 		while (el != list_end(&curr->parent->children_list)) {
@@ -367,8 +369,6 @@ process_exit (void) {
 		}
 	}
 	file_close(curr->running_file);
-	// if (curr->filesys_lock->holder == curr)
-	// 	lock_release(&curr->filesys_lock);
 	process_cleanup ();
 }
 
