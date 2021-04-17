@@ -177,9 +177,9 @@ open (const char *file) {
 	}
 	lock_acquire(&filesys_lock);
 	opened_file = filesys_open(file);
-	lock_release(&filesys_lock);
 
 	if (opened_file == NULL) {
+		lock_release(&filesys_lock);
 		return -1;
 	}
 	if (!list_empty(&curr->files_list)) {
@@ -195,6 +195,7 @@ open (const char *file) {
 	new_f_el->file = opened_file;
 	new_f_el->fd = new_fd;
 	list_insert_ordered(&curr->files_list, &new_f_el->elem, compare_file_elem, NULL);
+	lock_release(&filesys_lock);
 	return new_fd;
 }
 
@@ -213,16 +214,16 @@ read (int fd, void *buffer, unsigned size) {
 	struct file_elem* f_el;
 	int read_size;
 
+	lock_acquire(&filesys_lock);
 	if(fd == 0) {
 		read_size = input_getc();
 	} else if(fd == 1) {
 		exit(-1);
 	}	else {
-		lock_acquire(&filesys_lock);
 		f_el = file_elem_by_fd(fd);
 		read_size = file_read(f_el->file, buffer, size);
-		lock_release(&filesys_lock);
 	}
+	lock_release(&filesys_lock);
 	return read_size;
 }
 
@@ -232,16 +233,16 @@ write (int fd, const void *buffer, unsigned size) {
 	struct file_elem* f_el;
 	int written_size;
 
+	lock_acquire(&filesys_lock);
 	if (fd == 1) {
 		putbuf(buffer, size);
 	} else if (fd == 0) {
 		exit(-1);
 	} else {
-		lock_acquire(&filesys_lock);
 		f_el = file_elem_by_fd(fd);
 		written_size = file_write(f_el->file, buffer, size);
-		lock_release(&filesys_lock);
 	}
+	lock_release(&filesys_lock);
 	return written_size;
 }
 
@@ -249,7 +250,9 @@ void
 seek (int fd, unsigned position) {
 	struct file_elem* f_el = file_elem_by_fd(fd);
 
+	lock_acquire(&filesys_lock);
 	file_seek(f_el->file, position);
+	lock_release(&filesys_lock);
 }
 
 unsigned
