@@ -98,11 +98,33 @@ initd (void *f_name) {
 	NOT_REACHED ();
 }
 
+struct file_map_elem {
+  struct file* original;
+  struct file* copy;
+};
+
+struct file*
+find_copied_file(struct file_map_elem* map, int size, struct file* find) {
+	struct list_elem* el;
+	struct file_map_elem* file_map_el;
+
+	if (list_empty(map))
+		return NULL;
+	for (int i = 0; i < size; i++) {
+		if (map[i].original == find)
+			return map[i].copy;
+	}
+	return NULL;
+}
+
 bool
 copy_file_list(struct thread* parent, struct thread* child) {
 	struct list_elem *el;
 	struct file_elem *f_el;
 	struct file_elem* new_f_el;
+	int size, idx = 0;
+	struct file_map_elem* map;
+	struct file* found_file;
 
 	/* 4. TODO: Duplicate parent's page to the new page and
 	 *    TODO: check whether parent's page is writable or not (set WRITABLE
@@ -110,7 +132,8 @@ copy_file_list(struct thread* parent, struct thread* child) {
 	if (list_empty(&parent->files_list)) {
 		return true;
 	}
-
+	size = list_size(&parent->files_list);
+	map = malloc(sizeof(struct file_map_elem) * size);
 	el = list_begin(&parent->files_list);
 	while (el != list_end(&parent->files_list)) {
 		f_el = list_entry(el, struct file_elem, elem);
@@ -123,25 +146,33 @@ copy_file_list(struct thread* parent, struct thread* child) {
 		new_f_el->fd = f_el->fd;
 		new_f_el->valid = f_el->valid;
 		// printf("check 1\n");
-
-		if (f_el->file != NULL && f_el->fd > 1) {
-			// printf("check 2 of %d: fd %d\n", child->tid, f_el->fd);
-			lock_acquire(&filesys_lock);
-			new_f_el->file = file_duplicate(f_el->file);
-			lock_release(&filesys_lock);
-			// printf("check 2-1\n");
-			if (new_f_el->file == NULL) {
-				// printf("check 2-2\n");
-				free(new_f_el);
-				return false;
+		found_file = find_copied_file(map, size, f_el->file);
+		if (found_file == NULL) {
+			if (f_el->fd > 1) {
+				// printf("check 2 of %d: fd %d\n", child->tid, f_el->fd);
+				new_f_el->file = file_duplicate(f_el->file);
+				// printf("check 2-1\n");
+				if (new_f_el->file == NULL) {
+					// printf("check 2-2\n");
+					free(new_f_el);
+					free(map);
+					return false;
+				}
+				map[idx].original = f_el->file;
+				map[idx].copy = new_f_el->file;
+				idx++;
 			}
+		} else {
+			new_f_el->file = found_file;
 		}
 		// printf("check 3\n");
 		list_push_back(&child->files_list, &new_f_el->elem);
 		// printf("check 4\n");
 		new_f_el = NULL;
 		el = el->next;
+		printf("check\n");
 	}
+	free(map);
 	return true;
 }
 
