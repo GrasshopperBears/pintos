@@ -219,21 +219,7 @@ perl -I../.. ../../tests/filesys/base/sm-seq-random.ck tests/filesys/base/sm-seq
 pass tests/filesys/base/sm-seq-random
 pintos -v -k -T 300 -m 20   --fs-disk=10 -p tests/filesys/base/syn-read:syn-read -p tests/filesys/base/child-syn-read:child-syn-read -- -q   -f run syn-read < /dev/null 2> tests/filesys/base/syn-read.errors > tests/filesys/base/syn-read.output
 perl -I../.. ../../tests/filesys/base/syn-read.ck tests/filesys/base/syn-read tests/filesys/base/syn-read.result
-FAIL tests/filesys/base/syn-read
-Kernel panic in run: PANIC at ../../threads/thread.c:326 in thread_current(): assertion `is_thread (t)' failed.
-Call stack: 0x8004218ced 0x8004207499 0x8004206e28 0x8004212a87 0x80042095f6 0x8004209a14 0x800421dfba 0x80042095f6 0x8004209a14 0x800420c5eb 0xcccccccccccccccc
-Translation of call stack:
-0x0000008004218ced: debug_panic (lib/kernel/debug.c:32)
-0x0000008004207499: thread_current (threads/thread.c:327)
-0x0000008004206e28: thread_tick (threads/thread.c:163)
-0x0000008004212a87: timer_interrupt (devices/timer.c:129)
-0x00000080042095f6: intr_handler (threads/interrupt.c:352)
-0x0000008004209a14: intr_entry (threads/intr-stubs.o:?)
-0x000000800421dfba: page_fault (userprog/exception.c:139)
-0x00000080042095f6: intr_handler (threads/interrupt.c:352)
-0x0000008004209a14: intr_entry (threads/intr-stubs.o:?)
-0x000000800420c5eb: palloc_free_multiple (threads/palloc.c:321)
-0xcccccccccccccccc: (unknown)
+pass tests/filesys/base/syn-read
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/syn-remove:syn-remove -- -q   -f run syn-remove < /dev/null 2> tests/filesys/base/syn-remove.errors > tests/filesys/base/syn-remove.output
 perl -I../.. ../../tests/filesys/base/syn-remove.ck tests/filesys/base/syn-remove tests/filesys/base/syn-remove.result
 pass tests/filesys/base/syn-remove
@@ -242,8 +228,7 @@ perl -I../.. ../../tests/filesys/base/syn-write.ck tests/filesys/base/syn-write 
 pass tests/filesys/base/syn-write
 pintos -v -k -T 600 -m 20 -m 20   --fs-disk=10 -p tests/userprog/no-vm/multi-oom:multi-oom -- -q   -f run multi-oom < /dev/null 2> tests/userprog/no-vm/multi-oom.errors > tests/userprog/no-vm/multi-oom.output
 perl -I../.. ../../tests/userprog/no-vm/multi-oom.ck tests/userprog/no-vm/multi-oom tests/userprog/no-vm/multi-oom.result
-FAIL tests/userprog/no-vm/multi-oom
-run: Should return > 0.: FAILED
+pass tests/userprog/no-vm/multi-oom
 pintos -v -k -T 60 -m 20   --fs-disk=10  -- -q  -threads-tests -f run alarm-single < /dev/null 2> tests/threads/alarm-single.errors > tests/threads/alarm-single.output
 perl -I../.. ../../tests/threads/alarm-single.ck tests/threads/alarm-single tests/threads/alarm-single.result
 pass tests/threads/alarm-single
@@ -371,10 +356,10 @@ pass tests/filesys/base/sm-full
 pass tests/filesys/base/sm-random
 pass tests/filesys/base/sm-seq-block
 pass tests/filesys/base/sm-seq-random
-FAIL tests/filesys/base/syn-read
+pass tests/filesys/base/syn-read
 pass tests/filesys/base/syn-remove
 pass tests/filesys/base/syn-write
-FAIL tests/userprog/no-vm/multi-oom
+pass tests/userprog/no-vm/multi-oom
 pass tests/threads/alarm-single
 pass tests/threads/alarm-multiple
 pass tests/threads/alarm-simultaneous
@@ -393,5 +378,4 @@ pass tests/threads/priority-preempt
 pass tests/threads/priority-sema
 pass tests/threads/priority-condvar
 pass tests/threads/priority-donate-chain
-2 of 95 tests failed.
-../../tests/Make.tests:28: recipe for target 'check' failed
+All 95 tests passed.
