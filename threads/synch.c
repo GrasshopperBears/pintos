@@ -223,7 +223,9 @@ update_donation_list(struct lock* lock) {
 }
 
 void
-add_donation_list(struct lock* lock, int prev, struct donate_elem* new_el) {
+add_donation_list(struct lock* lock, int prev) {
+	struct donate_elem* new_el = malloc(sizeof(struct donate_elem));
+
 	lock->original_priority = prev;
 	lock->donated = true;
 	new_el->lock = lock;
@@ -233,7 +235,6 @@ add_donation_list(struct lock* lock, int prev, struct donate_elem* new_el) {
 
 void donate(struct lock* lock) {
 	int prev;
-	struct donate_elem* new_el = malloc(sizeof(struct donate_elem));
 
 	prev = lock->holder->priority;
 	lock->holder->priority = thread_current()->priority;
@@ -241,7 +242,7 @@ void donate(struct lock* lock) {
 		lock->holder->original_priority = prev;
 	
 	if (!lock->donated)
-		add_donation_list(lock, prev, new_el);
+		add_donation_list(lock, prev);
 	else
 		update_donation_list(lock);
 }
@@ -377,6 +378,7 @@ lock_release (struct lock *lock) {
 
 	if (!list_empty (&sema->waiters)) {
 		list_sort(&sema->waiters, thread_compare, NULL);
+		// printf("unblock %s %d(curr-%d)\n", list_entry (list_begin (&sema->waiters), struct thread, elem)->name, list_entry (list_begin (&sema->waiters), struct thread, elem)->priority, thread_current()->priority);
 		thread_unblock (list_entry (list_pop_front (&sema->waiters), struct thread, elem));
 	}
 

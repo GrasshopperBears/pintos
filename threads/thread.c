@@ -230,8 +230,7 @@ thread_create (const char *name, int priority,
 
 	/* Add to run queue. */
 	thread_unblock (t);
-	if (thread_current()->status == THREAD_RUNNING)
-		thread_kick ();
+	thread_kick ();
 	
 	return tid;
 }
@@ -828,12 +827,5 @@ thread_compare (const struct list_elem *e1, const struct list_elem *e2, void *au
 		return true;
 	else
 		return false;
-
-}
-
-void
-print_total_status (void) {
-
-	printf("%d", (int) list_size(&total_list));
 
 }
