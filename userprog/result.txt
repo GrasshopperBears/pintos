@@ -219,7 +219,21 @@ perl -I../.. ../../tests/filesys/base/sm-seq-random.ck tests/filesys/base/sm-seq
 pass tests/filesys/base/sm-seq-random
 pintos -v -k -T 300 -m 20   --fs-disk=10 -p tests/filesys/base/syn-read:syn-read -p tests/filesys/base/child-syn-read:child-syn-read -- -q   -f run syn-read < /dev/null 2> tests/filesys/base/syn-read.errors > tests/filesys/base/syn-read.output
 perl -I../.. ../../tests/filesys/base/syn-read.ck tests/filesys/base/syn-read tests/filesys/base/syn-read.result
-pass tests/filesys/base/syn-read
+FAIL tests/filesys/base/syn-read
+Kernel panic in run: PANIC at ../../threads/thread.c:326 in thread_current(): assertion `is_thread (t)' failed.
+Call stack: 0x8004218ced 0x8004207499 0x8004206e28 0x8004212a87 0x80042095f6 0x8004209a14 0x800421dfba 0x80042095f6 0x8004209a14 0x800420c5eb 0xcccccccccccccccc
+Translation of call stack:
+0x0000008004218ced: debug_panic (lib/kernel/debug.c:32)
+0x0000008004207499: thread_current (threads/thread.c:327)
+0x0000008004206e28: thread_tick (threads/thread.c:163)
+0x0000008004212a87: timer_interrupt (devices/timer.c:129)
+0x00000080042095f6: intr_handler (threads/interrupt.c:352)
+0x0000008004209a14: intr_entry (threads/intr-stubs.o:?)
+0x000000800421dfba: page_fault (userprog/exception.c:139)
+0x00000080042095f6: intr_handler (threads/interrupt.c:352)
+0x0000008004209a14: intr_entry (threads/intr-stubs.o:?)
+0x000000800420c5eb: palloc_free_multiple (threads/palloc.c:321)
+0xcccccccccccccccc: (unknown)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/syn-remove:syn-remove -- -q   -f run syn-remove < /dev/null 2> tests/filesys/base/syn-remove.errors > tests/filesys/base/syn-remove.output
 perl -I../.. ../../tests/filesys/base/syn-remove.ck tests/filesys/base/syn-remove tests/filesys/base/syn-remove.result
 pass tests/filesys/base/syn-remove
@@ -228,7 +242,8 @@ perl -I../.. ../../tests/filesys/base/syn-write.ck tests/filesys/base/syn-write 
 pass tests/filesys/base/syn-write
 pintos -v -k -T 600 -m 20 -m 20   --fs-disk=10 -p tests/userprog/no-vm/multi-oom:multi-oom -- -q   -f run multi-oom < /dev/null 2> tests/userprog/no-vm/multi-oom.errors > tests/userprog/no-vm/multi-oom.output
 perl -I../.. ../../tests/userprog/no-vm/multi-oom.ck tests/userprog/no-vm/multi-oom tests/userprog/no-vm/multi-oom.result
-pass tests/userprog/no-vm/multi-oom
+FAIL tests/userprog/no-vm/multi-oom
+run: Should return > 0.: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10  -- -q  -threads-tests -f run alarm-single < /dev/null 2> tests/threads/alarm-single.errors > tests/threads/alarm-single.output
 perl -I../.. ../../tests/threads/alarm-single.ck tests/threads/alarm-single tests/threads/alarm-single.result
 pass tests/threads/alarm-single
@@ -258,37 +273,7 @@ perl -I../.. ../../tests/threads/priority-donate-multiple.ck tests/threads/prior
 pass tests/threads/priority-donate-multiple
 pintos -v -k -T 60 -m 20   --fs-disk=10  -- -q  -threads-tests -f run priority-donate-multiple2 < /dev/null 2> tests/threads/priority-donate-multiple2.errors > tests/threads/priority-donate-multiple2.output
 perl -I../.. ../../tests/threads/priority-donate-multiple2.ck tests/threads/priority-donate-multiple2 tests/threads/priority-donate-multiple2.result
-FAIL tests/threads/priority-donate-multiple2
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (priority-donate-multiple2) begin
-  (priority-donate-multiple2) Main thread should have priority 34.  Actual priority: 34.
-  (priority-donate-multiple2) Main thread should have priority 36.  Actual priority: 36.
-  (priority-donate-multiple2) Main thread should have priority 36.  Actual priority: 36.
-  (priority-donate-multiple2) Thread b acquired lock b.
-  (priority-donate-multiple2) Thread b finished.
-  (priority-donate-multiple2) Thread a acquired lock a.
-  (priority-donate-multiple2) Thread a finished.
-  (priority-donate-multiple2) Thread c finished.
-  (priority-donate-multiple2) Threads b, a, c should have just finished, in that order.
-  (priority-donate-multiple2) Main thread should have priority 31.  Actual priority: 31.
-  (priority-donate-multiple2) end
-Differences in `diff -u' format:
-  (priority-donate-multiple2) begin
-  (priority-donate-multiple2) Main thread should have priority 34.  Actual priority: 34.
-  (priority-donate-multiple2) Main thread should have priority 36.  Actual priority: 36.
-  (priority-donate-multiple2) Main thread should have priority 36.  Actual priority: 36.
-- (priority-donate-multiple2) Thread b acquired lock b.
-- (priority-donate-multiple2) Thread b finished.
-  (priority-donate-multiple2) Thread a acquired lock a.
-  (priority-donate-multiple2) Thread a finished.
-  (priority-donate-multiple2) Thread c finished.
-+ (priority-donate-multiple2) Thread b acquired lock b.
-+ (priority-donate-multiple2) Thread b finished.
-  (priority-donate-multiple2) Threads b, a, c should have just finished, in that order.
-  (priority-donate-multiple2) Main thread should have priority 31.  Actual priority: 31.
-  (priority-donate-multiple2) end
+pass tests/threads/priority-donate-multiple2
 pintos -v -k -T 60 -m 20   --fs-disk=10  -- -q  -threads-tests -f run priority-donate-nest < /dev/null 2> tests/threads/priority-donate-nest.errors > tests/threads/priority-donate-nest.output
 perl -I../.. ../../tests/threads/priority-donate-nest.ck tests/threads/priority-donate-nest tests/threads/priority-donate-nest.result
 pass tests/threads/priority-donate-nest
@@ -312,96 +297,7 @@ perl -I../.. ../../tests/threads/priority-condvar.ck tests/threads/priority-cond
 pass tests/threads/priority-condvar
 pintos -v -k -T 60 -m 20   --fs-disk=10  -- -q  -threads-tests -f run priority-donate-chain < /dev/null 2> tests/threads/priority-donate-chain.errors > tests/threads/priority-donate-chain.output
 perl -I../.. ../../tests/threads/priority-donate-chain.ck tests/threads/priority-donate-chain tests/threads/priority-donate-chain.result
-FAIL tests/threads/priority-donate-chain
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (priority-donate-chain) begin
-  (priority-donate-chain) main got lock.
-  (priority-donate-chain) main should have priority 3.  Actual priority: 3.
-  (priority-donate-chain) main should have priority 6.  Actual priority: 6.
-  (priority-donate-chain) main should have priority 9.  Actual priority: 9.
-  (priority-donate-chain) main should have priority 12.  Actual priority: 12.
-  (priority-donate-chain) main should have priority 15.  Actual priority: 15.
-  (priority-donate-chain) main should have priority 18.  Actual priority: 18.
-  (priority-donate-chain) main should have priority 21.  Actual priority: 21.
-  (priority-donate-chain) thread 1 got lock
-  (priority-donate-chain) thread 1 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 2 got lock
-  (priority-donate-chain) thread 2 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 3 got lock
-  (priority-donate-chain) thread 3 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 4 got lock
-  (priority-donate-chain) thread 4 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 5 got lock
-  (priority-donate-chain) thread 5 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 6 got lock
-  (priority-donate-chain) thread 6 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 7 got lock
-  (priority-donate-chain) thread 7 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 7 finishing with priority 21.
-  (priority-donate-chain) interloper 7 finished.
-  (priority-donate-chain) thread 6 finishing with priority 18.
-  (priority-donate-chain) interloper 6 finished.
-  (priority-donate-chain) thread 5 finishing with priority 15.
-  (priority-donate-chain) interloper 5 finished.
-  (priority-donate-chain) thread 4 finishing with priority 12.
-  (priority-donate-chain) interloper 4 finished.
-  (priority-donate-chain) thread 3 finishing with priority 9.
-  (priority-donate-chain) interloper 3 finished.
-  (priority-donate-chain) thread 2 finishing with priority 6.
-  (priority-donate-chain) interloper 2 finished.
-  (priority-donate-chain) thread 1 finishing with priority 3.
-  (priority-donate-chain) interloper 1 finished.
-  (priority-donate-chain) main finishing with priority 0.
-  (priority-donate-chain) end
-Differences in `diff -u' format:
-  (priority-donate-chain) begin
-  (priority-donate-chain) main got lock.
-  (priority-donate-chain) main should have priority 3.  Actual priority: 3.
-  (priority-donate-chain) main should have priority 6.  Actual priority: 6.
-  (priority-donate-chain) main should have priority 9.  Actual priority: 9.
-  (priority-donate-chain) main should have priority 12.  Actual priority: 12.
-  (priority-donate-chain) main should have priority 15.  Actual priority: 15.
-  (priority-donate-chain) main should have priority 18.  Actual priority: 18.
-  (priority-donate-chain) main should have priority 21.  Actual priority: 21.
-+ (priority-donate-chain) interloper 7 finished.
-+ (priority-donate-chain) interloper 6 finished.
-+ (priority-donate-chain) interloper 5 finished.
-+ (priority-donate-chain) interloper 4 finished.
-+ (priority-donate-chain) interloper 3 finished.
-+ (priority-donate-chain) interloper 2 finished.
-+ (priority-donate-chain) interloper 1 finished.
-  (priority-donate-chain) thread 1 got lock
-  (priority-donate-chain) thread 1 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 2 got lock
-  (priority-donate-chain) thread 2 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 3 got lock
-  (priority-donate-chain) thread 3 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 4 got lock
-  (priority-donate-chain) thread 4 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 5 got lock
-  (priority-donate-chain) thread 5 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 6 got lock
-  (priority-donate-chain) thread 6 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 7 got lock
-  (priority-donate-chain) thread 7 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 7 finishing with priority 21.
-- (priority-donate-chain) interloper 7 finished.
-  (priority-donate-chain) thread 6 finishing with priority 18.
-- (priority-donate-chain) interloper 6 finished.
-  (priority-donate-chain) thread 5 finishing with priority 15.
-- (priority-donate-chain) interloper 5 finished.
-  (priority-donate-chain) thread 4 finishing with priority 12.
-- (priority-donate-chain) interloper 4 finished.
-  (priority-donate-chain) thread 3 finishing with priority 9.
-- (priority-donate-chain) interloper 3 finished.
-  (priority-donate-chain) thread 2 finishing with priority 6.
-- (priority-donate-chain) interloper 2 finished.
-  (priority-donate-chain) thread 1 finishing with priority 3.
-- (priority-donate-chain) interloper 1 finished.
-  (priority-donate-chain) main finishing with priority 0.
-  (priority-donate-chain) end
+pass tests/threads/priority-donate-chain
 pass tests/userprog/args-none
 pass tests/userprog/args-single
 pass tests/userprog/args-multiple
@@ -475,10 +371,10 @@ pass tests/filesys/base/sm-full
 pass tests/filesys/base/sm-random
 pass tests/filesys/base/sm-seq-block
 pass tests/filesys/base/sm-seq-random
-pass tests/filesys/base/syn-read
+FAIL tests/filesys/base/syn-read
 pass tests/filesys/base/syn-remove
 pass tests/filesys/base/syn-write
-pass tests/userprog/no-vm/multi-oom
+FAIL tests/userprog/no-vm/multi-oom
 pass tests/threads/alarm-single
 pass tests/threads/alarm-multiple
 pass tests/threads/alarm-simultaneous
@@ -488,7 +384,7 @@ pass tests/threads/alarm-negative
 pass tests/threads/priority-change
 pass tests/threads/priority-donate-one
 pass tests/threads/priority-donate-multiple
-FAIL tests/threads/priority-donate-multiple2
+pass tests/threads/priority-donate-multiple2
 pass tests/threads/priority-donate-nest
 pass tests/threads/priority-donate-sema
 pass tests/threads/priority-donate-lower
@@ -496,6 +392,6 @@ pass tests/threads/priority-fifo
 pass tests/threads/priority-preempt
 pass tests/threads/priority-sema
 pass tests/threads/priority-condvar
-FAIL tests/threads/priority-donate-chain
+pass tests/threads/priority-donate-chain
 2 of 95 tests failed.
 ../../tests/Make.tests:28: recipe for target 'check' failed

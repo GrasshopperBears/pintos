@@ -12,7 +12,7 @@ make clean && make && cd build && pintos-mkdisk filesys.dsk 10
 # pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-once:fork-once -- -q   -f run fork-once
 # pintos ${DEBUGGING} -v -k -T 300 -m 20   --fs-disk=10 -p tests/filesys/base/syn-read:syn-read -p tests/filesys/base/child-syn-read:child-syn-read -- -q   -f run syn-read
 # pintos ${DEBUGGING} -v -k -T 600 -m 20 -m 20   --fs-disk=10 -p tests/userprog/no-vm/multi-oom:multi-oom -- -q   -f run multi-oom
-pintos -v -k -T 60 -m 20   --fs-disk=10  -- -q  -threads-tests -f run priority-donate-multiple2
+pintos ${DEBUGGING} -v -k -T 60 -m 20   --fs-disk=10  -- -q  -threads-tests -f run priority-donate-multiple2
 cd ..
 
 # make clean && make && cd build && pintos-mkdisk filesys.dsk 10

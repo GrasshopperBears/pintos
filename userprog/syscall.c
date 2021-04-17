@@ -17,6 +17,8 @@ void syscall_entry (void);
 void syscall_handler (struct intr_frame *);
 bool compare_file_elem (const struct list_elem *e1, const struct list_elem *e2);
 
+struct lock filesys_lock;
+
 /* System call.
  *
  * Previously system call services was handled by the interrupt handler
@@ -32,6 +34,7 @@ bool compare_file_elem (const struct list_elem *e1, const struct list_elem *e2);
 
 void
 syscall_init (void) {
+	lock_init(&filesys_lock);
 	write_msr(MSR_STAR, ((uint64_t)SEL_UCSEG - 0x10) << 48  |
 			((uint64_t)SEL_KCSEG) << 32);
 	write_msr(MSR_LSTAR, (uint64_t) syscall_entry);
@@ -172,9 +175,9 @@ open (const char *file) {
 	if (file == NULL || new_f_el == NULL) {
 		exit(-1);
 	}
-	lock_acquire(curr->filesys_lock);
+	lock_acquire(&filesys_lock);
 	opened_file = filesys_open(file);
-	lock_release(curr->filesys_lock);
+	lock_release(&filesys_lock);
 
 	if (opened_file == NULL) {
 		return -1;
@@ -215,10 +218,10 @@ read (int fd, void *buffer, unsigned size) {
 	} else if(fd == 1) {
 		exit(-1);
 	}	else {
+		lock_acquire(&filesys_lock);
 		f_el = file_elem_by_fd(fd);
-		lock_acquire(curr->filesys_lock);
 		read_size = file_read(f_el->file, buffer, size);
-		lock_release(curr->filesys_lock);
+		lock_release(&filesys_lock);
 	}
 	return read_size;
 }
@@ -234,10 +237,10 @@ write (int fd, const void *buffer, unsigned size) {
 	} else if (fd == 0) {
 		exit(-1);
 	} else {
+		lock_acquire(&filesys_lock);
 		f_el = file_elem_by_fd(fd);
-		lock_acquire(curr->filesys_lock);
 		written_size = file_write(f_el->file, buffer, size);
-		lock_release(curr->filesys_lock);
+		lock_release(&filesys_lock);
 	}
 	return written_size;
 }

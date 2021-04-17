@@ -275,9 +275,9 @@ lock_acquire (struct lock *lock) {
 		}
 
 		new_lock_elem = malloc(sizeof(struct lock_list_elem));
-		old_level = intr_disable ();
 		new_lock_elem->lock = lock;
 		list_push_front(&thread_current()->waiting_list, &new_lock_elem->elem);
+		old_level = intr_disable ();
 		list_push_front(&sema->waiters, &thread_current ()->elem);
 		if (lock->holder->priority < thread_current()->priority && thread_mlfqs == false) {
 			donate(lock);
@@ -349,7 +349,7 @@ recover_priority(struct lock* lock) {
 		t->original_priority = -1;
 	} else if (t->priority <= donate_el->priority_after_donation)
 		t->priority = lock->original_priority;
-	free(donate_el);
+	// free(donate_el);
 }
 
 /* Releases LOCK, which must be owned by the current thread.

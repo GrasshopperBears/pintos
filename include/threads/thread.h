@@ -110,7 +110,7 @@ struct thread {
 	bool is_process;
 	int exit_status;
 	struct thread* parent;
-	struct lock *filesys_lock;
+	// struct lock *filesys_lock;
 	struct file *running_file;
 
 

@@ -28,6 +28,8 @@ static bool load (const char *file_name, struct intr_frame *if_);
 static void initd (void *f_name);
 static void __do_fork (void *);
 
+extern struct lock filesys_lock;
+
 /* General process initializer for initd and other process. */
 static void
 process_init (void) {
@@ -274,9 +276,7 @@ process_exec (void *f_name) {
 	process_cleanup ();
 
 	/* And then load the binary */
-	// lock_acquire(thread_current()->filesys_lock);
 	success = load (file_name, &_if);
-	// lock_release(thread_current()->filesys_lock);
 
 	/* If load failed, quit. */
 	palloc_free_page (file_name);
@@ -497,12 +497,14 @@ load (const char *file_name, struct intr_frame *if_) {
 	token = strtok_r (file_name, " ", &save_ptr);
 
 	/* Open executable file. */
+	lock_acquire(&filesys_lock);
 	file = filesys_open (token);
+	lock_release(&filesys_lock);
 	if (file == NULL) {
 		printf ("load: %s: open failed\n", file_name);
 		exit(-1);
 	}
-
+	lock_acquire(&filesys_lock);
 	t->running_file = file;
 	file_deny_write(file);
 
@@ -515,20 +517,27 @@ load (const char *file_name, struct intr_frame *if_) {
 			|| ehdr.e_phentsize != sizeof (struct Phdr)
 			|| ehdr.e_phnum > 1024) {
 		printf ("load: %s: error loading executable\n", file_name);
+		lock_release(&filesys_lock);
 		goto done;
 	}
+	lock_release(&filesys_lock);
 
 	/* Read program headers. */
 	file_ofs = ehdr.e_phoff;
 	for (i = 0; i < ehdr.e_phnum; i++) {
 		struct Phdr phdr;
 
-		if (file_ofs < 0 || file_ofs > file_length (file))
+		lock_acquire(&filesys_lock);
+		if (file_ofs < 0 || file_ofs > file_length (file)) {
+			lock_release(&filesys_lock);
 			goto done;
+		}
 		file_seek (file, file_ofs);
-
-		if (file_read (file, &phdr, sizeof phdr) != sizeof phdr)
+		if (file_read (file, &phdr, sizeof phdr) != sizeof phdr) {
+			lock_release(&filesys_lock);
 			goto done;
+		}
+		lock_release(&filesys_lock);
 		file_ofs += sizeof phdr;
 		switch (phdr.p_type) {
 			case PT_NULL:
