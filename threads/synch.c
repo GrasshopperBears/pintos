@@ -31,6 +31,7 @@
 #include <string.h>
 #include "threads/interrupt.h"
 #include "threads/thread.h"
+#include "threads/malloc.h"
 
 void donation(struct lock* lock);
 void donation_propagation(struct lock* lock, int depth);
@@ -189,16 +190,17 @@ lock_init (struct lock *lock) {
 void
 delete_waiting_list(struct lock* lock) {
 	struct list_elem* el;
-	struct lock* lock_ptr;
+	struct lock_list_elem* lock_list_el;
 
 	if (list_empty(&thread_current()->waiting_list))
 		return;
 
 	el = list_begin(&thread_current()->waiting_list);
 	while (el != list_end(&thread_current()->waiting_list)) {
-		lock_ptr = list_entry(el, struct lock_list_elem, elem)->lock;
-		if (lock_ptr == lock) {
+		lock_list_el = list_entry(el, struct lock_list_elem, elem);
+		if (lock_list_el->lock == lock) {
 			list_remove(el);
+			free(lock_list_el);
 			break;
 		}
 		el = el->next;
@@ -229,8 +231,9 @@ add_donation_list(struct lock* lock, int prev, struct donate_elem* new_el) {
 	list_insert_ordered(&lock->holder->donation_list, &new_el->elem, donate_elem_compare, NULL);
 }
 
-void donate(struct lock* lock, struct donate_elem* new_el) {
+void donate(struct lock* lock) {
 	int prev;
+	struct donate_elem* new_el = malloc(sizeof(struct donate_elem));
 
 	prev = lock->holder->priority;
 	lock->holder->priority = thread_current()->priority;
@@ -256,8 +259,7 @@ lock_acquire (struct lock *lock) {
 	bool success = false;
 	enum intr_level old_level;
 	struct semaphore* sema = &lock->semaphore;
-	struct donate_elem new_el;
-	struct lock_list_elem new_lock_elem;
+	struct lock_list_elem* new_lock_elem;
 
 	ASSERT (lock != NULL);
 	ASSERT (!intr_context ());
@@ -271,12 +273,13 @@ lock_acquire (struct lock *lock) {
 			break;
 		}
 
+		new_lock_elem = malloc(sizeof(struct lock_list_elem));
 		old_level = intr_disable ();
-		new_lock_elem.lock = lock;
-		list_push_front(&thread_current()->waiting_list, &new_lock_elem.elem);
+		new_lock_elem->lock = lock;
+		list_push_front(&thread_current()->waiting_list, &new_lock_elem->elem);
 		list_push_front(&sema->waiters, &thread_current ()->elem);
 		if (lock->holder->priority < thread_current()->priority && thread_mlfqs == false) {
-			donate(lock, &new_el);
+			donate(lock);
 			donation_propagation(lock, 0);
 		}
 		thread_block();
@@ -289,7 +292,6 @@ donation_propagation(struct lock* lock, int depth) {
 	struct lock* lock_ptr;
 	struct list_elem* el;
 	int prev;
-	struct donate_elem new_el;
 	struct donate_elem* donate_el;
 	struct list_elem* list_el;
 
@@ -299,7 +301,7 @@ donation_propagation(struct lock* lock, int depth) {
 	while (el != list_end(&lock->holder->waiting_list)) {
 		lock_ptr = list_entry(el, struct lock_list_elem, elem)->lock;
 		if (lock_ptr->holder->priority < thread_current()->priority) {
-			donate(lock_ptr, &new_el);
+			donate(lock_ptr);
 			donation_propagation(lock_ptr, depth + 1);
 		}
 		el = el->next;
@@ -346,6 +348,7 @@ recover_priority(struct lock* lock) {
 		t->original_priority = -1;
 	} else if (t->priority <= donate_el->priority_after_donation)
 		t->priority = lock->original_priority;
+	free(donate_el);
 }
 
 /* Releases LOCK, which must be owned by the current thread.
