@@ -141,7 +141,38 @@ perl -I../.. ../../tests/userprog/exec-bad-ptr.ck tests/userprog/exec-bad-ptr te
 pass tests/userprog/exec-bad-ptr
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/exec-read:exec-read -p ../../tests/userprog/sample.txt:sample.txt -p tests/userprog/child-read:child-read -- -q   -f run exec-read < /dev/null 2> tests/userprog/exec-read.errors > tests/userprog/exec-read.output
 perl -I../.. ../../tests/userprog/exec-read.ck tests/userprog/exec-read tests/userprog/exec-read.result
-pass tests/userprog/exec-read
+FAIL tests/userprog/exec-read
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (exec-read) begin
+  (exec-read) open "sample.txt"
+  (exec-read) read "sample.txt" first 20 bytes
+  (child-read) begin
+  (child-read) open "sample.txt"
+  (child-read) read "sample.txt" first 20 bytes
+  (child-read) read "sample.txt" remainders
+  (child-read) Child success
+  (child-read) end
+  child-read: exit(0)
+  (exec-read) Parent success
+  (exec-read) end
+  exec-read: exit(0)
+Differences in `diff -u' format:
+  (exec-read) begin
+  (exec-read) open "sample.txt"
+  (exec-read) read "sample.txt" first 20 bytes
+- (child-read) begin
+- (child-read) open "sample.txt"
+- (child-read) read "sample.txt" first 20 bytes
+- (child-read) read "sample.txt" remainders
+- (child-read) Child success
+- (child-read) end
+- child-read: exit(0)
+- (exec-read) Parent success
+- (exec-read) end
+- exec-read: exit(0)
++ exec-read: exit(-1)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/wait-simple:wait-simple -p tests/userprog/child-simple:child-simple -- -q   -f run wait-simple < /dev/null 2> tests/userprog/wait-simple.errors > tests/userprog/wait-simple.output
 perl -I../.. ../../tests/userprog/wait-simple.ck tests/userprog/wait-simple tests/userprog/wait-simple.result
 pass tests/userprog/wait-simple
@@ -165,20 +196,32 @@ perl -I../.. ../../tests/userprog/rox-simple.ck tests/userprog/rox-simple tests/
 pass tests/userprog/rox-simple
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/rox-child:rox-child -p tests/userprog/child-rox:child-rox -- -q   -f run rox-child < /dev/null 2> tests/userprog/rox-child.errors > tests/userprog/rox-child.output
 perl -I../.. ../../tests/userprog/rox-child.ck tests/userprog/rox-child tests/userprog/rox-child.result
-pass tests/userprog/rox-child
+FAIL tests/userprog/rox-child
+Kernel panic in run: PANIC at ../../threads/malloc.c:249 in block_to_arena(): assertion `a->magic == ARENA_MAGIC' failed.
+Call stack: 0x8004218ced 0x800420cf6c 0x800420cd35 0x800421d950 0x800421cc9d 0x800421e8e1 0x800421f3a5 0x800421e3bec
+Translation of call stack:
+0x0000008004218ced: debug_panic (lib/kernel/debug.c:32)
+0x000000800420cf6c: block_to_arena (threads/malloc.c:252)
+0x000000800420cd35: free (threads/malloc.c:205)
+0x000000800421d950: load (userprog/process.c:700)
+0x000000800421cc9d: process_exec (userprog/process.c:341)
+0x000000800421e8e1: exec (userprog/syscall.c:168)
+0x000000800421f3a5: syscall_handler (userprog/syscall.c:445)
+0x00000800421e3bec: (unknown)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/rox-multichild:rox-multichild -p tests/userprog/child-rox:child-rox -- -q   -f run rox-multichild < /dev/null 2> tests/userprog/rox-multichild.errors > tests/userprog/rox-multichild.output
 perl -I../.. ../../tests/userprog/rox-multichild.ck tests/userprog/rox-multichild tests/userprog/rox-multichild.result
 FAIL tests/userprog/rox-multichild
-Kernel panic in run: PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
-Call stack: 0x8004218ced 0x800421dff0 0x80042095f6 0x8004209a14 0x800421c5e0 0x800421c916 0x8004207ea5
+Kernel panic in run: PANIC at ../../threads/malloc.c:249 in block_to_arena(): assertion `a->magic == ARENA_MAGIC' failed.
+Call stack: 0x8004218ced 0x800420cf6c 0x800420cd35 0x800421d950 0x800421cc9d 0x800421e8e1 0x800421f3a5 0x800421e3bec
 Translation of call stack:
 0x0000008004218ced: debug_panic (lib/kernel/debug.c:32)
-0x000000800421dff0: kill (userprog/exception.c:103)
-0x00000080042095f6: intr_handler (threads/interrupt.c:352)
-0x0000008004209a14: intr_entry (threads/intr-stubs.o:?)
-0x000000800421c5e0: copy_file_list (userprog/process.c:129)
-0x000000800421c916: __do_fork (userprog/process.c:240)
-0x0000008004207ea5: kernel_thread (threads/thread.c:593)
+0x000000800420cf6c: block_to_arena (threads/malloc.c:252)
+0x000000800420cd35: free (threads/malloc.c:205)
+0x000000800421d950: load (userprog/process.c:700)
+0x000000800421cc9d: process_exec (userprog/process.c:341)
+0x000000800421e8e1: exec (userprog/syscall.c:168)
+0x000000800421f3a5: syscall_handler (userprog/syscall.c:445)
+0x00000800421e3bec: (unknown)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/bad-read:bad-read -- -q   -f run bad-read < /dev/null 2> tests/userprog/bad-read.errors > tests/userprog/bad-read.output
 perl -I../.. ../../tests/userprog/bad-read.ck tests/userprog/bad-read tests/userprog/bad-read.result
 pass tests/userprog/bad-read
@@ -205,7 +248,8 @@ perl -I../.. ../../tests/filesys/base/lg-full.ck tests/filesys/base/lg-full test
 pass tests/filesys/base/lg-full
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/lg-random:lg-random -- -q   -f run lg-random < /dev/null 2> tests/filesys/base/lg-random.errors > tests/filesys/base/lg-random.output
 perl -I../.. ../../tests/filesys/base/lg-random.ck tests/filesys/base/lg-random tests/filesys/base/lg-random.result
-pass tests/filesys/base/lg-random
+FAIL tests/filesys/base/lg-random
+run: 325 bytes read starting at offset 31232 in "bazzle" differ from expected: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/lg-seq-block:lg-seq-block -- -q   -f run lg-seq-block < /dev/null 2> tests/filesys/base/lg-seq-block.errors > tests/filesys/base/lg-seq-block.output
 perl -I../.. ../../tests/filesys/base/lg-seq-block.ck tests/filesys/base/lg-seq-block tests/filesys/base/lg-seq-block.result
 pass tests/filesys/base/lg-seq-block
@@ -220,7 +264,8 @@ perl -I../.. ../../tests/filesys/base/sm-full.ck tests/filesys/base/sm-full test
 pass tests/filesys/base/sm-full
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/sm-random:sm-random -- -q   -f run sm-random < /dev/null 2> tests/filesys/base/sm-random.errors > tests/filesys/base/sm-random.output
 perl -I../.. ../../tests/filesys/base/sm-random.ck tests/filesys/base/sm-random tests/filesys/base/sm-random.result
-pass tests/filesys/base/sm-random
+FAIL tests/filesys/base/sm-random
+run: 13 bytes read starting at offset 0 in "bazzle" differ from expected: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/sm-seq-block:sm-seq-block -- -q   -f run sm-seq-block < /dev/null 2> tests/filesys/base/sm-seq-block.errors > tests/filesys/base/sm-seq-block.output
 perl -I../.. ../../tests/filesys/base/sm-seq-block.ck tests/filesys/base/sm-seq-block tests/filesys/base/sm-seq-block.result
 pass tests/filesys/base/sm-seq-block
@@ -229,26 +274,37 @@ perl -I../.. ../../tests/filesys/base/sm-seq-random.ck tests/filesys/base/sm-seq
 pass tests/filesys/base/sm-seq-random
 pintos -v -k -T 300 -m 20   --fs-disk=10 -p tests/filesys/base/syn-read:syn-read -p tests/filesys/base/child-syn-read:child-syn-read -- -q   -f run syn-read < /dev/null 2> tests/filesys/base/syn-read.errors > tests/filesys/base/syn-read.output
 perl -I../.. ../../tests/filesys/base/syn-read.ck tests/filesys/base/syn-read tests/filesys/base/syn-read.result
-pass tests/filesys/base/syn-read
+FAIL tests/filesys/base/syn-read
+Kernel panic in run: PANIC at ../../threads/synch.c:267 in lock_acquire(): assertion `!lock_held_by_current_thread (lock)' failed.
+Call stack: 0x8004218ced 0x800420ad70 0x800420ca26 0x800420add0 0x800420c397 0x800420c49b 0x800420ca56 0x800420add0 0x800421ecd4 0x800421f561 0x800421e3be 0x40040a 0x40047e 0x4006ed 0x4002a6 0x400fa7 0x400ff0
+Translation of call stack:
+0x0000008004218ced: debug_panic (lib/kernel/debug.c:32)
+0x000000800420ad70: lock_acquire (threads/synch.c:270)
+0x000000800420ca26: malloc (threads/malloc.c:118)
+0x000000800420add0: lock_acquire (threads/synch.c:277)
+0x000000800420c397: palloc_get_multiple (threads/palloc.c:267 (discriminator 4))
+0x000000800420c49b: palloc_get_page (threads/palloc.c:297)
+0x000000800420ca56: malloc (threads/malloc.c:122)
+0x000000800420add0: lock_acquire (threads/synch.c:277)
+0x000000800421ecd4: write (userprog/syscall.c:285)
+0x000000800421f561: syscall_handler (userprog/syscall.c:471)
+0x000000800421e3be: no_sti (userprog/syscall-entry.o:?)
+0x000000000040040a: (unknown)
+0x000000000040047e: (unknown)
+0x00000000004006ed: (unknown)
+0x00000000004002a6: (unknown)
+0x0000000000400fa7: (unknown)
+0x0000000000400ff0: (unknown)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/syn-remove:syn-remove -- -q   -f run syn-remove < /dev/null 2> tests/filesys/base/syn-remove.errors > tests/filesys/base/syn-remove.output
 perl -I../.. ../../tests/filesys/base/syn-remove.ck tests/filesys/base/syn-remove tests/filesys/base/syn-remove.result
-pass tests/filesys/base/syn-remove
+FAIL tests/filesys/base/syn-remove
+run: read "deleteme": FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/syn-write:syn-write -p tests/filesys/base/child-syn-wrt:child-syn-wrt -- -q   -f run syn-write < /dev/null 2> tests/filesys/base/syn-write.errors > tests/filesys/base/syn-write.output
 perl -I../.. ../../tests/filesys/base/syn-write.ck tests/filesys/base/syn-write tests/filesys/base/syn-write.result
 pass tests/filesys/base/syn-write
 pintos -v -k -T 600 -m 20 -m 20   --fs-disk=10 -p tests/userprog/no-vm/multi-oom:multi-oom -- -q   -f run multi-oom < /dev/null 2> tests/userprog/no-vm/multi-oom.errors > tests/userprog/no-vm/multi-oom.output
 perl -I../.. ../../tests/userprog/no-vm/multi-oom.ck tests/userprog/no-vm/multi-oom tests/userprog/no-vm/multi-oom.result
-FAIL tests/userprog/no-vm/multi-oom
-Kernel panic in run: PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
-Call stack: 0x8004218ced 0x800421dff0 0x80042095f6 0x8004209a14 0x800421c5e0 0x800421c916 0x8004207ea5
-Translation of call stack:
-0x0000008004218ced: debug_panic (lib/kernel/debug.c:32)
-0x000000800421dff0: kill (userprog/exception.c:103)
-0x00000080042095f6: intr_handler (threads/interrupt.c:352)
-0x0000008004209a14: intr_entry (threads/intr-stubs.o:?)
-0x000000800421c5e0: copy_file_list (userprog/process.c:129)
-0x000000800421c916: __do_fork (userprog/process.c:240)
-0x0000008004207ea5: kernel_thread (threads/thread.c:593)
+pass tests/userprog/no-vm/multi-oom
 pintos -v -k -T 60 -m 20   --fs-disk=10  -- -q  -threads-tests -f run alarm-single < /dev/null 2> tests/threads/alarm-single.errors > tests/threads/alarm-single.output
 perl -I../.. ../../tests/threads/alarm-single.ck tests/threads/alarm-single tests/threads/alarm-single.result
 pass tests/threads/alarm-single
@@ -306,25 +362,7 @@ pass tests/threads/priority-donate-chain
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/dup2/dup2-complex:dup2-complex -p ../../tests/userprog/dup2/sample.txt:sample.txt -- -q   -f run dup2-complex < /dev/null 2> tests/userprog/dup2/dup2-complex.errors > tests/userprog/dup2/dup2-complex.output
 perl -I../.. ../../tests/userprog/dup2/dup2-complex.ck tests/userprog/dup2/dup2-complex tests/userprog/dup2/dup2-complex.result
 FAIL tests/userprog/dup2/dup2-complex
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (dup2-complex) open "sample.txt"
-  (dup2-complex) open "sample.txt"
-  (dup2-complex) first dup2()
-  Pintos is funny
-  child: exit(110)
-  (dup2-complex) Parent success
-  dup2-complex: exit(0)
-Differences in `diff -u' format:
-- (dup2-complex) open "sample.txt"
-- (dup2-complex) open "sample.txt"
-- (dup2-complex) first dup2()
-- Pintos is funny
-- child: exit(110)
-- (dup2-complex) Parent success
-- dup2-complex: exit(0)
-+ dup2-complex: exit(-1)
+run: expected text differs from actual: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/dup2/dup2-simple:dup2-simple -p ../../tests/userprog/dup2/sample.txt:sample.txt -- -q   -f run dup2-simple < /dev/null 2> tests/userprog/dup2/dup2-simple.errors > tests/userprog/dup2/dup2-simple.output
 perl -I../.. ../../tests/userprog/dup2/dup2-simple.ck tests/userprog/dup2/dup2-simple tests/userprog/dup2/dup2-simple.result
 FAIL tests/userprog/dup2/dup2-simple
@@ -336,11 +374,13 @@ Acceptable output:
   (dup2-simple) Parent success
   dup2-simple: exit(0)
 Differences in `diff -u' format:
-- (dup2-simple) open "sample.txt"
-- (dup2-simple) first dup2()
-- (dup2-simple) Parent success
-- dup2-simple: exit(0)
-+ dup2-simple: exit(-1)
++ (dup2-simple) start
+  (dup2-simple) open "sample.txt"
++ (dup2-simple) open done
++ (dup2-simple) read done
+  (dup2-simple) first dup2()
+  (dup2-simple) Parent success
+  dup2-simple: exit(0)
 pass tests/userprog/args-none
 pass tests/userprog/args-single
 pass tests/userprog/args-multiple
@@ -388,7 +428,7 @@ pass tests/userprog/exec-arg
 pass tests/userprog/exec-boundary
 pass tests/userprog/exec-missing
 pass tests/userprog/exec-bad-ptr
-pass tests/userprog/exec-read
+FAIL tests/userprog/exec-read
 pass tests/userprog/wait-simple
 pass tests/userprog/wait-twice
 pass tests/userprog/wait-killed
@@ -396,7 +436,7 @@ pass tests/userprog/wait-bad-pid
 pass tests/userprog/multi-recurse
 pass tests/userprog/multi-child-fd
 pass tests/userprog/rox-simple
-pass tests/userprog/rox-child
+FAIL tests/userprog/rox-child
 FAIL tests/userprog/rox-multichild
 pass tests/userprog/bad-read
 pass tests/userprog/bad-write
@@ -406,18 +446,18 @@ pass tests/userprog/bad-jump
 pass tests/userprog/bad-jump2
 pass tests/filesys/base/lg-create
 pass tests/filesys/base/lg-full
-pass tests/filesys/base/lg-random
+FAIL tests/filesys/base/lg-random
 pass tests/filesys/base/lg-seq-block
 pass tests/filesys/base/lg-seq-random
 pass tests/filesys/base/sm-create
 pass tests/filesys/base/sm-full
-pass tests/filesys/base/sm-random
+FAIL tests/filesys/base/sm-random
 pass tests/filesys/base/sm-seq-block
 pass tests/filesys/base/sm-seq-random
-pass tests/filesys/base/syn-read
-pass tests/filesys/base/syn-remove
+FAIL tests/filesys/base/syn-read
+FAIL tests/filesys/base/syn-remove
 pass tests/filesys/base/syn-write
-FAIL tests/userprog/no-vm/multi-oom
+pass tests/userprog/no-vm/multi-oom
 pass tests/threads/alarm-single
 pass tests/threads/alarm-multiple
 pass tests/threads/alarm-simultaneous
@@ -438,4 +478,5 @@ pass tests/threads/priority-condvar
 pass tests/threads/priority-donate-chain
 FAIL tests/userprog/dup2/dup2-complex
 FAIL tests/userprog/dup2/dup2-simple
-4 of 97 tests failed.
+9 of 97 tests failed.
+../../tests/Make.tests:28: recipe for target 'check' failed

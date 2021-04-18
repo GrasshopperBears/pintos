@@ -87,24 +87,42 @@ halt(void) {
 	power_off();
 }
 
+bool
+is_closed(struct file** closed_files, struct file* find, int size) {
+	for (int i = 0; i < size; i++) {
+		if (closed_files[i] = find)
+			return true;
+	}
+	return false;
+}
+
 void
 close_all_files(void) {
 	struct thread* curr = thread_current();
 	struct list_elem* el;
 	struct file_elem *f_el;
+	struct file** closed_files;
+	int size, idx = 0;
 
 	if (list_empty(&curr->files_list))
 		return;
+	size = list_size(&curr->files_list);
+	closed_files = malloc(sizeof(struct file_elem *) * size);
 	el = list_begin(&curr->files_list);
-	// printf("files list of %d size: %d\n", curr->tid, list_size(&curr->files_list));
 	while (el != list_end(&curr->files_list)) {
 		f_el = list_entry(el, struct file_elem, elem);
 		el = el->next;
-		if (f_el->fd > 1 && f_el->file != NULL && f_el->file->inode->deny_write_cnt > 0)
-			file_close(f_el->file);
+		if (f_el->fd > 1 && f_el->file != NULL) {
+			if (!is_closed(closed_files, f_el->file, idx)) {
+				closed_files[idx] = f_el->file;
+				file_close(f_el->file);
+				idx++;
+			}
+		}
 		list_remove(&f_el->elem);
 		free(f_el);
 	}
+	free(closed_files);
 }
 
 void
@@ -112,6 +130,7 @@ exit(int status) {
 	struct thread* curr = thread_current();
 
 	curr->exit_status = status;
+	// printf("exit of %d status-%d\n", curr->tid, status);
 	close_all_files();
 	thread_exit();
 }
@@ -123,7 +142,7 @@ fork (const char *thread_name) {
 	pid_t child_pid;
 	enum intr_level old_level;
 
-	if (parent->depth > 20)
+	if (parent->depth > 40)
 		return TID_ERROR;
 
 	child_pid = process_fork(thread_name, &parent->tf, &parent_lock);
@@ -208,8 +227,10 @@ open (const char *file) {
 	}
 	new_f_el->file = opened_file;
 	new_f_el->fd = new_fd;
+	new_f_el->reference = -1;
 	list_insert_ordered(&curr->files_list, &new_f_el->elem, compare_file_elem, NULL);
 	lock_release(&filesys_lock);
+	// printf("open %d\n", new_fd);
 	return new_fd;
 }
 
@@ -236,8 +257,8 @@ read (int fd, void *buffer, unsigned size) {
 	// printf("found\n");
 
 	lock_acquire(&filesys_lock);
-	if(fd == 0) {
-		if (f_el->valid)
+	if(fd == 0 || f_el->reference == 1) {
+		if (f_el->open)
 			read_size = input_getc();
 		else
 			read_size = 0;
@@ -247,6 +268,7 @@ read (int fd, void *buffer, unsigned size) {
 		read_size = file_read(f_el->file, buffer, size);
 	}
 	lock_release(&filesys_lock);
+	// printf("read: %d\n", read_size);
 	return read_size;
 }
 
@@ -260,8 +282,8 @@ write (int fd, const void *buffer, unsigned size) {
 		exit(-1);
 
 	lock_acquire(&filesys_lock);
-	if (fd == 1) {
-		if (f_el->valid)
+	if (fd == 1 || f_el->reference == 1) {
+		if (f_el->open)
 			putbuf(buffer, size);
 		else
 			written_size = 0;
@@ -271,6 +293,7 @@ write (int fd, const void *buffer, unsigned size) {
 		written_size = file_write(f_el->file, buffer, size);
 	}
 	lock_release(&filesys_lock);
+	// printf("writer: %d\n", written_size);
 	return written_size;
 }
 
@@ -278,9 +301,11 @@ void
 seek (int fd, unsigned position) {
 	struct file_elem* f_el = file_elem_by_fd(fd);
 
-	if (f_el == NULL)
+	// printf("seek %d from %d\n", position, thread_current()->tid);
+	if (position == 0)
+		return;
+	if (f_el == NULL || f_el->file == NULL)
 		exit(-1);
-
 	lock_acquire(&filesys_lock);
 	file_seek(f_el->file, position);
 	lock_release(&filesys_lock);
@@ -296,6 +321,37 @@ tell (int fd) {
 	return f_el->file->pos;
 }
 
+bool
+other_fd_open(struct file_elem* find_f_el) {
+	struct thread* curr = thread_current();
+	struct file_elem* f_el;
+	struct list_elem* el;
+
+	el = list_begin(&curr->files_list);
+	while (el != list_end(&curr->files_list)) {
+		f_el = list_entry(el, struct file_elem, elem);
+		if (f_el->fd != find_f_el->fd && f_el->file == find_f_el->file)
+			return true;
+		el = el->next;
+	}
+	return false;
+}
+
+void
+close_all_std(int fd) {
+	struct thread* curr = thread_current();
+	struct list_elem* el;
+	struct file_elem* f_el;
+
+	el = list_begin(&curr->files_list);
+	while (el != list_end(&curr->files_list)) {
+		f_el = list_entry(el, struct file_elem, elem);
+		if (f_el->fd == fd || f_el->reference == fd)
+			f_el->open = false;
+		el = el->next;
+	}
+}
+
 void
 close (int fd) {
 	struct list_elem* el;
@@ -303,14 +359,19 @@ close (int fd) {
 
 	if (f_el == NULL)
 		exit(-1);
-
-	if (fd == 0 || fd == 1) {
-		f_el->valid = false;
+	if (fd == 0 || fd == 1 || f_el->reference == 0 || f_el->reference == 1) {
+		close_all_std((fd == 0 || fd == 1) ? fd : f_el->reference);
 	} else {
-		file_close(f_el->file);
+		if (!other_fd_open(f_el)) {
+			lock_acquire(&filesys_lock);
+			file_close(f_el->file);
+			lock_release(&filesys_lock);
+		}
 		list_remove(&f_el->elem);
 		free(f_el);
 	}
+	// printf("close %d from %d\n", fd, thread_current()->tid);
+	// printf("close done\n");
 }
 
 int
@@ -318,19 +379,22 @@ dup2(int oldfd, int newfd) {
 	struct thread* curr = thread_current();
 	struct file_elem *old_f_el, *new_f_el;
 
-	if (oldfd == NULL || newfd == NULL)
+	if (oldfd == NULL || newfd == NULL || oldfd < 0 || newfd < 0)
 		return -1;
 	if (oldfd == newfd)
 		return newfd;
-
+	// printf("dup2 old-%d new-%d\n", oldfd, newfd);
 	old_f_el = file_elem_by_fd(oldfd);
 	new_f_el = file_elem_by_fd(newfd);
+	// printf("curr size-----: %d\n", list_size(&curr->files_list));
 	if (old_f_el == NULL)
 		return NULL;
 	if (new_f_el != NULL) {
-		lock_acquire(&filesys_lock);
-		file_close(new_f_el->file);
-		lock_release(&filesys_lock);
+		if (!other_fd_open(new_f_el)) {
+			lock_acquire(&filesys_lock);
+			file_close(new_f_el->file);
+			lock_release(&filesys_lock);
+		}
 		new_f_el->file = old_f_el->file;
 	}	else {
 		// printf("new\n");
@@ -340,8 +404,15 @@ dup2(int oldfd, int newfd) {
 		new_f_el->fd = newfd;
 		new_f_el->file = old_f_el->file;
 		list_insert_ordered(&curr->files_list, &new_f_el->elem, compare_file_elem, NULL);
-		// printf("new size: %d\n", list_size(&curr->files_list));
 	}
+	if (oldfd == 0 || oldfd == 1 || old_f_el->reference == 0 || old_f_el->reference == 1) {
+		new_f_el->reference = (oldfd == 0 || oldfd == 1) ? oldfd : old_f_el->reference;
+	} else {
+		old_f_el->reference = newfd;
+		new_f_el->reference = oldfd;
+	}
+	new_f_el->open = old_f_el->open;
+	// printf("curr size: %d\n", list_size(&curr->files_list));
 	return newfd;
 }
 

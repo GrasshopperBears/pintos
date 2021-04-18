@@ -87,9 +87,13 @@ initd (void *f_name) {
 
 	process_init ();
 	f_el_stdin->fd = 0;
-	f_el_stdin->valid = true;
+	f_el_stdin->open = true;
+	f_el_stdin->file = NULL;
+	f_el_stdin->reference = -1;
 	f_el_stdout->fd = 1;
-	f_el_stdout->valid = true;
+	f_el_stdout->open = true;
+	f_el_stdout->file = NULL;
+	f_el_stdout->reference = -1;
 	list_push_back(&current->files_list, &f_el_stdin->elem);
 	list_push_back(&current->files_list, &f_el_stdout->elem);
 
@@ -108,8 +112,6 @@ find_copied_file(struct file_map_elem* map, int size, struct file* find) {
 	struct list_elem* el;
 	struct file_map_elem* file_map_el;
 
-	if (list_empty(map))
-		return NULL;
 	for (int i = 0; i < size; i++) {
 		if (map[i].original == find)
 			return map[i].copy;
@@ -133,22 +135,31 @@ copy_file_list(struct thread* parent, struct thread* child) {
 		return true;
 	}
 	size = list_size(&parent->files_list);
+	// printf("size: %d\n", size);
 	map = malloc(sizeof(struct file_map_elem) * size);
 	el = list_begin(&parent->files_list);
+	// printf("Start\n");
 	while (el != list_end(&parent->files_list)) {
 		f_el = list_entry(el, struct file_elem, elem);
-		if (f_el->fd < 0)
+		if (f_el->fd < 0) {
+			free(map);
+			// printf("err 0\n");
 			return false;
+		}
 		new_f_el = malloc(sizeof(struct file_elem));
-		if (new_f_el == NULL)
+		if (new_f_el == NULL) {
+			free(map);
+			// printf("err 1\n");
 			return false;
+		}
 		
 		new_f_el->fd = f_el->fd;
-		new_f_el->valid = f_el->valid;
+		new_f_el->open = f_el->open;
+		new_f_el->reference = f_el->reference;
 		// printf("check 1\n");
 		found_file = find_copied_file(map, size, f_el->file);
 		if (found_file == NULL) {
-			if (f_el->fd > 1) {
+			if (f_el->fd > 1 && f_el->reference != 0 && f_el->reference != 1) {
 				// printf("check 2 of %d: fd %d\n", child->tid, f_el->fd);
 				new_f_el->file = file_duplicate(f_el->file);
 				// printf("check 2-1\n");
@@ -156,6 +167,7 @@ copy_file_list(struct thread* parent, struct thread* child) {
 					// printf("check 2-2\n");
 					free(new_f_el);
 					free(map);
+					// printf("err 2\n");
 					return false;
 				}
 				map[idx].original = f_el->file;
@@ -167,12 +179,13 @@ copy_file_list(struct thread* parent, struct thread* child) {
 		}
 		// printf("check 3\n");
 		list_push_back(&child->files_list, &new_f_el->elem);
-		// printf("check 4\n");
-		new_f_el = NULL;
+		// printf("copied\n");
+		// new_f_el = NULL;
 		el = el->next;
-		printf("check\n");
+		// printf("check\n");
 	}
 	free(map);
+	// printf("check 3\n");
 	return true;
 }
 
@@ -295,6 +308,7 @@ __do_fork (void *aux) {
 		if (parent->status == THREAD_BLOCKED)
 			thread_unblock(parent);
 		palloc_free_page(aux);
+		// printf("fork done\n");
 		do_iret (&if_);
 	}
 error:
