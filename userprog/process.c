@@ -135,39 +135,31 @@ copy_file_list(struct thread* parent, struct thread* child) {
 		return true;
 	}
 	size = list_size(&parent->files_list);
-	// printf("size: %d\n", size);
 	map = malloc(sizeof(struct file_map_elem) * size);
 	el = list_begin(&parent->files_list);
-	// printf("Start\n");
 	while (el != list_end(&parent->files_list)) {
 		f_el = list_entry(el, struct file_elem, elem);
 		if (f_el->fd < 0) {
 			free(map);
-			// printf("err 0\n");
 			return false;
 		}
 		new_f_el = malloc(sizeof(struct file_elem));
 		if (new_f_el == NULL) {
 			free(map);
-			// printf("err 1\n");
 			return false;
 		}
 		
 		new_f_el->fd = f_el->fd;
 		new_f_el->open = f_el->open;
 		new_f_el->reference = f_el->reference;
-		// printf("check 1\n");
 		found_file = find_copied_file(map, size, f_el->file);
+		
 		if (found_file == NULL) {
 			if (f_el->fd > 1 && f_el->reference != 0 && f_el->reference != 1) {
-				// printf("check 2 of %d: fd %d\n", child->tid, f_el->fd);
 				new_f_el->file = file_duplicate(f_el->file);
-				// printf("check 2-1\n");
 				if (new_f_el->file == NULL) {
-					// printf("check 2-2\n");
 					free(new_f_el);
 					free(map);
-					// printf("err 2\n");
 					return false;
 				}
 				map[idx].original = f_el->file;
@@ -177,15 +169,10 @@ copy_file_list(struct thread* parent, struct thread* child) {
 		} else {
 			new_f_el->file = found_file;
 		}
-		// printf("check 3\n");
 		list_push_back(&child->files_list, &new_f_el->elem);
-		// printf("copied\n");
-		// new_f_el = NULL;
 		el = el->next;
-		// printf("check\n");
 	}
 	free(map);
-	// printf("check 3\n");
 	return true;
 }
 
@@ -692,11 +679,11 @@ load (const char *file_name, struct intr_frame *if_) {
 	if_->R.rsi = if_->rsp + PTR_SIZE;
 	// hex_dump ((uintptr_t)if_->rsp, if_->rsp, USER_STACK - if_->rsp, true);
 
+	free(args_addr_list);
 	success = true;
 
 done:
 	/* We arrive here whether the load is successful or not. */
-	free(args_addr_list);
 	palloc_free_page(copied_file_name);
 	if (!success)
 		file_close (file);

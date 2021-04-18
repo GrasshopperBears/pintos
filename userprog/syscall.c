@@ -115,7 +115,9 @@ close_all_files(void) {
 		if (f_el->fd > 1 && f_el->file != NULL) {
 			if (!is_closed(closed_files, f_el->file, idx)) {
 				closed_files[idx] = f_el->file;
+				lock_acquire(&filesys_lock);
 				file_close(f_el->file);
+				lock_release(&filesys_lock);
 				idx++;
 			}
 		}
@@ -130,7 +132,6 @@ exit(int status) {
 	struct thread* curr = thread_current();
 
 	curr->exit_status = status;
-	// printf("exit of %d status-%d\n", curr->tid, status);
 	close_all_files();
 	thread_exit();
 }
@@ -230,7 +231,6 @@ open (const char *file) {
 	new_f_el->reference = -1;
 	list_insert_ordered(&curr->files_list, &new_f_el->elem, compare_file_elem, NULL);
 	lock_release(&filesys_lock);
-	// printf("open %d\n", new_fd);
 	return new_fd;
 }
 
@@ -241,8 +241,9 @@ filesize (int fd) {
 
 	if (f_el == NULL)
 		exit(-1);
-
+	lock_acquire(&filesys_lock);
 	size = file_length(f_el->file);
+	lock_release(&filesys_lock);
 	return size;
 }
 
@@ -251,10 +252,9 @@ read (int fd, void *buffer, unsigned size) {
 	struct thread* curr = thread_current();
 	struct file_elem* f_el = file_elem_by_fd(fd);
 	int read_size;
-	// printf("start\n");
+
 	if (f_el == NULL)
 		exit(-1);
-	// printf("found\n");
 
 	lock_acquire(&filesys_lock);
 	if(fd == 0 || f_el->reference == 1) {
@@ -268,7 +268,6 @@ read (int fd, void *buffer, unsigned size) {
 		read_size = file_read(f_el->file, buffer, size);
 	}
 	lock_release(&filesys_lock);
-	// printf("read: %d\n", read_size);
 	return read_size;
 }
 
@@ -293,7 +292,6 @@ write (int fd, const void *buffer, unsigned size) {
 		written_size = file_write(f_el->file, buffer, size);
 	}
 	lock_release(&filesys_lock);
-	// printf("writer: %d\n", written_size);
 	return written_size;
 }
 
@@ -301,9 +299,8 @@ void
 seek (int fd, unsigned position) {
 	struct file_elem* f_el = file_elem_by_fd(fd);
 
-	// printf("seek %d from %d\n", position, thread_current()->tid);
-	if (position == 0)
-		return;
+	// if (position == 0)
+	// 	return;
 	if (f_el == NULL || f_el->file == NULL)
 		exit(-1);
 	lock_acquire(&filesys_lock);
@@ -370,8 +367,6 @@ close (int fd) {
 		list_remove(&f_el->elem);
 		free(f_el);
 	}
-	// printf("close %d from %d\n", fd, thread_current()->tid);
-	// printf("close done\n");
 }
 
 int
@@ -383,10 +378,9 @@ dup2(int oldfd, int newfd) {
 		return -1;
 	if (oldfd == newfd)
 		return newfd;
-	// printf("dup2 old-%d new-%d\n", oldfd, newfd);
+
 	old_f_el = file_elem_by_fd(oldfd);
 	new_f_el = file_elem_by_fd(newfd);
-	// printf("curr size-----: %d\n", list_size(&curr->files_list));
 	if (old_f_el == NULL)
 		return NULL;
 	if (new_f_el != NULL) {
@@ -397,7 +391,6 @@ dup2(int oldfd, int newfd) {
 		}
 		new_f_el->file = old_f_el->file;
 	}	else {
-		// printf("new\n");
 		new_f_el = malloc(sizeof(struct file_elem));
 		if (new_f_el == NULL)
 			return -1;
@@ -412,7 +405,6 @@ dup2(int oldfd, int newfd) {
 		new_f_el->reference = oldfd;
 	}
 	new_f_el->open = old_f_el->open;
-	// printf("curr size: %d\n", list_size(&curr->files_list));
 	return newfd;
 }
 
