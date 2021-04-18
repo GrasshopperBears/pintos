@@ -280,6 +280,7 @@ write (int fd, const void *buffer, unsigned size) {
 	if (f_el == NULL)
 		exit(-1);
 
+	lock_acquire(&filesys_lock);
 	if (fd == 1 || f_el->reference == 1) {
 		if (f_el->open)
 			putbuf(buffer, size);
@@ -288,10 +289,9 @@ write (int fd, const void *buffer, unsigned size) {
 	} else if (fd == 0) {
 		exit(-1);
 	} else {
-		lock_acquire(&filesys_lock);
 		written_size = file_write(f_el->file, buffer, size);
-		lock_release(&filesys_lock);
 	}
+	lock_release(&filesys_lock);
 	return written_size;
 }
 
