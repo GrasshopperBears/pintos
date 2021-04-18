@@ -285,17 +285,7 @@ perl -I../.. ../../tests/threads/priority-donate-chain.ck tests/threads/priority
 pass tests/threads/priority-donate-chain
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/dup2/dup2-complex:dup2-complex -p ../../tests/userprog/dup2/sample.txt:sample.txt -- -q   -f run dup2-complex < /dev/null 2> tests/userprog/dup2/dup2-complex.errors > tests/userprog/dup2/dup2-complex.output
 perl -I../.. ../../tests/userprog/dup2/dup2-complex.ck tests/userprog/dup2/dup2-complex tests/userprog/dup2/dup2-complex.result
-FAIL tests/userprog/dup2/dup2-complex
-Kernel panic in run: PANIC at ../../filesys/file.c:151 in file_seek(): assertion `new_pos >= 0' failed.
-Call stack: 0x8004218ced 0x8004220dde 0x800421ee46 0x800421f5eb 0x800421e3be 0x40089d 0x4014e9
-Translation of call stack:
-0x0000008004218ced: debug_panic (lib/kernel/debug.c:32)
-0x0000008004220dde: file_seek (filesys/file.c:152)
-0x000000800421ee46: seek (userprog/syscall.c:308)
-0x000000800421f5eb: syscall_handler (userprog/syscall.c:467)
-0x000000800421e3be: no_sti (userprog/syscall-entry.o:?)
-0x000000000040089d: (unknown)
-0x00000000004014e9: (unknown)
+pass tests/userprog/dup2/dup2-complex
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/dup2/dup2-simple:dup2-simple -p ../../tests/userprog/dup2/sample.txt:sample.txt -- -q   -f run dup2-simple < /dev/null 2> tests/userprog/dup2/dup2-simple.errors > tests/userprog/dup2/dup2-simple.output
 perl -I../.. ../../tests/userprog/dup2/dup2-simple.ck tests/userprog/dup2/dup2-simple tests/userprog/dup2/dup2-simple.result
 pass tests/userprog/dup2/dup2-simple
@@ -394,7 +384,6 @@ pass tests/threads/priority-preempt
 pass tests/threads/priority-sema
 pass tests/threads/priority-condvar
 pass tests/threads/priority-donate-chain
-FAIL tests/userprog/dup2/dup2-complex
+pass tests/userprog/dup2/dup2-complex
 pass tests/userprog/dup2/dup2-simple
-1 of 97 tests failed.
-../../tests/Make.tests:28: recipe for target 'check' failed
+All 97 tests passed.

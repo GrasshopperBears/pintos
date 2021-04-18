@@ -299,10 +299,11 @@ void
 seek (int fd, unsigned position) {
 	struct file_elem* f_el = file_elem_by_fd(fd);
 
-	// if (position == 0)
-	// 	return;
+	if ((f_el == NULL && position == 0) || (fd == 0 || fd == 1 || f_el->reference == 0 || f_el->reference == 1))
+		return;
 	if (f_el == NULL || f_el->file == NULL)
 		exit(-1);
+
 	lock_acquire(&filesys_lock);
 	file_seek(f_el->file, position);
 	lock_release(&filesys_lock);
@@ -367,6 +368,7 @@ close (int fd) {
 		list_remove(&f_el->elem);
 		free(f_el);
 	}
+	// printf("%d closed fd %d\n", thread_current()->tid, fd);
 }
 
 int
