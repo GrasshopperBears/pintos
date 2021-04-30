@@ -3,6 +3,7 @@
 #include "threads/malloc.h"
 #include "vm/vm.h"
 #include "vm/inspect.h"
+#include <hash.h>
 
 /* Initializes the virtual memory subsystem by invoking each subsystem's
  * intialize codes. */
@@ -65,7 +66,13 @@ struct page *
 spt_find_page (struct supplemental_page_table *spt UNUSED, void *va UNUSED) {
 	struct page *page = NULL;
 	/* TODO: Fill this function. */
+	struct page p;
+  struct hash_elem *h_el;
 
+	p.va = va;
+	h_el = hash_find(&spt->hash, &p.spt_hash_elem);
+	if (h_el != NULL)
+		page = hash_entry(h_el, struct page, spt_hash_elem);
 	return page;
 }
 
@@ -75,7 +82,10 @@ spt_insert_page (struct supplemental_page_table *spt UNUSED,
 		struct page *page UNUSED) {
 	int succ = false;
 	/* TODO: Fill this function. */
-
+	struct hash_elem* result = hash_insert(&spt->hash, &page->spt_hash_elem);
+	if (result == NULL)
+		succ = true;
+	
 	return succ;
 }
 
@@ -171,9 +181,24 @@ vm_do_claim_page (struct page *page) {
 	return swap_in (page, frame->kva);
 }
 
+unsigned
+spt_hash (const struct hash_elem *h_el, void *aux UNUSED) {
+  const struct page *p = hash_entry (h_el, struct page, spt_hash_elem);
+  return hash_bytes (&p->va, sizeof p->va);
+}
+
+bool
+spt_less (const struct hash_elem *a_, const struct hash_elem *b_, void *aux UNUSED) {
+  const struct page *a = hash_entry (a_, struct page, spt_hash_elem);
+  const struct page *b = hash_entry (b_, struct page, spt_hash_elem);
+
+  return a->va < b->va;
+}
+
 /* Initialize new supplemental page table */
 void
 supplemental_page_table_init (struct supplemental_page_table *spt UNUSED) {
+	hash_init(&spt->hash, spt_hash, spt_less, NULL);
 }
 
 /* Copy supplemental page table from src to dst */
