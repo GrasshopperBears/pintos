@@ -4,6 +4,7 @@
 #include "vm/vm.h"
 #include "vm/inspect.h"
 #include <hash.h>
+#include "threads/mmu.h"
 
 /* Initializes the virtual memory subsystem by invoking each subsystem's
  * intialize codes. */
@@ -122,6 +123,14 @@ static struct frame *
 vm_get_frame (void) {
 	struct frame *frame = NULL;
 	/* TODO: Fill this function. */
+	void* newpage = palloc_get_page(PAL_USER | PAL_ZERO);
+
+	if (newpage == NULL)
+		PANIC("todo");	// TODO: user pool 다 찼을 경우 evict 구현
+
+	frame = malloc(sizeof(struct frame));
+	frame->kva = newpage;
+	frame->page = NULL;
 
 	ASSERT (frame != NULL);
 	ASSERT (frame->page == NULL);
@@ -163,6 +172,7 @@ bool
 vm_claim_page (void *va UNUSED) {
 	struct page *page = NULL;
 	/* TODO: Fill this function */
+	page = palloc_get_page(PAL_USER | PAL_ZERO);
 
 	return vm_do_claim_page (page);
 }
@@ -171,14 +181,18 @@ vm_claim_page (void *va UNUSED) {
 static bool
 vm_do_claim_page (struct page *page) {
 	struct frame *frame = vm_get_frame ();
+	bool succ;
 
 	/* Set links */
 	frame->page = page;
 	page->frame = frame;
 
 	/* TODO: Insert page table entry to map page's VA to frame's PA. */
+	// setup MMU = add the mapping from the virtual address to the physical address in the page table
+	succ = pml4_set_page(thread_current()->pml4, page->va, frame->kva, page->writable);
 
-	return swap_in (page, frame->kva);
+	// return swap_in (page, frame->kva);	// TODO: swap in 구현하면 갈아끼워야 할듯?
+	return succ;
 }
 
 unsigned
