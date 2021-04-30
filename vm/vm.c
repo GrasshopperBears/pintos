@@ -49,14 +49,29 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 	ASSERT (VM_TYPE(type) != VM_UNINIT)
 
 	struct supplemental_page_table *spt = &thread_current ()->spt;
+	bool (*initializer)(struct page *, enum vm_type, void *);
+	struct page* page;
+	bool succ;
 
 	/* Check wheter the upage is already occupied or not. */
 	if (spt_find_page (spt, upage) == NULL) {
 		/* TODO: Create the page, fetch the initialier according to the VM type,
 		 * TODO: and then create "uninit" page struct by calling uninit_new. You
 		 * TODO: should modify the field after calling the uninit_new. */
+		page = malloc(sizeof(struct page));
+
+		// TODO: malloc fail 시 처리를 해줘야 하나??
+		// if (page == NULL)
+
+		initializer = type == VM_ANON ? anon_initializer : file_backed_initializer;
+		uninit_new (page, upage, init, type, aux, initializer);
+		page->writable = writable;
 
 		/* TODO: Insert the page into the spt. */
+		succ = spt_insert_page(spt, page);
+		if (!succ)
+			goto err;
+		return succ;
 	}
 err:
 	return false;
