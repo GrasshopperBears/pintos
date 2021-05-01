@@ -99,9 +99,12 @@ spt_insert_page (struct supplemental_page_table *spt UNUSED,
 		struct page *page UNUSED) {
 	int succ = false;
 	/* TODO: Fill this function. */
-	struct hash_elem* result = hash_insert(&spt->hash, &page->spt_hash_elem);
+	struct hash_elem* result;
 
-	// This function should checks that the virtual address does not exist in the given supplemental page table
+	if (spt_find_page(spt, page->va))
+		return false;
+
+	result = hash_insert(&spt->hash, &page->spt_hash_elem);
 	if (result == NULL)
 		succ = true;
 	
@@ -175,7 +178,7 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 	/* TODO: Your code goes here */
 
 	// spt 에서 주소에 해당하는 page가 존재하는지 찾기
-	page = spt_find_page (page, addr);
+	page = spt_find_page (&thread_current()->spt, addr);
 
 	if (page == NULL)
 		return false;
