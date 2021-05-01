@@ -38,4 +38,12 @@ struct file {
 	bool deny_write;            /* Has file_deny_write() been called? */
 };
 
+struct lazy_parameter {
+  struct file *file;
+  off_t ofs;
+	uint32_t read_bytes;
+  uint32_t zero_bytes;
+  uint8_t *upage;
+};
+
 #endif /* userprog/process.h */

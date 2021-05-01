@@ -845,6 +845,20 @@ lazy_load_segment (struct page *page, void *aux) {
 	/* TODO: Load the segment from the file */
 	/* TODO: This called when the first page fault occurs on address VA. */
 	/* TODO: VA is available when calling this function. */
+	struct lazy_parameter * params = (struct lazy_parameter *)aux;
+	
+	if (params->file == NULL)
+		return false;
+
+	//TODO: success 여부 어떻게 체크할까?
+
+	lock_acquire(&filesys_lock);
+	file_seek(params->file, params->ofs);
+	file_read(params->file, params->upage, params->read_bytes);
+	lock_release(&filesys_lock);
+	memset(params->upage + params->read_bytes, 0, params->zero_bytes);
+
+	return true;
 }
 
 /* Loads a segment starting at offset OFS in FILE at address
@@ -867,6 +881,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 	ASSERT ((read_bytes + zero_bytes) % PGSIZE == 0);
 	ASSERT (pg_ofs (upage) == 0);
 	ASSERT (ofs % PGSIZE == 0);
+	unsigned cnt = 0;
 
 	while (read_bytes > 0 || zero_bytes > 0) {
 		/* Do calculate how to fill this page.
@@ -876,7 +891,12 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 		size_t page_zero_bytes = PGSIZE - page_read_bytes;
 
 		/* TODO: Set up aux to pass information to the lazy_load_segment. */
-		void *aux = NULL;
+		struct lazy_parameter *aux = malloc(sizeof(struct lazy_parameter));
+		aux->file = file;
+		aux->ofs = ofs + cnt * PGSIZE;
+		aux->read_bytes = page_read_bytes;
+		aux->zero_bytes = page_zero_bytes;
+		aux->upage = upage;
 		if (!vm_alloc_page_with_initializer (VM_ANON, upage,
 					writable, lazy_load_segment, aux))
 			return false;
@@ -885,6 +905,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 		read_bytes -= page_read_bytes;
 		zero_bytes -= page_zero_bytes;
 		upage += PGSIZE;
+		cnt++;
 	}
 	return true;
 }
@@ -899,7 +920,13 @@ setup_stack (struct intr_frame *if_) {
 	 * TODO: If success, set the rsp accordingly.
 	 * TODO: You should mark the page is stack. */
 	/* TODO: Your code goes here */
+	struct page *page = palloc_get_page(PAL_USER | PAL_ZERO); // TODO: PAL_ZERO 이거 맞나?
 
+	success = vm_do_claim_page(page);
+	if (success) {
+		if_->rsp = stack_bottom;
+		page->is_stack = true;
+	}
 	return success;
 }
 #endif /* VM */

@@ -36,7 +36,7 @@ page_get_type (struct page *page) {
 
 /* Helpers */
 static struct frame *vm_get_victim (void);
-static bool vm_do_claim_page (struct page *page);
+// static bool vm_do_claim_page (struct page *page);
 static struct frame *vm_evict_frame (void);
 
 /* Create the pending page object with initializer. If you want to create a
@@ -60,10 +60,11 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		 * TODO: should modify the field after calling the uninit_new. */
 		page = malloc(sizeof(struct page));
 
-		// TODO: malloc fail 시 처리를 해줘야 하나??
-		// if (page == NULL)
+		// TODO: malloc fail 시 처리 이게 맞나??
+		if (page == NULL)
+			goto err;
 
-		initializer = type == VM_ANON ? anon_initializer : file_backed_initializer;
+		initializer = (type == VM_ANON) ? anon_initializer : file_backed_initializer;
 		uninit_new (page, upage, init, type, aux, initializer);
 		page->writable = writable;
 
@@ -99,6 +100,8 @@ spt_insert_page (struct supplemental_page_table *spt UNUSED,
 	int succ = false;
 	/* TODO: Fill this function. */
 	struct hash_elem* result = hash_insert(&spt->hash, &page->spt_hash_elem);
+
+	// This function should checks that the virtual address does not exist in the given supplemental page table
 	if (result == NULL)
 		succ = true;
 	
@@ -138,7 +141,7 @@ static struct frame *
 vm_get_frame (void) {
 	struct frame *frame = NULL;
 	/* TODO: Fill this function. */
-	void* newpage = palloc_get_page(PAL_USER | PAL_ZERO);
+	void* newpage = palloc_get_page(PAL_USER);
 
 	if (newpage == NULL)
 		PANIC("todo");	// TODO: user pool 다 찼을 경우 evict 구현
@@ -171,6 +174,16 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 	/* TODO: Validate the fault */
 	/* TODO: Your code goes here */
 
+	// spt 에서 주소에 해당하는 page가 존재하는지 찾기
+	page = spt_find_page (page, addr);
+
+	if (page == NULL)
+		return false;
+	if (is_kernel_vaddr (page->va))
+		return false;
+	if (!not_present && write)
+		return false;
+	
 	return vm_do_claim_page (page);
 }
 
@@ -193,7 +206,7 @@ vm_claim_page (void *va UNUSED) {
 }
 
 /* Claim the PAGE and set up the mmu. */
-static bool
+bool
 vm_do_claim_page (struct page *page) {
 	struct frame *frame = vm_get_frame ();
 	bool succ;
@@ -227,6 +240,7 @@ spt_less (const struct hash_elem *a_, const struct hash_elem *b_, void *aux UNUS
 /* Initialize new supplemental page table */
 void
 supplemental_page_table_init (struct supplemental_page_table *spt UNUSED) {
+	// spt = malloc(sizeof(struct supplemental_page_table));
 	hash_init(&spt->hash, spt_hash, spt_less, NULL);
 }
 
