@@ -331,7 +331,7 @@ process_exec (void *f_name) {
 	palloc_free_page (file_name);
 	if (!success)
 		return -1;
-
+	printf("load done\n");
 	/* Start switched process. */
 	do_iret (&_if);
 	NOT_REACHED ();
@@ -846,16 +846,18 @@ lazy_load_segment (struct page *page, void *aux) {
 	/* TODO: This called when the first page fault occurs on address VA. */
 	/* TODO: VA is available when calling this function. */
 	struct lazy_parameter * params = (struct lazy_parameter *)aux;
+	int size;
 	
 	if (params->file == NULL)
 		return false;
 
 	//TODO: success 여부 어떻게 체크할까?
-
-	lock_acquire(&filesys_lock);
-	file_seek(params->file, params->ofs);
-	file_read(params->file, params->upage, params->read_bytes);
-	lock_release(&filesys_lock);
+	if (params->read_bytes > 0) {
+		lock_acquire(&filesys_lock);
+		file_seek(params->file, params->ofs);
+		size = file_read(params->file, params->upage, params->read_bytes);
+		lock_release(&filesys_lock);
+	}
 	memset(params->upage + params->read_bytes, 0, params->zero_bytes);
 
 	return true;
