@@ -331,7 +331,7 @@ process_exec (void *f_name) {
 	palloc_free_page (file_name);
 	if (!success)
 		return -1;
-	printf("load done\n");
+	// printf("load done\n");
 	/* Start switched process. */
 	do_iret (&_if);
 	NOT_REACHED ();
@@ -922,7 +922,12 @@ setup_stack (struct intr_frame *if_) {
 	 * TODO: If success, set the rsp accordingly.
 	 * TODO: You should mark the page is stack. */
 	/* TODO: Your code goes here */
-	success = vm_claim_page(stack_bottom);
+	// struct page *page = malloc(sizeof(struct page));
+	// page->va = 
+	// printf("start\n");
+	success = vm_alloc_page(VM_ANON, stack_bottom, true);
+	// printf("stack: %d\n", success);
+	// success = vm_claim_page(stack_bottom);
 
 	if (success)
 		if_->rsp = USER_STACK;

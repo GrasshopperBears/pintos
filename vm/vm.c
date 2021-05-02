@@ -77,7 +77,8 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		// printf("inserted: %p\n", upage);
 		if (!succ)
 			goto err;
-		init(page, aux);
+		if (init != NULL)
+			init(page, aux);
 		return succ;
 	}
 err:
@@ -218,7 +219,7 @@ vm_claim_page (void *va UNUSED) {
 	page = malloc(sizeof(struct page));
 	page->va = va;
 	spt_insert_page(&thread_current()->spt, page);
-	printf("inserted-claim: %p\n", va);
+	// printf("inserted-claim: %p\n", va);
 
 	return vm_do_claim_page (page);
 }
