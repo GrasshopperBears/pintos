@@ -5,6 +5,9 @@
 #include "vm/inspect.h"
 #include <hash.h>
 #include "threads/mmu.h"
+#include "threads/synch.h"
+
+struct lock hash_lock;
 
 /* Initializes the virtual memory subsystem by invoking each subsystem's
  * intialize codes. */
@@ -18,6 +21,7 @@ vm_init (void) {
 	register_inspect_intr ();
 	/* DO NOT MODIFY UPPER LINES. */
 	/* TODO: Your code goes here. */
+	lock_init(&hash_lock);
 }
 
 /* Get the type of the page. This function is useful if you want to know the
@@ -64,7 +68,7 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		if (page == NULL)
 			goto err;
 
-		initializer = (type == VM_ANON) ? anon_initializer : file_backed_initializer;
+		initializer = (VM_TYPE(type) == VM_ANON) ? anon_initializer : file_backed_initializer;
 		uninit_new (page, upage, init, type, aux, initializer);
 		page->writable = writable;
 
@@ -101,9 +105,8 @@ spt_insert_page (struct supplemental_page_table *spt UNUSED,
 	/* TODO: Fill this function. */
 	struct hash_elem* result;
 
-	if (spt_find_page(spt, page->va))
-		return false;
-
+	// if (spt_find_page(spt, page->va))
+	// 	return false;
 	result = hash_insert(&spt->hash, &page->spt_hash_elem);
 	if (result == NULL)
 		succ = true;
@@ -148,6 +151,7 @@ vm_get_frame (void) {
 
 	if (newpage == NULL)
 		PANIC("todo");	// TODO: user pool 다 찼을 경우 evict 구현
+		// return vm_evict_frame();
 
 	frame = malloc(sizeof(struct frame));
 	frame->kva = newpage;
@@ -180,8 +184,8 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 	// spt 에서 주소에 해당하는 page가 존재하는지 찾기
 	page = spt_find_page (&thread_current()->spt, addr);
 
-	if (page == NULL)
-		return false;
+	// if (page == NULL)
+	// 	return false;
 	if (is_kernel_vaddr (page->va))
 		return false;
 	if (!not_present && write)
@@ -203,7 +207,9 @@ bool
 vm_claim_page (void *va UNUSED) {
 	struct page *page = NULL;
 	/* TODO: Fill this function */
-	page = palloc_get_page(PAL_USER | PAL_ZERO);
+	page = malloc(sizeof(struct page));
+	page->va = va;
+	spt_insert_page(&thread_current()->spt, page);
 
 	return vm_do_claim_page (page);
 }
@@ -243,7 +249,6 @@ spt_less (const struct hash_elem *a_, const struct hash_elem *b_, void *aux UNUS
 /* Initialize new supplemental page table */
 void
 supplemental_page_table_init (struct supplemental_page_table *spt UNUSED) {
-	// spt = malloc(sizeof(struct supplemental_page_table));
 	hash_init(&spt->hash, spt_hash, spt_less, NULL);
 }
 

@@ -920,13 +920,11 @@ setup_stack (struct intr_frame *if_) {
 	 * TODO: If success, set the rsp accordingly.
 	 * TODO: You should mark the page is stack. */
 	/* TODO: Your code goes here */
-	struct page *page = palloc_get_page(PAL_USER | PAL_ZERO); // TODO: PAL_ZERO 이거 맞나?
+	success = vm_claim_page(stack_bottom);
 
-	success = vm_do_claim_page(page);
-	if (success) {
-		if_->rsp = stack_bottom;
-		page->is_stack = true;
-	}
+	if (success)
+		if_->rsp = USER_STACK;
+
 	return success;
 }
 #endif /* VM */
