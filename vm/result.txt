@@ -1,0 +1,321 @@
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-normal:create-normal --swap-disk=4 -- -q   -f run create-normal < /dev/null 2> tests/userprog/create-normal.errors > tests/userprog/create-normal.output
+perl -I../.. ../../tests/userprog/create-normal.ck tests/userprog/create-normal tests/userprog/create-normal.result
+pass tests/userprog/create-normal
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-empty:create-empty --swap-disk=4 -- -q   -f run create-empty < /dev/null 2> tests/userprog/create-empty.errors > tests/userprog/create-empty.output
+perl -I../.. ../../tests/userprog/create-empty.ck tests/userprog/create-empty tests/userprog/create-empty.result
+pass tests/userprog/create-empty
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-null:create-null --swap-disk=4 -- -q   -f run create-null < /dev/null 2> tests/userprog/create-null.errors > tests/userprog/create-null.output
+perl -I../.. ../../tests/userprog/create-null.ck tests/userprog/create-null tests/userprog/create-null.result
+pass tests/userprog/create-null
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-bad-ptr:create-bad-ptr --swap-disk=4 -- -q   -f run create-bad-ptr < /dev/null 2> tests/userprog/create-bad-ptr.errors > tests/userprog/create-bad-ptr.output
+perl -I../.. ../../tests/userprog/create-bad-ptr.ck tests/userprog/create-bad-ptr tests/userprog/create-bad-ptr.result
+pass tests/userprog/create-bad-ptr
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-long:create-long --swap-disk=4 -- -q   -f run create-long < /dev/null 2> tests/userprog/create-long.errors > tests/userprog/create-long.output
+perl -I../.. ../../tests/userprog/create-long.ck tests/userprog/create-long tests/userprog/create-long.result
+pass tests/userprog/create-long
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-exists:create-exists --swap-disk=4 -- -q   -f run create-exists < /dev/null 2> tests/userprog/create-exists.errors > tests/userprog/create-exists.output
+perl -I../.. ../../tests/userprog/create-exists.ck tests/userprog/create-exists tests/userprog/create-exists.result
+pass tests/userprog/create-exists
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-bound:create-bound --swap-disk=4 -- -q   -f run create-bound < /dev/null 2> tests/userprog/create-bound.errors > tests/userprog/create-bound.output
+perl -I../.. ../../tests/userprog/create-bound.ck tests/userprog/create-bound tests/userprog/create-bound.result
+pass tests/userprog/create-bound
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-normal:open-normal -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run open-normal < /dev/null 2> tests/userprog/open-normal.errors > tests/userprog/open-normal.output
+perl -I../.. ../../tests/userprog/open-normal.ck tests/userprog/open-normal tests/userprog/open-normal.result
+pass tests/userprog/open-normal
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-missing:open-missing --swap-disk=4 -- -q   -f run open-missing < /dev/null 2> tests/userprog/open-missing.errors > tests/userprog/open-missing.output
+perl -I../.. ../../tests/userprog/open-missing.ck tests/userprog/open-missing tests/userprog/open-missing.result
+pass tests/userprog/open-missing
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-boundary:open-boundary -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run open-boundary < /dev/null 2> tests/userprog/open-boundary.errors > tests/userprog/open-boundary.output
+perl -I../.. ../../tests/userprog/open-boundary.ck tests/userprog/open-boundary tests/userprog/open-boundary.result
+pass tests/userprog/open-boundary
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-empty:open-empty --swap-disk=4 -- -q   -f run open-empty < /dev/null 2> tests/userprog/open-empty.errors > tests/userprog/open-empty.output
+perl -I../.. ../../tests/userprog/open-empty.ck tests/userprog/open-empty tests/userprog/open-empty.result
+pass tests/userprog/open-empty
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-null:open-null --swap-disk=4 -- -q   -f run open-null < /dev/null 2> tests/userprog/open-null.errors > tests/userprog/open-null.output
+perl -I../.. ../../tests/userprog/open-null.ck tests/userprog/open-null tests/userprog/open-null.result
+pass tests/userprog/open-null
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-bad-ptr:open-bad-ptr --swap-disk=4 -- -q   -f run open-bad-ptr < /dev/null 2> tests/userprog/open-bad-ptr.errors > tests/userprog/open-bad-ptr.output
+perl -I../.. ../../tests/userprog/open-bad-ptr.ck tests/userprog/open-bad-ptr tests/userprog/open-bad-ptr.result
+pass tests/userprog/open-bad-ptr
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-twice:open-twice -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run open-twice < /dev/null 2> tests/userprog/open-twice.errors > tests/userprog/open-twice.output
+perl -I../.. ../../tests/userprog/open-twice.ck tests/userprog/open-twice tests/userprog/open-twice.result
+pass tests/userprog/open-twice
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/close-normal:close-normal -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run close-normal < /dev/null 2> tests/userprog/close-normal.errors > tests/userprog/close-normal.output
+perl -I../.. ../../tests/userprog/close-normal.ck tests/userprog/close-normal tests/userprog/close-normal.result
+pass tests/userprog/close-normal
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/close-twice:close-twice -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run close-twice < /dev/null 2> tests/userprog/close-twice.errors > tests/userprog/close-twice.output
+perl -I../.. ../../tests/userprog/close-twice.ck tests/userprog/close-twice tests/userprog/close-twice.result
+pass tests/userprog/close-twice
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/close-bad-fd:close-bad-fd --swap-disk=4 -- -q   -f run close-bad-fd < /dev/null 2> tests/userprog/close-bad-fd.errors > tests/userprog/close-bad-fd.output
+perl -I../.. ../../tests/userprog/close-bad-fd.ck tests/userprog/close-bad-fd tests/userprog/close-bad-fd.result
+pass tests/userprog/close-bad-fd
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/read-normal:read-normal -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run read-normal < /dev/null 2> tests/userprog/read-normal.errors > tests/userprog/read-normal.output
+perl -I../.. ../../tests/userprog/read-normal.ck tests/userprog/read-normal tests/userprog/read-normal.result
+pass tests/userprog/read-normal
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/read-bad-ptr:read-bad-ptr -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run read-bad-ptr < /dev/null 2> tests/userprog/read-bad-ptr.errors > tests/userprog/read-bad-ptr.output
+perl -I../.. ../../tests/userprog/read-bad-ptr.ck tests/userprog/read-bad-ptr tests/userprog/read-bad-ptr.result
+pass tests/userprog/read-bad-ptr
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/read-boundary:read-boundary -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run read-boundary < /dev/null 2> tests/userprog/read-boundary.errors > tests/userprog/read-boundary.output
+perl -I../.. ../../tests/userprog/read-boundary.ck tests/userprog/read-boundary tests/userprog/read-boundary.result
+pass tests/userprog/read-boundary
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/read-zero:read-zero -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run read-zero < /dev/null 2> tests/userprog/read-zero.errors > tests/userprog/read-zero.output
+perl -I../.. ../../tests/userprog/read-zero.ck tests/userprog/read-zero tests/userprog/read-zero.result
+pass tests/userprog/read-zero
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/read-stdout:read-stdout --swap-disk=4 -- -q   -f run read-stdout < /dev/null 2> tests/userprog/read-stdout.errors > tests/userprog/read-stdout.output
+perl -I../.. ../../tests/userprog/read-stdout.ck tests/userprog/read-stdout tests/userprog/read-stdout.result
+pass tests/userprog/read-stdout
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/read-bad-fd:read-bad-fd --swap-disk=4 -- -q   -f run read-bad-fd < /dev/null 2> tests/userprog/read-bad-fd.errors > tests/userprog/read-bad-fd.output
+perl -I../.. ../../tests/userprog/read-bad-fd.ck tests/userprog/read-bad-fd tests/userprog/read-bad-fd.result
+pass tests/userprog/read-bad-fd
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/write-normal:write-normal -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run write-normal < /dev/null 2> tests/userprog/write-normal.errors > tests/userprog/write-normal.output
+perl -I../.. ../../tests/userprog/write-normal.ck tests/userprog/write-normal tests/userprog/write-normal.result
+pass tests/userprog/write-normal
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/write-bad-ptr:write-bad-ptr -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run write-bad-ptr < /dev/null 2> tests/userprog/write-bad-ptr.errors > tests/userprog/write-bad-ptr.output
+perl -I../.. ../../tests/userprog/write-bad-ptr.ck tests/userprog/write-bad-ptr tests/userprog/write-bad-ptr.result
+pass tests/userprog/write-bad-ptr
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/write-boundary:write-boundary -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run write-boundary < /dev/null 2> tests/userprog/write-boundary.errors > tests/userprog/write-boundary.output
+perl -I../.. ../../tests/userprog/write-boundary.ck tests/userprog/write-boundary tests/userprog/write-boundary.result
+pass tests/userprog/write-boundary
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/write-zero:write-zero -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run write-zero < /dev/null 2> tests/userprog/write-zero.errors > tests/userprog/write-zero.output
+perl -I../.. ../../tests/userprog/write-zero.ck tests/userprog/write-zero tests/userprog/write-zero.result
+pass tests/userprog/write-zero
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/write-stdin:write-stdin --swap-disk=4 -- -q   -f run write-stdin < /dev/null 2> tests/userprog/write-stdin.errors > tests/userprog/write-stdin.output
+perl -I../.. ../../tests/userprog/write-stdin.ck tests/userprog/write-stdin tests/userprog/write-stdin.result
+pass tests/userprog/write-stdin
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/write-bad-fd:write-bad-fd --swap-disk=4 -- -q   -f run write-bad-fd < /dev/null 2> tests/userprog/write-bad-fd.errors > tests/userprog/write-bad-fd.output
+perl -I../.. ../../tests/userprog/write-bad-fd.ck tests/userprog/write-bad-fd tests/userprog/write-bad-fd.result
+pass tests/userprog/write-bad-fd
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-once:fork-once --swap-disk=4 -- -q   -f run fork-once < /dev/null 2> tests/userprog/fork-once.errors > tests/userprog/fork-once.output
+perl -I../.. ../../tests/userprog/fork-once.ck tests/userprog/fork-once tests/userprog/fork-once.result
+FAIL tests/userprog/fork-once
+Kernel panic in run: PANIC at ../../threads/thread.c:326 in thread_current(): assertion `is_thread (t)' failed.
+Call stack: 0x8004218cf9 0x80042074a5 0x800420b424 0x800421bffe 0x800421c1cb 0x800421c1af 0x80042171f8 0x8004216930 0x800421c05e 0x80042161fc 0x800421cdff 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20
+Translation of call stack:
+0x0000008004218cf9: debug_panic (lib/kernel/debug.c:32)
+0x00000080042074a5: thread_current (threads/thread.c:327)
+0x000000800420b424: lock_held_by_current_thread (threads/synch.c:397)
+0x000000800421bffe: console_locked_by_current_thread (lib/kernel/console.c:111 (discriminator 2))
+0x000000800421c1cb: putchar_have_lock (lib/kernel/console.c:173)
+0x000000800421c1af: vprintf_helper (lib/kernel/console.c:166)
+0x00000080042171f8: format_string (lib/stdio.c:529 (discriminator 3))
+0x0000008004216930: __vprintf (lib/stdio.c:284)
+0x000000800421c05e: vprintf (lib/kernel/console.c:123)
+0x00000080042161fc: printf (lib/stdio.c:80)
+0x000000800421cdff: process_exit (userprog/process.c:397)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
+0x000000800421cfb9: process_cleanup (userprog/process.c:436)
+0x000000800421cf83: process_exit (userprog/process.c:421)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
+0x000000800421cfb9: process_cleanup (userprog/process.c:436)
+0x000000800421cf83: process_exit (userprog/process.c:421)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
+0x000000800421cfb9: process_cleanup (userprog/process.c:436)
+0x000000800421cf83: process_exit (userprog/process.c:421)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
+0x000000800421cfb9: process_cleanup (userprog/process.c:436)
+0x000000800421cf83: process_exit (userprog/process.c:421)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-multiple:fork-multiple --swap-disk=4 -- -q   -f run fork-multiple < /dev/null 2> tests/userprog/fork-multiple.errors > tests/userprog/fork-multiple.output
+perl -I../.. ../../tests/userprog/fork-multiple.ck tests/userprog/fork-multiple tests/userprog/fork-multiple.result
+FAIL tests/userprog/fork-multiple
+Kernel panic in run: PANIC at ../../threads/thread.c:326 in thread_current(): assertion `is_thread (t)' failed.
+Call stack: 0x8004218cf9 0x80042074a5 0x800420b424 0x800421bffe 0x800421c1cb 0x800421c1af 0x80042171f8 0x8004216930 0x800421c05e 0x80042161fc 0x800421cdff 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20
+Translation of call stack:
+0x0000008004218cf9: debug_panic (lib/kernel/debug.c:32)
+0x00000080042074a5: thread_current (threads/thread.c:327)
+0x000000800420b424: lock_held_by_current_thread (threads/synch.c:397)
+0x000000800421bffe: console_locked_by_current_thread (lib/kernel/console.c:111 (discriminator 2))
+0x000000800421c1cb: putchar_have_lock (lib/kernel/console.c:173)
+0x000000800421c1af: vprintf_helper (lib/kernel/console.c:166)
+0x00000080042171f8: format_string (lib/stdio.c:529 (discriminator 3))
+0x0000008004216930: __vprintf (lib/stdio.c:284)
+0x000000800421c05e: vprintf (lib/kernel/console.c:123)
+0x00000080042161fc: printf (lib/stdio.c:80)
+0x000000800421cdff: process_exit (userprog/process.c:397)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
+0x000000800421cfb9: process_cleanup (userprog/process.c:436)
+0x000000800421cf83: process_exit (userprog/process.c:421)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
+0x000000800421cfb9: process_cleanup (userprog/process.c:436)
+0x000000800421cf83: process_exit (userprog/process.c:421)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
+0x000000800421cfb9: process_cleanup (userprog/process.c:436)
+0x000000800421cf83: process_exit (userprog/process.c:421)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
+0x000000800421cfb9: process_cleanup (userprog/process.c:436)
+0x000000800421cf83: process_exit (userprog/process.c:421)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-recursive:fork-recursive --swap-disk=4 -- -q   -f run fork-recursive < /dev/null 2> tests/userprog/fork-recursive.errors > tests/userprog/fork-recursive.output
+perl -I../.. ../../tests/userprog/fork-recursive.ck tests/userprog/fork-recursive tests/userprog/fork-recursive.result
+FAIL tests/userprog/fork-recursive
+Kernel panic in run: PANIC at ../../threads/thread.c:326 in thread_current(): assertion `is_thread (t)' failed.
+Call stack: 0x8004218cf9 0x80042074a5 0x800420b424 0x800421bffe 0x800421c1cb 0x800421c1af 0x80042171f8 0x8004216930 0x800421c05e 0x80042161fc 0x800421cdff 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20
+Translation of call stack:
+0x0000008004218cf9: debug_panic (lib/kernel/debug.c:32)
+0x00000080042074a5: thread_current (threads/thread.c:327)
+0x000000800420b424: lock_held_by_current_thread (threads/synch.c:397)
+0x000000800421bffe: console_locked_by_current_thread (lib/kernel/console.c:111 (discriminator 2))
+0x000000800421c1cb: putchar_have_lock (lib/kernel/console.c:173)
+0x000000800421c1af: vprintf_helper (lib/kernel/console.c:166)
+0x00000080042171f8: format_string (lib/stdio.c:529 (discriminator 3))
+0x0000008004216930: __vprintf (lib/stdio.c:284)
+0x000000800421c05e: vprintf (lib/kernel/console.c:123)
+0x00000080042161fc: printf (lib/stdio.c:80)
+0x000000800421cdff: process_exit (userprog/process.c:397)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
+0x000000800421cfb9: process_cleanup (userprog/process.c:436)
+0x000000800421cf83: process_exit (userprog/process.c:421)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
+0x000000800421cfb9: process_cleanup (userprog/process.c:436)
+0x000000800421cf83: process_exit (userprog/process.c:421)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
+0x000000800421cfb9: process_cleanup (userprog/process.c:436)
+0x000000800421cf83: process_exit (userprog/process.c:421)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
+0x000000800421cfb9: process_cleanup (userprog/process.c:436)
+0x000000800421cf83: process_exit (userprog/process.c:421)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-read:fork-read -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run fork-read < /dev/null 2> tests/userprog/fork-read.errors > tests/userprog/fork-read.output
+perl -I../.. ../../tests/userprog/fork-read.ck tests/userprog/fork-read tests/userprog/fork-read.result
+FAIL tests/userprog/fork-read
+Kernel panic in run: PANIC at ../../threads/thread.c:326 in thread_current(): assertion `is_thread (t)' failed.
+Call stack: 0x8004218cf9 0x80042074a5 0x800420b424 0x800421bffe 0x800421c1cb 0x800421c1af 0x80042171f8 0x8004216930 0x800421c05e 0x80042161fc 0x800421cdff 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20
+Translation of call stack:
+0x0000008004218cf9: debug_panic (lib/kernel/debug.c:32)
+0x00000080042074a5: thread_current (threads/thread.c:327)
+0x000000800420b424: lock_held_by_current_thread (threads/synch.c:397)
+0x000000800421bffe: console_locked_by_current_thread (lib/kernel/console.c:111 (discriminator 2))
+0x000000800421c1cb: putchar_have_lock (lib/kernel/console.c:173)
+0x000000800421c1af: vprintf_helper (lib/kernel/console.c:166)
+0x00000080042171f8: format_string (lib/stdio.c:529 (discriminator 3))
+0x0000008004216930: __vprintf (lib/stdio.c:284)
+0x000000800421c05e: vprintf (lib/kernel/console.c:123)
+0x00000080042161fc: printf (lib/stdio.c:80)
+0x000000800421cdff: process_exit (userprog/process.c:397)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
+0x000000800421cfb9: process_cleanup (userprog/process.c:436)
+0x000000800421cf83: process_exit (userprog/process.c:421)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
+0x000000800421cfb9: process_cleanup (userprog/process.c:436)
+0x000000800421cf83: process_exit (userprog/process.c:421)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
+0x000000800421cfb9: process_cleanup (userprog/process.c:436)
+0x000000800421cf83: process_exit (userprog/process.c:421)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
+0x000000800421cfb9: process_cleanup (userprog/process.c:436)
+0x000000800421cf83: process_exit (userprog/process.c:421)
+0x000000800420756b: thread_exit (threads/thread.c:350)
+0x000000800421e73a: fork (userprog/syscall.c:140)
+0x000000800421e221: page_fault (userprog/exception.c:156)
+0x0000008004209602: intr_handler (threads/interrupt.c:352)
+0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-close:fork-close -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run fork-close < /dev/null 2> tests/userprog/fork-close.errors > tests/userprog/fork-close.output
+../../tests/Make.tests:75: recipe for target 'tests/userprog/fork-close.output' failed

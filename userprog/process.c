@@ -295,7 +295,7 @@ __do_fork (void *aux) {
 		if (parent->status == THREAD_BLOCKED)
 			thread_unblock(parent);
 		palloc_free_page(aux);
-		// printf("fork done\n");
+		printf("fork done\n");
 		do_iret (&if_);
 	}
 error:
@@ -425,9 +425,11 @@ process_exit (void) {
 static void
 process_cleanup (void) {
 	struct thread *curr = thread_current ();
+	printf("start cleanup %s\n", curr->name);
 
 #ifdef VM
 	supplemental_page_table_kill (&curr->spt);
+	printf("done\n");
 #endif
 
 	uint64_t *pml4;

@@ -270,6 +270,7 @@ copy_spt_hash(struct hash_elem *e, void *aux) {
 
 	page_copy->va = page_original->va;
 	page_copy->writable = page_original->writable;
+	page_copy->operations = page_original->operations;
 	spt_insert_page(dst, page_copy);
 
 	page_copy->frame = page_original->frame;
@@ -297,5 +298,5 @@ void
 supplemental_page_table_kill (struct supplemental_page_table *spt UNUSED) {
 	/* TODO: Destroy all the supplemental_page_table hold by thread and
 	 * TODO: writeback all the modified contents to the storage. */
-	hash_apply(spt, kill_spt_hash);
+	hash_clear(spt, kill_spt_hash);
 }
