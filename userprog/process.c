@@ -295,7 +295,7 @@ __do_fork (void *aux) {
 		if (parent->status == THREAD_BLOCKED)
 			thread_unblock(parent);
 		palloc_free_page(aux);
-		printf("fork done\n");
+		// printf("fork done\n");
 		do_iret (&if_);
 	}
 error:
@@ -367,15 +367,15 @@ process_wait (tid_t child_tid UNUSED) {
 			
 			if (!c_el->terminated) {
 				c_el->waiting = true;
+				printf("start wait %s\n", curr->name);
 				sema_init(&sema, 0);
 				c_el->waiting_sema = &sema;
 				sema_down(&sema);
 			}
 			returned_status = c_el->exit_status;
-			// if (curr->parent != NULL) {
 			list_remove(&c_el->elem);
 			palloc_free_page(c_el);
-			// }
+			printf("pass %d\n", returned_status);
 			return returned_status;
 		}
 		el = el->next;
@@ -425,11 +425,9 @@ process_exit (void) {
 static void
 process_cleanup (void) {
 	struct thread *curr = thread_current ();
-	printf("start cleanup %s\n", curr->name);
 
 #ifdef VM
 	supplemental_page_table_kill (&curr->spt);
-	printf("done\n");
 #endif
 
 	uint64_t *pml4;

@@ -1,3 +1,24 @@
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-none:args-none --swap-disk=4 -- -q   -f run args-none < /dev/null 2> tests/userprog/args-none.errors > tests/userprog/args-none.output
+perl -I../.. ../../tests/userprog/args-none.ck tests/userprog/args-none tests/userprog/args-none.result
+pass tests/userprog/args-none
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-single:args-single --swap-disk=4 -- -q   -f run 'args-single onearg' < /dev/null 2> tests/userprog/args-single.errors > tests/userprog/args-single.output
+perl -I../.. ../../tests/userprog/args-single.ck tests/userprog/args-single tests/userprog/args-single.result
+pass tests/userprog/args-single
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-multiple:args-multiple --swap-disk=4 -- -q   -f run 'args-multiple some arguments for you!' < /dev/null 2> tests/userprog/args-multiple.errors > tests/userprog/args-multiple.output
+perl -I../.. ../../tests/userprog/args-multiple.ck tests/userprog/args-multiple tests/userprog/args-multiple.result
+pass tests/userprog/args-multiple
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-many:args-many --swap-disk=4 -- -q   -f run 'args-many a b c d e f g h i j k l m n o p q r s t u v' < /dev/null 2> tests/userprog/args-many.errors > tests/userprog/args-many.output
+perl -I../.. ../../tests/userprog/args-many.ck tests/userprog/args-many tests/userprog/args-many.result
+pass tests/userprog/args-many
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-dbl-space:args-dbl-space --swap-disk=4 -- -q   -f run 'args-dbl-space two  spaces!' < /dev/null 2> tests/userprog/args-dbl-space.errors > tests/userprog/args-dbl-space.output
+perl -I../.. ../../tests/userprog/args-dbl-space.ck tests/userprog/args-dbl-space tests/userprog/args-dbl-space.result
+pass tests/userprog/args-dbl-space
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/halt:halt --swap-disk=4 -- -q   -f run halt < /dev/null 2> tests/userprog/halt.errors > tests/userprog/halt.output
+perl -I../.. ../../tests/userprog/halt.ck tests/userprog/halt tests/userprog/halt.result
+pass tests/userprog/halt
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/exit:exit --swap-disk=4 -- -q   -f run exit < /dev/null 2> tests/userprog/exit.errors > tests/userprog/exit.output
+perl -I../.. ../../tests/userprog/exit.ck tests/userprog/exit tests/userprog/exit.result
+pass tests/userprog/exit
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-normal:create-normal --swap-disk=4 -- -q   -f run create-normal < /dev/null 2> tests/userprog/create-normal.errors > tests/userprog/create-normal.output
 perl -I../.. ../../tests/userprog/create-normal.ck tests/userprog/create-normal tests/userprog/create-normal.result
 pass tests/userprog/create-normal
@@ -88,234 +109,207 @@ pass tests/userprog/write-bad-fd
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-once:fork-once --swap-disk=4 -- -q   -f run fork-once < /dev/null 2> tests/userprog/fork-once.errors > tests/userprog/fork-once.output
 perl -I../.. ../../tests/userprog/fork-once.ck tests/userprog/fork-once tests/userprog/fork-once.result
 FAIL tests/userprog/fork-once
-Kernel panic in run: PANIC at ../../threads/thread.c:326 in thread_current(): assertion `is_thread (t)' failed.
-Call stack: 0x8004218cf9 0x80042074a5 0x800420b424 0x800421bffe 0x800421c1cb 0x800421c1af 0x80042171f8 0x8004216930 0x800421c05e 0x80042161fc 0x800421cdff 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20
-Translation of call stack:
-0x0000008004218cf9: debug_panic (lib/kernel/debug.c:32)
-0x00000080042074a5: thread_current (threads/thread.c:327)
-0x000000800420b424: lock_held_by_current_thread (threads/synch.c:397)
-0x000000800421bffe: console_locked_by_current_thread (lib/kernel/console.c:111 (discriminator 2))
-0x000000800421c1cb: putchar_have_lock (lib/kernel/console.c:173)
-0x000000800421c1af: vprintf_helper (lib/kernel/console.c:166)
-0x00000080042171f8: format_string (lib/stdio.c:529 (discriminator 3))
-0x0000008004216930: __vprintf (lib/stdio.c:284)
-0x000000800421c05e: vprintf (lib/kernel/console.c:123)
-0x00000080042161fc: printf (lib/stdio.c:80)
-0x000000800421cdff: process_exit (userprog/process.c:397)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
-0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
-0x000000800421cfb9: process_cleanup (userprog/process.c:436)
-0x000000800421cf83: process_exit (userprog/process.c:421)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
-0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
-0x000000800421cfb9: process_cleanup (userprog/process.c:436)
-0x000000800421cf83: process_exit (userprog/process.c:421)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
-0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
-0x000000800421cfb9: process_cleanup (userprog/process.c:436)
-0x000000800421cf83: process_exit (userprog/process.c:421)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
-0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
-0x000000800421cfb9: process_cleanup (userprog/process.c:436)
-0x000000800421cf83: process_exit (userprog/process.c:421)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (fork-once) begin
+  (fork-once) child run
+  child: exit(81)
+  (fork-once) Parent: child exit status is 81
+  (fork-once) end
+  fork-once: exit(0)
+Differences in `diff -u' format:
+  (fork-once) begin
+  (fork-once) child run
+  child: exit(81)
+- (fork-once) Parent: child exit status is 81
+  (fork-once) end
+  fork-once: exit(0)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-multiple:fork-multiple --swap-disk=4 -- -q   -f run fork-multiple < /dev/null 2> tests/userprog/fork-multiple.errors > tests/userprog/fork-multiple.output
 perl -I../.. ../../tests/userprog/fork-multiple.ck tests/userprog/fork-multiple tests/userprog/fork-multiple.result
 FAIL tests/userprog/fork-multiple
-Kernel panic in run: PANIC at ../../threads/thread.c:326 in thread_current(): assertion `is_thread (t)' failed.
-Call stack: 0x8004218cf9 0x80042074a5 0x800420b424 0x800421bffe 0x800421c1cb 0x800421c1af 0x80042171f8 0x8004216930 0x800421c05e 0x80042161fc 0x800421cdff 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20
+Kernel panic in run: PANIC at ../../threads/mmu.c:235 in pml4_set_page(): assertion `pg_ofs (kpage) == 0' failed.
+Call stack: 0x8004218cf9 0x800420de10 0x8004223092 0x800421b632 0x80042230d7 0x800421c9d0 0x8004207eb1
 Translation of call stack:
 0x0000008004218cf9: debug_panic (lib/kernel/debug.c:32)
-0x00000080042074a5: thread_current (threads/thread.c:327)
-0x000000800420b424: lock_held_by_current_thread (threads/synch.c:397)
-0x000000800421bffe: console_locked_by_current_thread (lib/kernel/console.c:111 (discriminator 2))
-0x000000800421c1cb: putchar_have_lock (lib/kernel/console.c:173)
-0x000000800421c1af: vprintf_helper (lib/kernel/console.c:166)
-0x00000080042171f8: format_string (lib/stdio.c:529 (discriminator 3))
-0x0000008004216930: __vprintf (lib/stdio.c:284)
-0x000000800421c05e: vprintf (lib/kernel/console.c:123)
-0x00000080042161fc: printf (lib/stdio.c:80)
-0x000000800421cdff: process_exit (userprog/process.c:397)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x000000800420de10: pml4_set_page (threads/mmu.c:236)
+0x0000008004223092: copy_spt_hash (vm/vm.c:284)
 0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
-0x000000800421cfb9: process_cleanup (userprog/process.c:436)
-0x000000800421cf83: process_exit (userprog/process.c:421)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
-0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
-0x000000800421cfb9: process_cleanup (userprog/process.c:436)
-0x000000800421cf83: process_exit (userprog/process.c:421)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
-0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
-0x000000800421cfb9: process_cleanup (userprog/process.c:436)
-0x000000800421cf83: process_exit (userprog/process.c:421)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
-0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
-0x000000800421cfb9: process_cleanup (userprog/process.c:436)
-0x000000800421cf83: process_exit (userprog/process.c:421)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x00000080042230d7: supplemental_page_table_copy (vm/vm.c:292)
+0x000000800421c9d0: __do_fork (userprog/process.c:263)
+0x0000008004207eb1: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-recursive:fork-recursive --swap-disk=4 -- -q   -f run fork-recursive < /dev/null 2> tests/userprog/fork-recursive.errors > tests/userprog/fork-recursive.output
 perl -I../.. ../../tests/userprog/fork-recursive.ck tests/userprog/fork-recursive tests/userprog/fork-recursive.result
 FAIL tests/userprog/fork-recursive
-Kernel panic in run: PANIC at ../../threads/thread.c:326 in thread_current(): assertion `is_thread (t)' failed.
-Call stack: 0x8004218cf9 0x80042074a5 0x800420b424 0x800421bffe 0x800421c1cb 0x800421c1af 0x80042171f8 0x8004216930 0x800421c05e 0x80042161fc 0x800421cdff 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20
+Kernel panic in run: PANIC at ../../threads/mmu.c:235 in pml4_set_page(): assertion `pg_ofs (kpage) == 0' failed.
+Call stack: 0x8004218cf9 0x800420de10 0x8004223092 0x800421b632 0x80042230d7 0x800421c9d0 0x8004207eb1
 Translation of call stack:
 0x0000008004218cf9: debug_panic (lib/kernel/debug.c:32)
-0x00000080042074a5: thread_current (threads/thread.c:327)
-0x000000800420b424: lock_held_by_current_thread (threads/synch.c:397)
-0x000000800421bffe: console_locked_by_current_thread (lib/kernel/console.c:111 (discriminator 2))
-0x000000800421c1cb: putchar_have_lock (lib/kernel/console.c:173)
-0x000000800421c1af: vprintf_helper (lib/kernel/console.c:166)
-0x00000080042171f8: format_string (lib/stdio.c:529 (discriminator 3))
-0x0000008004216930: __vprintf (lib/stdio.c:284)
-0x000000800421c05e: vprintf (lib/kernel/console.c:123)
-0x00000080042161fc: printf (lib/stdio.c:80)
-0x000000800421cdff: process_exit (userprog/process.c:397)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x000000800420de10: pml4_set_page (threads/mmu.c:236)
+0x0000008004223092: copy_spt_hash (vm/vm.c:284)
 0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
-0x000000800421cfb9: process_cleanup (userprog/process.c:436)
-0x000000800421cf83: process_exit (userprog/process.c:421)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
-0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
-0x000000800421cfb9: process_cleanup (userprog/process.c:436)
-0x000000800421cf83: process_exit (userprog/process.c:421)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
-0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
-0x000000800421cfb9: process_cleanup (userprog/process.c:436)
-0x000000800421cf83: process_exit (userprog/process.c:421)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
-0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
-0x000000800421cfb9: process_cleanup (userprog/process.c:436)
-0x000000800421cf83: process_exit (userprog/process.c:421)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+0x00000080042230d7: supplemental_page_table_copy (vm/vm.c:292)
+0x000000800421c9d0: __do_fork (userprog/process.c:263)
+0x0000008004207eb1: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-read:fork-read -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run fork-read < /dev/null 2> tests/userprog/fork-read.errors > tests/userprog/fork-read.output
 perl -I../.. ../../tests/userprog/fork-read.ck tests/userprog/fork-read tests/userprog/fork-read.result
 FAIL tests/userprog/fork-read
-Kernel panic in run: PANIC at ../../threads/thread.c:326 in thread_current(): assertion `is_thread (t)' failed.
-Call stack: 0x8004218cf9 0x80042074a5 0x800420b424 0x800421bffe 0x800421c1cb 0x800421c1af 0x80042171f8 0x8004216930 0x800421c05e 0x80042161fc 0x800421cdff 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20 0x800421b632 0x8004223018 0x800421cfb9 0x800421cf83 0x800420756b 0x800421e73a 0x800421e221 0x8004209602 0x8004209a20
-Translation of call stack:
-0x0000008004218cf9: debug_panic (lib/kernel/debug.c:32)
-0x00000080042074a5: thread_current (threads/thread.c:327)
-0x000000800420b424: lock_held_by_current_thread (threads/synch.c:397)
-0x000000800421bffe: console_locked_by_current_thread (lib/kernel/console.c:111 (discriminator 2))
-0x000000800421c1cb: putchar_have_lock (lib/kernel/console.c:173)
-0x000000800421c1af: vprintf_helper (lib/kernel/console.c:166)
-0x00000080042171f8: format_string (lib/stdio.c:529 (discriminator 3))
-0x0000008004216930: __vprintf (lib/stdio.c:284)
-0x000000800421c05e: vprintf (lib/kernel/console.c:123)
-0x00000080042161fc: printf (lib/stdio.c:80)
-0x000000800421cdff: process_exit (userprog/process.c:397)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
-0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
-0x000000800421cfb9: process_cleanup (userprog/process.c:436)
-0x000000800421cf83: process_exit (userprog/process.c:421)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
-0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
-0x000000800421cfb9: process_cleanup (userprog/process.c:436)
-0x000000800421cf83: process_exit (userprog/process.c:421)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
-0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
-0x000000800421cfb9: process_cleanup (userprog/process.c:436)
-0x000000800421cf83: process_exit (userprog/process.c:421)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
-0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223018: supplemental_page_table_kill (vm/vm.c:299)
-0x000000800421cfb9: process_cleanup (userprog/process.c:436)
-0x000000800421cf83: process_exit (userprog/process.c:421)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e73a: fork (userprog/syscall.c:140)
-0x000000800421e221: page_fault (userprog/exception.c:156)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (fork-read) begin
+  (fork-read) open "sample.txt"
+  (fork-read) child run
+  (fork-read) Child: pintos is funny!
+  (fork-read) end
+  child: exit(0)
+  (fork-read) Parent success
+  (fork-read) end
+  fork-read: exit(0)
+Differences in `diff -u' format:
+  (fork-read) begin
+  (fork-read) open "sample.txt"
+  (fork-read) child run
+  (fork-read) Child: pintos is funny!
+  (fork-read) end
+  child: exit(0)
+- (fork-read) Parent success
+- (fork-read) end
+- fork-read: exit(0)
++ fork-read: exit(-1)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-close:fork-close -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run fork-close < /dev/null 2> tests/userprog/fork-close.errors > tests/userprog/fork-close.output
-../../tests/Make.tests:75: recipe for target 'tests/userprog/fork-close.output' failed
+perl -I../.. ../../tests/userprog/fork-close.ck tests/userprog/fork-close tests/userprog/fork-close.result
+FAIL tests/userprog/fork-close
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (fork-close) begin
+  (fork-close) open "sample.txt"
+  (fork-close) child run
+  (fork-close) end
+  child: exit(0)
+  (fork-close) Parent success
+  (fork-close) end
+  fork-close: exit(0)
+Differences in `diff -u' format:
+  (fork-close) begin
+  (fork-close) open "sample.txt"
+  (fork-close) child run
+  (fork-close) end
+  child: exit(0)
+- (fork-close) Parent success
+- (fork-close) end
+- fork-close: exit(0)
++ fork-close: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-boundary:fork-boundary --swap-disk=4 -- -q   -f run fork-boundary < /dev/null 2> tests/userprog/fork-boundary.errors > tests/userprog/fork-boundary.output
+perl -I../.. ../../tests/userprog/fork-boundary.ck tests/userprog/fork-boundary tests/userprog/fork-boundary.result
+FAIL tests/userprog/fork-boundary
+run: fork: FAILED
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/exec-once:exec-once -p tests/userprog/child-simple:child-simple --swap-disk=4 -- -q   -f run exec-once < /dev/null 2> tests/userprog/exec-once.errors > tests/userprog/exec-once.output
+perl -I../.. ../../tests/userprog/exec-once.ck tests/userprog/exec-once tests/userprog/exec-once.result
+pass tests/userprog/exec-once
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/exec-arg:exec-arg -p tests/userprog/child-args:child-args --swap-disk=4 -- -q   -f run exec-arg < /dev/null 2> tests/userprog/exec-arg.errors > tests/userprog/exec-arg.output
+perl -I../.. ../../tests/userprog/exec-arg.ck tests/userprog/exec-arg tests/userprog/exec-arg.result
+pass tests/userprog/exec-arg
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/exec-boundary:exec-boundary -p tests/userprog/child-simple:child-simple --swap-disk=4 -- -q   -f run exec-boundary < /dev/null 2> tests/userprog/exec-boundary.errors > tests/userprog/exec-boundary.output
+perl -I../.. ../../tests/userprog/exec-boundary.ck tests/userprog/exec-boundary tests/userprog/exec-boundary.result
+FAIL tests/userprog/exec-boundary
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (exec-boundary) begin
+  (child-simple) run
+  child-simple: exit(81)
+  (exec-boundary) fork
+  (exec-boundary) wait
+  (exec-boundary) end
+  exec-boundary: exit(0)
+Differences in `diff -u' format:
+  (exec-boundary) begin
+  (child-simple) run
+  child-simple: exit(81)
+- (exec-boundary) fork
+- (exec-boundary) wait
+  (exec-boundary) end
+  exec-boundary: exit(0)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/exec-missing:exec-missing --swap-disk=4 -- -q   -f run exec-missing < /dev/null 2> tests/userprog/exec-missing.errors > tests/userprog/exec-missing.output
+perl -I../.. ../../tests/userprog/exec-missing.ck tests/userprog/exec-missing tests/userprog/exec-missing.result
+pass tests/userprog/exec-missing
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/exec-bad-ptr:exec-bad-ptr --swap-disk=4 -- -q   -f run exec-bad-ptr < /dev/null 2> tests/userprog/exec-bad-ptr.errors > tests/userprog/exec-bad-ptr.output
+perl -I../.. ../../tests/userprog/exec-bad-ptr.ck tests/userprog/exec-bad-ptr tests/userprog/exec-bad-ptr.result
+pass tests/userprog/exec-bad-ptr
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/exec-read:exec-read -p ../../tests/userprog/sample.txt:sample.txt -p tests/userprog/child-read:child-read --swap-disk=4 -- -q   -f run exec-read < /dev/null 2> tests/userprog/exec-read.errors > tests/userprog/exec-read.output
+perl -I../.. ../../tests/userprog/exec-read.ck tests/userprog/exec-read tests/userprog/exec-read.result
+FAIL tests/userprog/exec-read
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (exec-read) begin
+  (exec-read) open "sample.txt"
+  (exec-read) read "sample.txt" first 20 bytes
+  (child-read) begin
+  (child-read) open "sample.txt"
+  (child-read) read "sample.txt" first 20 bytes
+  (child-read) read "sample.txt" remainders
+  (child-read) Child success
+  (child-read) end
+  child-read: exit(0)
+  (exec-read) Parent success
+  (exec-read) end
+  exec-read: exit(0)
+Differences in `diff -u' format:
+  (exec-read) begin
+  (exec-read) open "sample.txt"
+  (exec-read) read "sample.txt" first 20 bytes
+  (child-read) begin
+  (child-read) open "sample.txt"
+  (child-read) read "sample.txt" first 20 bytes
+  (child-read) read "sample.txt" remainders
+  (child-read) Child success
+  (child-read) end
+  child-read: exit(0)
+- (exec-read) Parent success
+  (exec-read) end
+  exec-read: exit(0)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/wait-simple:wait-simple -p tests/userprog/child-simple:child-simple --swap-disk=4 -- -q   -f run wait-simple < /dev/null 2> tests/userprog/wait-simple.errors > tests/userprog/wait-simple.output
+perl -I../.. ../../tests/userprog/wait-simple.ck tests/userprog/wait-simple tests/userprog/wait-simple.result
+FAIL tests/userprog/wait-simple
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (wait-simple) begin
+  (child-simple) run
+  child-simple: exit(81)
+  (wait-simple) wait(exec()) = 81
+  (wait-simple) end
+  wait-simple: exit(0)
+Differences in `diff -u' format:
+  (wait-simple) begin
+  (child-simple) run
+  child-simple: exit(81)
+- (wait-simple) wait(exec()) = 81
+  (wait-simple) end
+  wait-simple: exit(0)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/wait-twice:wait-twice -p tests/userprog/child-simple:child-simple --swap-disk=4 -- -q   -f run wait-twice < /dev/null 2> tests/userprog/wait-twice.errors > tests/userprog/wait-twice.output
+perl -I../.. ../../tests/userprog/wait-twice.ck tests/userprog/wait-twice tests/userprog/wait-twice.result
+FAIL tests/userprog/wait-twice
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (wait-twice) begin
+  (child-simple) run
+  child-simple: exit(81)
+  (wait-twice) wait(exec()) = 81
+  (wait-twice) wait(exec()) = -1
+  (wait-twice) end
+  wait-twice: exit(0)
+Differences in `diff -u' format:
+  (wait-twice) begin
+  (child-simple) run
+  child-simple: exit(81)
+- (wait-twice) wait(exec()) = 81
+- (wait-twice) wait(exec()) = -1
+  (wait-twice) end
+  wait-twice: exit(0)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/wait-killed:wait-killed -p tests/userprog/child-bad:child-bad --swap-disk=4 -- -q   -f run wait-killed < /dev/null 2> tests/userprog/wait-killed.errors > tests/userprog/wait-killed.output
+../../tests/Make.tests:75: recipe for target 'tests/userprog/wait-killed.output' failed

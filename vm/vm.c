@@ -150,7 +150,7 @@ static struct frame *
 vm_get_frame (void) {
 	struct frame *frame = NULL;
 	/* TODO: Fill this function. */
-	void* newpage = palloc_get_page(PAL_USER);
+	void* newpage = palloc_get_page(PAL_USER | PAL_ZERO);
 
 	if (newpage == NULL)
 		PANIC("todo");	// TODO: user pool 다 찼을 경우 evict 구현
@@ -237,6 +237,7 @@ vm_do_claim_page (struct page *page) {
 	/* TODO: Insert page table entry to map page's VA to frame's PA. */
 	// setup MMU = add the mapping from the virtual address to the physical address in the page table
 	succ = pml4_set_page(thread_current()->pml4, page->va, frame->kva, page->writable);
+	page->uninit.page_initializer(page, page_get_type(page), frame->kva);
 
 	// return swap_in (page, frame->kva);	// TODO: swap in 구현하면 갈아끼워야 할듯?
 	return succ;
@@ -266,7 +267,12 @@ void
 copy_spt_hash(struct hash_elem *e, void *aux) {
 	struct supplemental_page_table *dst = (struct supplemental_page_table*)aux;
 	struct page* page_original = hash_entry(e, struct page, spt_hash_elem);
+	struct frame *frame = malloc(sizeof(struct frame));
 	struct page* page_copy = malloc(sizeof(struct page));
+
+	frame->kva = page_original->frame->kva;
+	frame->page = page_copy;
+	page_copy->frame = frame;
 
 	page_copy->va = page_original->va;
 	page_copy->writable = page_original->writable;
