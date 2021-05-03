@@ -13,21 +13,20 @@ Formatting file system...done.
 Boot complete.
 Putting 'fork-once' into the file system...
 Executing 'fork-once':
-start wait main
 (fork-once) begin
 (fork-once) child run
 child: exit(81)
+(fork-once) Parent: child exit status is 81
 (fork-once) end
 fork-once: exit(0)
-pass 0
 Execution of 'fork-once' complete.
-Timer: 67 ticks
-Thread: 30 idle ticks, 33 kernel ticks, 5 user ticks
+Timer: 69 ticks
+Thread: 30 idle ticks, 31 kernel ticks, 8 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 80 reads, 234 writes
 hd1:0: 103 reads, 0 writes
 hd1:1: 0 reads, 0 writes
-Console: 1008 characters output
+Console: 1029 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

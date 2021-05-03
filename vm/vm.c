@@ -6,6 +6,7 @@
 #include <hash.h>
 #include "threads/mmu.h"
 #include "threads/synch.h"
+#include <string.h>
 
 struct lock hash_lock;
 
@@ -267,19 +268,17 @@ void
 copy_spt_hash(struct hash_elem *e, void *aux) {
 	struct supplemental_page_table *dst = (struct supplemental_page_table*)aux;
 	struct page* page_original = hash_entry(e, struct page, spt_hash_elem);
-	struct frame *frame = malloc(sizeof(struct frame));
+	struct frame *frame = vm_get_frame();
 	struct page* page_copy = malloc(sizeof(struct page));
 
-	frame->kva = page_original->frame->kva;
 	frame->page = page_copy;
 	page_copy->frame = frame;
-
 	page_copy->va = page_original->va;
 	page_copy->writable = page_original->writable;
 	page_copy->operations = page_original->operations;
-	spt_insert_page(dst, page_copy);
+	memcpy(frame->kva, page_original->frame->kva, PGSIZE);
 
-	page_copy->frame = page_original->frame;
+	spt_insert_page(dst, page_copy);
 	pml4_set_page(thread_current()->pml4, page_copy->va, page_copy->frame->kva, page_copy->writable);
 }
 

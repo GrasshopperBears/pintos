@@ -367,7 +367,6 @@ process_wait (tid_t child_tid UNUSED) {
 			
 			if (!c_el->terminated) {
 				c_el->waiting = true;
-				printf("start wait %s\n", curr->name);
 				sema_init(&sema, 0);
 				c_el->waiting_sema = &sema;
 				sema_down(&sema);
@@ -375,7 +374,6 @@ process_wait (tid_t child_tid UNUSED) {
 			returned_status = c_el->exit_status;
 			list_remove(&c_el->elem);
 			palloc_free_page(c_el);
-			printf("pass %d\n", returned_status);
 			return returned_status;
 		}
 		el = el->next;
@@ -859,6 +857,7 @@ lazy_load_segment (struct page *page, void *aux) {
 		lock_release(&filesys_lock);
 	}
 	memset(params->upage + params->read_bytes, 0, params->zero_bytes);
+	free(aux);
 
 	return true;
 }
@@ -922,12 +921,7 @@ setup_stack (struct intr_frame *if_) {
 	 * TODO: If success, set the rsp accordingly.
 	 * TODO: You should mark the page is stack. */
 	/* TODO: Your code goes here */
-	// struct page *page = malloc(sizeof(struct page));
-	// page->va = 
-	// printf("start\n");
 	success = vm_alloc_page(VM_ANON, stack_bottom, true);
-	// printf("stack: %d\n", success);
-	// success = vm_claim_page(stack_bottom);
 
 	if (success)
 		if_->rsp = USER_STACK;
