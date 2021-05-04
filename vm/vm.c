@@ -72,6 +72,7 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		initializer = (VM_TYPE(type) == VM_ANON) ? anon_initializer : file_backed_initializer;
 		uninit_new (page, upage, init, type, aux, initializer);
 		page->writable = writable;
+		page->is_stack = false;
 
 		/* TODO: Insert the page into the spt. */
 		succ = spt_insert_page(spt, page);
