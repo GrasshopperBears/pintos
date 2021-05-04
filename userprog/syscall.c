@@ -422,6 +422,7 @@ void
 syscall_handler (struct intr_frame *f UNUSED) {
 	// TODO: Your implementation goes here.
 	// printf ("system call at %s TYPE: %d\n", thread_current()->name, f->R.rax);
+	thread_current()->recent_rsp = f->rsp;
 	switch (f->R.rax)
 	{
 	case SYS_HALT:	// 0

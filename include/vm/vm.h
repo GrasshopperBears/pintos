@@ -50,6 +50,7 @@ struct page {
 	struct hash_elem spt_hash_elem;
 	bool writable;
 	bool is_stack;
+	bool is_code_seg;
 
 	/* Per-type data are binded into the union.
 	 * Each function automatically detects the current union */
@@ -114,5 +115,6 @@ void vm_dealloc_page (struct page *page);
 bool vm_claim_page (void *va);
 bool vm_do_claim_page (struct page *page);
 enum vm_type page_get_type (struct page *page);
+void after_stack_set(struct page *page, void *aux);
 
 #endif  /* VM_VM_H */

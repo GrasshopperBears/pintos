@@ -189,37 +189,13 @@ perl -I../.. ../../tests/userprog/bad-jump2.ck tests/userprog/bad-jump2 tests/us
 pass tests/userprog/bad-jump2
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/pt-grow-stack:pt-grow-stack --swap-disk=4 -- -q   -f run pt-grow-stack < /dev/null 2> tests/vm/pt-grow-stack.errors > tests/vm/pt-grow-stack.output
 perl -I../.. ../../tests/vm/pt-grow-stack.ck tests/vm/pt-grow-stack tests/vm/pt-grow-stack.result
-FAIL tests/vm/pt-grow-stack
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (pt-grow-stack) begin
-  (pt-grow-stack) cksum: 3424492700
-  (pt-grow-stack) end
-Differences in `diff -u' format:
-  (pt-grow-stack) begin
-- (pt-grow-stack) cksum: 3424492700
-- (pt-grow-stack) end
-
-(Process exit codes are excluded for matching purposes.)
+pass tests/vm/pt-grow-stack
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/pt-grow-bad:pt-grow-bad --swap-disk=4 -- -q   -f run pt-grow-bad < /dev/null 2> tests/vm/pt-grow-bad.errors > tests/vm/pt-grow-bad.output
 perl -I../.. ../../tests/vm/pt-grow-bad.ck tests/vm/pt-grow-bad tests/vm/pt-grow-bad.result
 pass tests/vm/pt-grow-bad
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/pt-big-stk-obj:pt-big-stk-obj --swap-disk=4 -- -q   -f run pt-big-stk-obj < /dev/null 2> tests/vm/pt-big-stk-obj.errors > tests/vm/pt-big-stk-obj.output
 perl -I../.. ../../tests/vm/pt-big-stk-obj.ck tests/vm/pt-big-stk-obj tests/vm/pt-big-stk-obj.result
-FAIL tests/vm/pt-big-stk-obj
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (pt-big-stk-obj) begin
-  (pt-big-stk-obj) cksum: 3256410166
-  (pt-big-stk-obj) end
-Differences in `diff -u' format:
-  (pt-big-stk-obj) begin
-- (pt-big-stk-obj) cksum: 3256410166
-- (pt-big-stk-obj) end
-
-(Process exit codes are excluded for matching purposes.)
+pass tests/vm/pt-big-stk-obj
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/pt-bad-addr:pt-bad-addr --swap-disk=4 -- -q   -f run pt-bad-addr < /dev/null 2> tests/vm/pt-bad-addr.errors > tests/vm/pt-bad-addr.output
 perl -I../.. ../../tests/vm/pt-bad-addr.ck tests/vm/pt-bad-addr tests/vm/pt-bad-addr.result
 pass tests/vm/pt-bad-addr
@@ -228,19 +204,7 @@ perl -I../.. ../../tests/vm/pt-bad-read.ck tests/vm/pt-bad-read tests/vm/pt-bad-
 pass tests/vm/pt-bad-read
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/pt-write-code:pt-write-code --swap-disk=4 -- -q   -f run pt-write-code < /dev/null 2> tests/vm/pt-write-code.errors > tests/vm/pt-write-code.output
 perl -I../.. ../../tests/vm/pt-write-code.ck tests/vm/pt-write-code tests/vm/pt-write-code.result
-FAIL tests/vm/pt-write-code
-Kernel panic in run: PANIC at ../../vm/vm.c:157 in vm_get_frame(): todo
-Call stack: 0x8004218cf9 0x8004222ba0 0x8004222e28 0x8004222d4b 0x800421e1e7 0x8004209602 0x8004209a20 0x400bca 0x400c13
-Translation of call stack:
-0x0000008004218cf9: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222ba0: vm_get_frame (vm/vm.c:160)
-0x0000008004222e28: vm_do_claim_page (vm/vm.c:231)
-0x0000008004222d4b: vm_try_handle_fault (vm/vm.c:205)
-0x000000800421e1e7: page_fault (userprog/exception.c:145)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
-0x0000000000400bca: (unknown)
-0x0000000000400c13: (unknown)
+pass tests/vm/pt-write-code
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/pt-write-code2:pt-write-code2 -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run pt-write-code2 < /dev/null 2> tests/vm/pt-write-code2.errors > tests/vm/pt-write-code2.output
 perl -I../.. ../../tests/vm/pt-write-code2.ck tests/vm/pt-write-code2 tests/vm/pt-write-code2.result
 FAIL tests/vm/pt-write-code2
@@ -261,11 +225,11 @@ Acceptable output:
   (pt-grow-stk-sc) end
 Differences in `diff -u' format:
   (pt-grow-stk-sc) begin
-- (pt-grow-stk-sc) create "sample.txt"
-- (pt-grow-stk-sc) open "sample.txt"
-- (pt-grow-stk-sc) write "sample.txt"
-- (pt-grow-stk-sc) 2nd open "sample.txt"
-- (pt-grow-stk-sc) read "sample.txt"
+  (pt-grow-stk-sc) create "sample.txt"
+  (pt-grow-stk-sc) open "sample.txt"
+  (pt-grow-stk-sc) write "sample.txt"
+  (pt-grow-stk-sc) 2nd open "sample.txt"
+  (pt-grow-stk-sc) read "sample.txt"
 - (pt-grow-stk-sc) compare written data against read data
 - (pt-grow-stk-sc) end
 
@@ -275,112 +239,58 @@ perl -I../.. ../../tests/vm/page-linear.ck tests/vm/page-linear tests/vm/page-li
 pass tests/vm/page-linear
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-parallel:page-parallel -p tests/vm/child-linear:child-linear --swap-disk=4 -- -q   -f run page-parallel < /dev/null 2> tests/vm/page-parallel.errors > tests/vm/page-parallel.output
 perl -I../.. ../../tests/vm/page-parallel.ck tests/vm/page-parallel tests/vm/page-parallel.result
-FAIL tests/vm/page-parallel
-Kernel panic in run: PANIC at ../../threads/thread.c:326 in thread_current(): assertion `is_thread (t)' failed.
-Call stack: 0x8004218cf9 0x80042074a5 0x800420b424 0x800420ad32 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420c3a3 0x800420c4a7 0x800421c876 0x800421e7ab 0x800421f37a 0x800421e33b 0x40010f 0x400c8c 0x400cd5
-Translation of call stack:
-0x0000008004218cf9: debug_panic (lib/kernel/debug.c:32)
-0x00000080042074a5: thread_current (threads/thread.c:327)
-0x000000800420b424: lock_held_by_current_thread (threads/synch.c:397)
-0x000000800420ad32: lock_acquire (threads/synch.c:267)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420c3a3: palloc_get_multiple (threads/palloc.c:267 (discriminator 4))
-0x000000800420c4a7: palloc_get_page (threads/palloc.c:297)
-0x000000800421c876: process_fork (userprog/process.c:184)
-0x000000800421e7ab: fork (userprog/syscall.c:149)
-0x000000800421f37a: syscall_handler (userprog/syscall.c:435)
-0x000000800421e33b: no_sti (userprog/syscall-entry.o:?)
-0x000000000040010f: (unknown)
-0x0000000000400c8c: (unknown)
-0x0000000000400cd5: (unknown)
+pass tests/vm/page-parallel
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-merge-seq:page-merge-seq -p tests/vm/child-sort:child-sort --swap-disk=4 -- -q   -f run page-merge-seq < /dev/null 2> tests/vm/page-merge-seq.errors > tests/vm/page-merge-seq.output
 perl -I../.. ../../tests/vm/page-merge-seq.ck tests/vm/page-merge-seq tests/vm/page-merge-seq.result
 FAIL tests/vm/page-merge-seq
-Kernel panic in run: PANIC at ../../vm/vm.c:157 in vm_get_frame(): todo
-Call stack: 0x8004218cf9 0x8004222ba0 0x8004222fbc 0x800421b632 0x80042230ec 0x800421c9d0 0x8004207eb1
+Kernel panic in run: PANIC at ../../vm/vm.c:163 in vm_get_frame(): todo
+Call stack: 0x8004218d07 0x8004222c15 0x8004223171 0x800421b640 0x80042232a1 0x800421c9de 0x8004207eb1
 Translation of call stack:
-0x0000008004218cf9: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222ba0: vm_get_frame (vm/vm.c:160)
-0x0000008004222fbc: copy_spt_hash (vm/vm.c:271)
-0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x00000080042230ec: supplemental_page_table_copy (vm/vm.c:291)
-0x000000800421c9d0: __do_fork (userprog/process.c:263)
+0x0000008004218d07: debug_panic (lib/kernel/debug.c:32)
+0x0000008004222c15: vm_get_frame (vm/vm.c:166)
+0x0000008004223171: copy_spt_hash (vm/vm.c:301)
+0x000000800421b640: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x00000080042232a1: supplemental_page_table_copy (vm/vm.c:321)
+0x000000800421c9de: __do_fork (userprog/process.c:263)
 0x0000008004207eb1: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-merge-par:page-merge-par -p tests/vm/child-sort:child-sort --swap-disk=4 -- -q   -f run page-merge-par < /dev/null 2> tests/vm/page-merge-par.errors > tests/vm/page-merge-par.output
 perl -I../.. ../../tests/vm/page-merge-par.ck tests/vm/page-merge-par tests/vm/page-merge-par.result
 FAIL tests/vm/page-merge-par
-Kernel panic in run: PANIC at ../../vm/vm.c:157 in vm_get_frame(): todo
-Call stack: 0x8004218cf9 0x8004222ba0 0x8004222fbc 0x800421b632 0x80042230ec 0x800421c9d0 0x8004207eb1
+Kernel panic in run: PANIC at ../../vm/vm.c:163 in vm_get_frame(): todo
+Call stack: 0x8004218d07 0x8004222c15 0x8004223171 0x800421b640 0x80042232a1 0x800421c9de 0x8004207eb1
 Translation of call stack:
-0x0000008004218cf9: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222ba0: vm_get_frame (vm/vm.c:160)
-0x0000008004222fbc: copy_spt_hash (vm/vm.c:271)
-0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x00000080042230ec: supplemental_page_table_copy (vm/vm.c:291)
-0x000000800421c9d0: __do_fork (userprog/process.c:263)
+0x0000008004218d07: debug_panic (lib/kernel/debug.c:32)
+0x0000008004222c15: vm_get_frame (vm/vm.c:166)
+0x0000008004223171: copy_spt_hash (vm/vm.c:301)
+0x000000800421b640: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x00000080042232a1: supplemental_page_table_copy (vm/vm.c:321)
+0x000000800421c9de: __do_fork (userprog/process.c:263)
 0x0000008004207eb1: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-merge-stk:page-merge-stk -p tests/vm/child-qsort:child-qsort --swap-disk=4 -- -q   -f run page-merge-stk < /dev/null 2> tests/vm/page-merge-stk.errors > tests/vm/page-merge-stk.output
 perl -I../.. ../../tests/vm/page-merge-stk.ck tests/vm/page-merge-stk tests/vm/page-merge-stk.result
 FAIL tests/vm/page-merge-stk
-Kernel panic in run: PANIC at ../../vm/vm.c:157 in vm_get_frame(): todo
-Call stack: 0x8004218cf9 0x8004222ba0 0x8004222fbc 0x800421b632 0x80042230ec 0x800421c9d0 0x8004207eb1
+Kernel panic in run: PANIC at ../../vm/vm.c:163 in vm_get_frame(): todo
+Call stack: 0x8004218d07 0x8004222c15 0x8004223171 0x800421b640 0x80042232a1 0x800421c9de 0x8004207eb1
 Translation of call stack:
-0x0000008004218cf9: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222ba0: vm_get_frame (vm/vm.c:160)
-0x0000008004222fbc: copy_spt_hash (vm/vm.c:271)
-0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x00000080042230ec: supplemental_page_table_copy (vm/vm.c:291)
-0x000000800421c9d0: __do_fork (userprog/process.c:263)
+0x0000008004218d07: debug_panic (lib/kernel/debug.c:32)
+0x0000008004222c15: vm_get_frame (vm/vm.c:166)
+0x0000008004223171: copy_spt_hash (vm/vm.c:301)
+0x000000800421b640: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x00000080042232a1: supplemental_page_table_copy (vm/vm.c:321)
+0x000000800421c9de: __do_fork (userprog/process.c:263)
 0x0000008004207eb1: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-merge-mm:page-merge-mm -p tests/vm/child-qsort-mm:child-qsort-mm --swap-disk=4 -- -q   -f run page-merge-mm < /dev/null 2> tests/vm/page-merge-mm.errors > tests/vm/page-merge-mm.output
 perl -I../.. ../../tests/vm/page-merge-mm.ck tests/vm/page-merge-mm tests/vm/page-merge-mm.result
 FAIL tests/vm/page-merge-mm
-Kernel panic in run: PANIC at ../../vm/vm.c:157 in vm_get_frame(): todo
-Call stack: 0x8004218cf9 0x8004222ba0 0x8004222fbc 0x800421b632 0x80042230ec 0x800421c9d0 0x8004207eb1
+Kernel panic in run: PANIC at ../../vm/vm.c:163 in vm_get_frame(): todo
+Call stack: 0x8004218d07 0x8004222c15 0x8004223171 0x800421b640 0x80042232a1 0x800421c9de 0x8004207eb1
 Translation of call stack:
-0x0000008004218cf9: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222ba0: vm_get_frame (vm/vm.c:160)
-0x0000008004222fbc: copy_spt_hash (vm/vm.c:271)
-0x000000800421b632: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x00000080042230ec: supplemental_page_table_copy (vm/vm.c:291)
-0x000000800421c9d0: __do_fork (userprog/process.c:263)
+0x0000008004218d07: debug_panic (lib/kernel/debug.c:32)
+0x0000008004222c15: vm_get_frame (vm/vm.c:166)
+0x0000008004223171: copy_spt_hash (vm/vm.c:301)
+0x000000800421b640: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x00000080042232a1: supplemental_page_table_copy (vm/vm.c:321)
+0x000000800421c9de: __do_fork (userprog/process.c:263)
 0x0000008004207eb1: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-shuffle:page-shuffle --swap-disk=4 -- -q   -f run page-shuffle < /dev/null 2> tests/vm/page-shuffle.errors > tests/vm/page-shuffle.output
 perl -I../.. ../../tests/vm/page-shuffle.ck tests/vm/page-shuffle tests/vm/page-shuffle.result
@@ -577,6 +487,15 @@ Test output failed to match any acceptable form.
 Acceptable output:
   (mmap-bad-fd) begin
   (mmap-bad-fd) try to mmap invalid fd
+  mmap-bad-fd: exit(-1)
+Differences in `diff -u' format:
+  (mmap-bad-fd) begin
+  (mmap-bad-fd) try to mmap invalid fd
+- mmap-bad-fd: exit(-1)
++ mmap-bad-fd: exit(0)
+Acceptable output:
+  (mmap-bad-fd) begin
+  (mmap-bad-fd) try to mmap invalid fd
   (mmap-bad-fd) end
   mmap-bad-fd: exit(0)
 Differences in `diff -u' format:
@@ -584,15 +503,6 @@ Differences in `diff -u' format:
   (mmap-bad-fd) try to mmap invalid fd
 - (mmap-bad-fd) end
   mmap-bad-fd: exit(0)
-Acceptable output:
-  (mmap-bad-fd) begin
-  (mmap-bad-fd) try to mmap invalid fd
-  mmap-bad-fd: exit(-1)
-Differences in `diff -u' format:
-  (mmap-bad-fd) begin
-  (mmap-bad-fd) try to mmap invalid fd
-- mmap-bad-fd: exit(-1)
-+ mmap-bad-fd: exit(0)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-clean:mmap-clean -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-clean < /dev/null 2> tests/vm/mmap-clean.errors > tests/vm/mmap-clean.output
 perl -I../.. ../../tests/vm/mmap-clean.ck tests/vm/mmap-clean tests/vm/mmap-clean.result
 FAIL tests/vm/mmap-clean
@@ -807,6 +717,15 @@ Test output failed to match any acceptable form.
 Acceptable output:
   (mmap-bad-fd3) begin
   (mmap-bad-fd3) try to mmap stdout
+  mmap-bad-fd3: exit(-1)
+Differences in `diff -u' format:
+  (mmap-bad-fd3) begin
+  (mmap-bad-fd3) try to mmap stdout
+- mmap-bad-fd3: exit(-1)
++ mmap-bad-fd3: exit(0)
+Acceptable output:
+  (mmap-bad-fd3) begin
+  (mmap-bad-fd3) try to mmap stdout
   (mmap-bad-fd3) end
   mmap-bad-fd3: exit(0)
 Differences in `diff -u' format:
@@ -814,15 +733,6 @@ Differences in `diff -u' format:
   (mmap-bad-fd3) try to mmap stdout
 - (mmap-bad-fd3) end
   mmap-bad-fd3: exit(0)
-Acceptable output:
-  (mmap-bad-fd3) begin
-  (mmap-bad-fd3) try to mmap stdout
-  mmap-bad-fd3: exit(-1)
-Differences in `diff -u' format:
-  (mmap-bad-fd3) begin
-  (mmap-bad-fd3) try to mmap stdout
-- mmap-bad-fd3: exit(-1)
-+ mmap-bad-fd3: exit(0)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-zero-len:mmap-zero-len --swap-disk=4 -- -q   -f run mmap-zero-len < /dev/null 2> tests/vm/mmap-zero-len.errors > tests/vm/mmap-zero-len.output
 perl -I../.. ../../tests/vm/mmap-zero-len.ck tests/vm/mmap-zero-len tests/vm/mmap-zero-len.result
 FAIL tests/vm/mmap-zero-len
@@ -880,8 +790,8 @@ Acceptable output:
   mmap-off: exit(0)
 Differences in `diff -u' format:
   (mmap-off) begin
-- (mmap-off) open "large.txt"
-- (mmap-off) try to mmap with offset 0x1000
+  (mmap-off) open "large.txt"
+  (mmap-off) try to mmap with offset 0x1000
 - (mmap-off) validate mmap.
 - (mmap-off) validated.
 - (mmap-off) write to mmap
@@ -895,8 +805,7 @@ Differences in `diff -u' format:
 - (mmap-off) validated.
 - (mmap-off) success
 - (mmap-off) end
-- mmap-off: exit(0)
-+ mmap-off: exit(-1)
+  mmap-off: exit(0)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-bad-off:mmap-bad-off -p ../../tests/vm/large.txt:large.txt --swap-disk=4 -- -q   -f run mmap-bad-off < /dev/null 2> tests/vm/mmap-bad-off.errors > tests/vm/mmap-bad-off.output
 perl -I../.. ../../tests/vm/mmap-bad-off.ck tests/vm/mmap-bad-off tests/vm/mmap-bad-off.result
 FAIL tests/vm/mmap-bad-off
@@ -1014,100 +923,56 @@ Differences in `diff -u' format:
 pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-anon:swap-anon --swap-disk=30 -- -q   -f run swap-anon < /dev/null 2> tests/vm/swap-anon.errors > tests/vm/swap-anon.output
 perl -I../.. ../../tests/vm/swap-anon.ck tests/vm/swap-anon tests/vm/swap-anon.result
 FAIL tests/vm/swap-anon
-Kernel panic in run: PANIC at ../../vm/vm.c:157 in vm_get_frame(): todo
-Call stack: 0x8004218cf9 0x8004222ba0 0x8004222e28 0x8004222d4b 0x800421e1e7 0x8004209602 0x8004209a20 0x800421dae8 0x8004222a25 0x800421dcc2 0x800421d4f1 0x800421cbd5 0x800421c4fd 0x8004207eb1
+Kernel panic in run: PANIC at ../../vm/vm.c:163 in vm_get_frame(): todo
+Call stack: 0x8004218d07 0x8004222c15 0x8004222fdd 0x8004222ef8 0x800421e202 0x8004209610 0x8004209a2e 0x800421daf6 0x8004222aa0 0x800421dcd8 0x800421d4ff 0x800421cbe3 0x800421c50b 0x8004207eb1
 Translation of call stack:
-0x0000008004218cf9: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222ba0: vm_get_frame (vm/vm.c:160)
-0x0000008004222e28: vm_do_claim_page (vm/vm.c:231)
-0x0000008004222d4b: vm_try_handle_fault (vm/vm.c:205)
-0x000000800421e1e7: page_fault (userprog/exception.c:145)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
-0x000000800421dae8: lazy_load_segment (userprog/process.c:860)
-0x0000008004222a25: vm_alloc_page_with_initializer (vm/vm.c:83)
-0x000000800421dcc2: load_segment (userprog/process.c:901)
-0x000000800421d4f1: load (userprog/process.c:620)
-0x000000800421cbd5: process_exec (userprog/process.c:328)
-0x000000800421c4fd: initd (userprog/process.c:100)
+0x0000008004218d07: debug_panic (lib/kernel/debug.c:32)
+0x0000008004222c15: vm_get_frame (vm/vm.c:166)
+0x0000008004222fdd: vm_do_claim_page (vm/vm.c:261)
+0x0000008004222ef8: vm_try_handle_fault (vm/vm.c:234)
+0x000000800421e202: page_fault (userprog/exception.c:145)
+0x0000008004209610: intr_handler (threads/interrupt.c:352)
+0x0000008004209a2e: intr_entry (threads/intr-stubs.o:?)
+0x000000800421daf6: lazy_load_segment (userprog/process.c:860)
+0x0000008004222aa0: vm_alloc_page_with_initializer (vm/vm.c:89)
+0x000000800421dcd8: load_segment (userprog/process.c:902)
+0x000000800421d4ff: load (userprog/process.c:620)
+0x000000800421cbe3: process_exec (userprog/process.c:328)
+0x000000800421c50b: initd (userprog/process.c:100)
 0x0000008004207eb1: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-iter:swap-iter -p ../../tests/vm/large.txt:large.txt --swap-disk=50 -- -q   -f run swap-iter < /dev/null 2> tests/vm/swap-iter.errors > tests/vm/swap-iter.output
 perl -I../.. ../../tests/vm/swap-iter.ck tests/vm/swap-iter tests/vm/swap-iter.result
 FAIL tests/vm/swap-iter
-Kernel panic in run: PANIC at ../../vm/vm.c:157 in vm_get_frame(): todo
-Call stack: 0x8004218cf9 0x8004222ba0 0x8004222e28 0x8004222d4b 0x800421e1e7 0x8004209602 0x8004209a20 0x800421dae8 0x8004222a25 0x800421dcc2 0x800421d4f1 0x800421cbd5 0x800421c4fd 0x8004207eb1
+Kernel panic in run: PANIC at ../../vm/vm.c:163 in vm_get_frame(): todo
+Call stack: 0x8004218d07 0x8004222c15 0x8004222fdd 0x8004222ef8 0x800421e202 0x8004209610 0x8004209a2e 0x800421daf6 0x8004222aa0 0x800421dcd8 0x800421d4ff 0x800421cbe3 0x800421c50b 0x8004207eb1
 Translation of call stack:
-0x0000008004218cf9: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222ba0: vm_get_frame (vm/vm.c:160)
-0x0000008004222e28: vm_do_claim_page (vm/vm.c:231)
-0x0000008004222d4b: vm_try_handle_fault (vm/vm.c:205)
-0x000000800421e1e7: page_fault (userprog/exception.c:145)
-0x0000008004209602: intr_handler (threads/interrupt.c:352)
-0x0000008004209a20: intr_entry (threads/intr-stubs.o:?)
-0x000000800421dae8: lazy_load_segment (userprog/process.c:860)
-0x0000008004222a25: vm_alloc_page_with_initializer (vm/vm.c:83)
-0x000000800421dcc2: load_segment (userprog/process.c:901)
-0x000000800421d4f1: load (userprog/process.c:620)
-0x000000800421cbd5: process_exec (userprog/process.c:328)
-0x000000800421c4fd: initd (userprog/process.c:100)
+0x0000008004218d07: debug_panic (lib/kernel/debug.c:32)
+0x0000008004222c15: vm_get_frame (vm/vm.c:166)
+0x0000008004222fdd: vm_do_claim_page (vm/vm.c:261)
+0x0000008004222ef8: vm_try_handle_fault (vm/vm.c:234)
+0x000000800421e202: page_fault (userprog/exception.c:145)
+0x0000008004209610: intr_handler (threads/interrupt.c:352)
+0x0000008004209a2e: intr_entry (threads/intr-stubs.o:?)
+0x000000800421daf6: lazy_load_segment (userprog/process.c:860)
+0x0000008004222aa0: vm_alloc_page_with_initializer (vm/vm.c:89)
+0x000000800421dcd8: load_segment (userprog/process.c:902)
+0x000000800421d4ff: load (userprog/process.c:620)
+0x000000800421cbe3: process_exec (userprog/process.c:328)
+0x000000800421c50b: initd (userprog/process.c:100)
 0x0000008004207eb1: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 600 -m 40   --fs-disk=10 -p tests/vm/swap-fork:swap-fork -p tests/vm/child-swap:child-swap --swap-disk=200 -- -q   -f run swap-fork < /dev/null 2> tests/vm/swap-fork.errors > tests/vm/swap-fork.output
 perl -I../.. ../../tests/vm/swap-fork.ck tests/vm/swap-fork tests/vm/swap-fork.result
 FAIL tests/vm/swap-fork
-Kernel panic in run: PANIC at ../../threads/thread.c:326 in thread_current(): assertion `is_thread (t)' failed.
-Call stack: 0x8004218cf9 0x80042074a5 0x800420b424 0x800420ad32 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420ca32 0x800420addc 0x800420c3a3 0x800420c4a7 0x800421c876 0x800421e7ab 0x800421f37a 0x800421e33b 0x400110 0x400c69 0x400cb2
+Kernel panic in run: PANIC at ../../vm/vm.c:163 in vm_get_frame(): todo
+Call stack: 0x8004218d07 0x8004222c15 0x8004223171 0x800421b640 0x80042232a1 0x800421c9de 0x8004207eb1
 Translation of call stack:
-0x0000008004218cf9: debug_panic (lib/kernel/debug.c:32)
-0x00000080042074a5: thread_current (threads/thread.c:327)
-0x000000800420b424: lock_held_by_current_thread (threads/synch.c:397)
-0x000000800420ad32: lock_acquire (threads/synch.c:267)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420ca32: malloc (threads/malloc.c:118)
-0x000000800420addc: lock_acquire (threads/synch.c:277)
-0x000000800420c3a3: palloc_get_multiple (threads/palloc.c:267 (discriminator 4))
-0x000000800420c4a7: palloc_get_page (threads/palloc.c:297)
-0x000000800421c876: process_fork (userprog/process.c:184)
-0x000000800421e7ab: fork (userprog/syscall.c:149)
-0x000000800421f37a: syscall_handler (userprog/syscall.c:435)
-0x000000800421e33b: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400110: (unknown)
-0x0000000000400c69: (unknown)
-0x0000000000400cb2: (unknown)
+0x0000008004218d07: debug_panic (lib/kernel/debug.c:32)
+0x0000008004222c15: vm_get_frame (vm/vm.c:166)
+0x0000008004223171: copy_spt_hash (vm/vm.c:301)
+0x000000800421b640: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x00000080042232a1: supplemental_page_table_copy (vm/vm.c:321)
+0x000000800421c9de: __do_fork (userprog/process.c:263)
+0x0000008004207eb1: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/lg-create:lg-create --swap-disk=4 -- -q   -f run lg-create < /dev/null 2> tests/filesys/base/lg-create.errors > tests/filesys/base/lg-create.output
 perl -I../.. ../../tests/filesys/base/lg-create.ck tests/filesys/base/lg-create tests/filesys/base/lg-create.result
 pass tests/filesys/base/lg-create
@@ -1142,16 +1007,16 @@ pintos -v -k -T 300 -m 20   --fs-disk=10 -p tests/filesys/base/syn-read:syn-read
 perl -I../.. ../../tests/filesys/base/syn-read.ck tests/filesys/base/syn-read tests/filesys/base/syn-read.result
 FAIL tests/filesys/base/syn-read
 Kernel panic in run: PANIC at ../../lib/kernel/list.c:78 in list_next(): assertion `is_head (elem) || is_interior (elem)' failed.
-Call stack: 0x8004218cf9 0x8004218f75 0x8004219a4a 0x8004219e1a 0x800420b360 0x800421ec47 0x800421f51f 0x800421e33b 0x40024b 0x400f8a
+Call stack: 0x8004218d07 0x8004218f83 0x8004219a58 0x8004219e28 0x800420b36e 0x800421ec62 0x800421f55b 0x800421e356 0x40024b 0x400f8a
 Translation of call stack:
-0x0000008004218cf9: debug_panic (lib/kernel/debug.c:32)
-0x0000008004218f75: list_next (lib/kernel/list.c:79)
-0x0000008004219a4a: find_end_of_run (lib/kernel/list.c:347 (discriminator 2))
-0x0000008004219e1a: list_sort (lib/kernel/list.c:401)
-0x000000800420b360: lock_release (threads/synch.c:382)
-0x000000800421ec47: read (userprog/syscall.c:271)
-0x000000800421f51f: syscall_handler (userprog/syscall.c:461)
-0x000000800421e33b: no_sti (userprog/syscall-entry.o:?)
+0x0000008004218d07: debug_panic (lib/kernel/debug.c:32)
+0x0000008004218f83: list_next (lib/kernel/list.c:79)
+0x0000008004219a58: find_end_of_run (lib/kernel/list.c:347 (discriminator 2))
+0x0000008004219e28: list_sort (lib/kernel/list.c:401)
+0x000000800420b36e: lock_release (threads/synch.c:382)
+0x000000800421ec62: read (userprog/syscall.c:271)
+0x000000800421f55b: syscall_handler (userprog/syscall.c:462)
+0x000000800421e356: no_sti (userprog/syscall-entry.o:?)
 0x000000000040024b: (unknown)
 0x0000000000400f8a: (unknown)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/syn-remove:syn-remove --swap-disk=4 -- -q   -f run syn-remove < /dev/null 2> tests/filesys/base/syn-remove.errors > tests/filesys/base/syn-remove.output
@@ -1165,7 +1030,22 @@ perl -I../.. ../../tests/threads/alarm-single.ck tests/threads/alarm-single test
 pass tests/threads/alarm-single
 pintos -v -k -T 60 -m 20   --fs-disk=10  --swap-disk=4 -- -q  -threads-tests -f run alarm-multiple < /dev/null 2> tests/threads/alarm-multiple.errors > tests/threads/alarm-multiple.output
 perl -I../.. ../../tests/threads/alarm-multiple.ck tests/threads/alarm-multiple tests/threads/alarm-multiple.result
-pass tests/threads/alarm-multiple
+FAIL tests/threads/alarm-multiple
+Kernel panic in run: PANIC at ../../lib/kernel/list.c:78 in list_next(): assertion `is_head (elem) || is_interior (elem)' failed.
+Call stack: 0x8004218d07 0x8004218f83 0x8004219a58 0x8004219e28 0x800420792b 0x8004207093 0x800420e938 0x800420e652 0x800420e423 0x800420675c 0x80042068cc 0x8004206186
+Translation of call stack:
+0x0000008004218d07: debug_panic (lib/kernel/debug.c:32)
+0x0000008004218f83: list_next (lib/kernel/list.c:79)
+0x0000008004219a58: find_end_of_run (lib/kernel/list.c:347 (discriminator 2))
+0x0000008004219e28: list_sort (lib/kernel/list.c:401)
+0x000000800420792b: thread_kick (threads/thread.c:433)
+0x0000008004207093: thread_create (threads/thread.c:235)
+0x000000800420e938: test_sleep (tests/threads/alarm-wait.c:82 (discriminator 3))
+0x000000800420e652: test_alarm_multiple (tests/threads/alarm-wait.c:25)
+0x000000800420e423: run_test (tests/threads/tests.c:57)
+0x000000800420675c: run_task (threads/init.c:245)
+0x00000080042068cc: run_actions (threads/init.c:297)
+0x0000008004206186: main (threads/init.c:125)
 pintos -v -k -T 60 -m 20   --fs-disk=10  --swap-disk=4 -- -q  -threads-tests -f run alarm-simultaneous < /dev/null 2> tests/threads/alarm-simultaneous.errors > tests/threads/alarm-simultaneous.output
 perl -I../.. ../../tests/threads/alarm-simultaneous.ck tests/threads/alarm-simultaneous tests/threads/alarm-simultaneous.result
 pass tests/threads/alarm-simultaneous
@@ -1281,16 +1161,16 @@ pass tests/userprog/bad-read2
 pass tests/userprog/bad-write2
 pass tests/userprog/bad-jump
 pass tests/userprog/bad-jump2
-FAIL tests/vm/pt-grow-stack
+pass tests/vm/pt-grow-stack
 pass tests/vm/pt-grow-bad
-FAIL tests/vm/pt-big-stk-obj
+pass tests/vm/pt-big-stk-obj
 pass tests/vm/pt-bad-addr
 pass tests/vm/pt-bad-read
-FAIL tests/vm/pt-write-code
+pass tests/vm/pt-write-code
 FAIL tests/vm/pt-write-code2
 FAIL tests/vm/pt-grow-stk-sc
 pass tests/vm/page-linear
-FAIL tests/vm/page-parallel
+pass tests/vm/page-parallel
 FAIL tests/vm/page-merge-seq
 FAIL tests/vm/page-merge-par
 FAIL tests/vm/page-merge-stk
@@ -1341,7 +1221,7 @@ FAIL tests/filesys/base/syn-read
 pass tests/filesys/base/syn-remove
 pass tests/filesys/base/syn-write
 pass tests/threads/alarm-single
-pass tests/threads/alarm-multiple
+FAIL tests/threads/alarm-multiple
 pass tests/threads/alarm-simultaneous
 pass tests/threads/alarm-priority
 pass tests/threads/alarm-zero
@@ -1359,5 +1239,5 @@ pass tests/threads/priority-sema
 pass tests/threads/priority-condvar
 pass tests/threads/priority-donate-chain
 FAIL tests/vm/cow/cow-simple
-43 of 141 tests failed.
+40 of 141 tests failed.
 ../../tests/Make.tests:28: recipe for target 'check' failed

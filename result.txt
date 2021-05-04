@@ -1,0 +1,374 @@
+cd build && make check
+make[1]: Entering directory '/home/kaist/pintos/vm/build'
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-none:args-none --swap-disk=4 -- -q   -f run args-none < /dev/null 2> tests/userprog/args-none.errors > tests/userprog/args-none.output
+perl -I../.. ../../tests/userprog/args-none.ck tests/userprog/args-none tests/userprog/args-none.result
+FAIL tests/userprog/args-none
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (args) begin
+  (args) argc = 1
+  (args) argv[0] = 'args-none'
+  (args) argv[1] = null
+  (args) end
+  args-none: exit(0)
+Differences in `diff -u' format:
+- (args) begin
+- (args) argc = 1
+- (args) argv[0] = 'args-none'
+- (args) argv[1] = null
+- (args) end
+- args-none: exit(0)
++ args-none: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-single:args-single --swap-disk=4 -- -q   -f run 'args-single onearg' < /dev/null 2> tests/userprog/args-single.errors > tests/userprog/args-single.output
+perl -I../.. ../../tests/userprog/args-single.ck tests/userprog/args-single tests/userprog/args-single.result
+FAIL tests/userprog/args-single
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (args) begin
+  (args) argc = 2
+  (args) argv[0] = 'args-single'
+  (args) argv[1] = 'onearg'
+  (args) argv[2] = null
+  (args) end
+  args-single: exit(0)
+Differences in `diff -u' format:
+- (args) begin
+- (args) argc = 2
+- (args) argv[0] = 'args-single'
+- (args) argv[1] = 'onearg'
+- (args) argv[2] = null
+- (args) end
+- args-single: exit(0)
++ args-single: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-multiple:args-multiple --swap-disk=4 -- -q   -f run 'args-multiple some arguments for you!' < /dev/null 2> tests/userprog/args-multiple.errors > tests/userprog/args-multiple.output
+perl -I../.. ../../tests/userprog/args-multiple.ck tests/userprog/args-multiple tests/userprog/args-multiple.result
+FAIL tests/userprog/args-multiple
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (args) begin
+  (args) argc = 5
+  (args) argv[0] = 'args-multiple'
+  (args) argv[1] = 'some'
+  (args) argv[2] = 'arguments'
+  (args) argv[3] = 'for'
+  (args) argv[4] = 'you!'
+  (args) argv[5] = null
+  (args) end
+  args-multiple: exit(0)
+Differences in `diff -u' format:
+- (args) begin
+- (args) argc = 5
+- (args) argv[0] = 'args-multiple'
+- (args) argv[1] = 'some'
+- (args) argv[2] = 'arguments'
+- (args) argv[3] = 'for'
+- (args) argv[4] = 'you!'
+- (args) argv[5] = null
+- (args) end
+- args-multiple: exit(0)
++ args-multiple: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-many:args-many --swap-disk=4 -- -q   -f run 'args-many a b c d e f g h i j k l m n o p q r s t u v' < /dev/null 2> tests/userprog/args-many.errors > tests/userprog/args-many.output
+perl -I../.. ../../tests/userprog/args-many.ck tests/userprog/args-many tests/userprog/args-many.result
+FAIL tests/userprog/args-many
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (args) begin
+  (args) argc = 23
+  (args) argv[0] = 'args-many'
+  (args) argv[1] = 'a'
+  (args) argv[2] = 'b'
+  (args) argv[3] = 'c'
+  (args) argv[4] = 'd'
+  (args) argv[5] = 'e'
+  (args) argv[6] = 'f'
+  (args) argv[7] = 'g'
+  (args) argv[8] = 'h'
+  (args) argv[9] = 'i'
+  (args) argv[10] = 'j'
+  (args) argv[11] = 'k'
+  (args) argv[12] = 'l'
+  (args) argv[13] = 'm'
+  (args) argv[14] = 'n'
+  (args) argv[15] = 'o'
+  (args) argv[16] = 'p'
+  (args) argv[17] = 'q'
+  (args) argv[18] = 'r'
+  (args) argv[19] = 's'
+  (args) argv[20] = 't'
+  (args) argv[21] = 'u'
+  (args) argv[22] = 'v'
+  (args) argv[23] = null
+  (args) end
+  args-many: exit(0)
+Differences in `diff -u' format:
+- (args) begin
+- (args) argc = 23
+- (args) argv[0] = 'args-many'
+- (args) argv[1] = 'a'
+- (args) argv[2] = 'b'
+- (args) argv[3] = 'c'
+- (args) argv[4] = 'd'
+- (args) argv[5] = 'e'
+- (args) argv[6] = 'f'
+- (args) argv[7] = 'g'
+- (args) argv[8] = 'h'
+- (args) argv[9] = 'i'
+- (args) argv[10] = 'j'
+- (args) argv[11] = 'k'
+- (args) argv[12] = 'l'
+- (args) argv[13] = 'm'
+- (args) argv[14] = 'n'
+- (args) argv[15] = 'o'
+- (args) argv[16] = 'p'
+- (args) argv[17] = 'q'
+- (args) argv[18] = 'r'
+- (args) argv[19] = 's'
+- (args) argv[20] = 't'
+- (args) argv[21] = 'u'
+- (args) argv[22] = 'v'
+- (args) argv[23] = null
+- (args) end
+- args-many: exit(0)
++ args-many: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-dbl-space:args-dbl-space --swap-disk=4 -- -q   -f run 'args-dbl-space two  spaces!' < /dev/null 2> tests/userprog/args-dbl-space.errors > tests/userprog/args-dbl-space.output
+perl -I../.. ../../tests/userprog/args-dbl-space.ck tests/userprog/args-dbl-space tests/userprog/args-dbl-space.result
+FAIL tests/userprog/args-dbl-space
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (args) begin
+  (args) argc = 3
+  (args) argv[0] = 'args-dbl-space'
+  (args) argv[1] = 'two'
+  (args) argv[2] = 'spaces!'
+  (args) argv[3] = null
+  (args) end
+  args-dbl-space: exit(0)
+Differences in `diff -u' format:
+- (args) begin
+- (args) argc = 3
+- (args) argv[0] = 'args-dbl-space'
+- (args) argv[1] = 'two'
+- (args) argv[2] = 'spaces!'
+- (args) argv[3] = null
+- (args) end
+- args-dbl-space: exit(0)
++ args-dbl-space: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/halt:halt --swap-disk=4 -- -q   -f run halt < /dev/null 2> tests/userprog/halt.errors > tests/userprog/halt.output
+perl -I../.. ../../tests/userprog/halt.ck tests/userprog/halt tests/userprog/halt.result
+FAIL tests/userprog/halt
+missing 'begin' message
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/exit:exit --swap-disk=4 -- -q   -f run exit < /dev/null 2> tests/userprog/exit.errors > tests/userprog/exit.output
+perl -I../.. ../../tests/userprog/exit.ck tests/userprog/exit tests/userprog/exit.result
+FAIL tests/userprog/exit
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (exit) begin
+  exit: exit(57)
+Differences in `diff -u' format:
+- (exit) begin
+- exit: exit(57)
++ exit: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-normal:create-normal --swap-disk=4 -- -q   -f run create-normal < /dev/null 2> tests/userprog/create-normal.errors > tests/userprog/create-normal.output
+perl -I../.. ../../tests/userprog/create-normal.ck tests/userprog/create-normal tests/userprog/create-normal.result
+FAIL tests/userprog/create-normal
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (create-normal) begin
+  (create-normal) create quux.dat
+  (create-normal) end
+  create-normal: exit(0)
+Differences in `diff -u' format:
+- (create-normal) begin
+- (create-normal) create quux.dat
+- (create-normal) end
+- create-normal: exit(0)
++ create-normal: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-empty:create-empty --swap-disk=4 -- -q   -f run create-empty < /dev/null 2> tests/userprog/create-empty.errors > tests/userprog/create-empty.output
+perl -I../.. ../../tests/userprog/create-empty.ck tests/userprog/create-empty tests/userprog/create-empty.result
+FAIL tests/userprog/create-empty
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (create-empty) begin
+  create-empty: exit(-1)
+Differences in `diff -u' format:
+- (create-empty) begin
+  create-empty: exit(-1)
+Acceptable output:
+  (create-empty) begin
+  (create-empty) create(""): 0
+  (create-empty) end
+  create-empty: exit(0)
+Differences in `diff -u' format:
+- (create-empty) begin
+- (create-empty) create(""): 0
+- (create-empty) end
+- create-empty: exit(0)
++ create-empty: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-null:create-null --swap-disk=4 -- -q   -f run create-null < /dev/null 2> tests/userprog/create-null.errors > tests/userprog/create-null.output
+perl -I../.. ../../tests/userprog/create-null.ck tests/userprog/create-null tests/userprog/create-null.result
+FAIL tests/userprog/create-null
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (create-null) begin
+  create-null: exit(-1)
+Differences in `diff -u' format:
+- (create-null) begin
+  create-null: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-bad-ptr:create-bad-ptr --swap-disk=4 -- -q   -f run create-bad-ptr < /dev/null 2> tests/userprog/create-bad-ptr.errors > tests/userprog/create-bad-ptr.output
+perl -I../.. ../../tests/userprog/create-bad-ptr.ck tests/userprog/create-bad-ptr tests/userprog/create-bad-ptr.result
+FAIL tests/userprog/create-bad-ptr
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (create-bad-ptr) begin
+  create-bad-ptr: exit(-1)
+Differences in `diff -u' format:
+- (create-bad-ptr) begin
+  create-bad-ptr: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-long:create-long --swap-disk=4 -- -q   -f run create-long < /dev/null 2> tests/userprog/create-long.errors > tests/userprog/create-long.output
+perl -I../.. ../../tests/userprog/create-long.ck tests/userprog/create-long tests/userprog/create-long.result
+FAIL tests/userprog/create-long
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (create-long) begin
+  (create-long) create("x..."): 0
+  (create-long) end
+  create-long: exit(0)
+Differences in `diff -u' format:
+- (create-long) begin
+- (create-long) create("x..."): 0
+- (create-long) end
+- create-long: exit(0)
++ create-long: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-exists:create-exists --swap-disk=4 -- -q   -f run create-exists < /dev/null 2> tests/userprog/create-exists.errors > tests/userprog/create-exists.output
+perl -I../.. ../../tests/userprog/create-exists.ck tests/userprog/create-exists tests/userprog/create-exists.result
+FAIL tests/userprog/create-exists
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (create-exists) begin
+  (create-exists) create quux.dat
+  (create-exists) create warble.dat
+  (create-exists) try to re-create quux.dat
+  (create-exists) create baffle.dat
+  (create-exists) try to re-create quux.dat
+  (create-exists) end
+  create-exists: exit(0)
+Differences in `diff -u' format:
+- (create-exists) begin
+- (create-exists) create quux.dat
+- (create-exists) create warble.dat
+- (create-exists) try to re-create quux.dat
+- (create-exists) create baffle.dat
+- (create-exists) try to re-create quux.dat
+- (create-exists) end
+- create-exists: exit(0)
++ create-exists: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-bound:create-bound --swap-disk=4 -- -q   -f run create-bound < /dev/null 2> tests/userprog/create-bound.errors > tests/userprog/create-bound.output
+perl -I../.. ../../tests/userprog/create-bound.ck tests/userprog/create-bound tests/userprog/create-bound.result
+FAIL tests/userprog/create-bound
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (create-bound) begin
+  (create-bound) create("quux.dat"): 1
+  (create-bound) end
+  create-bound: exit(0)
+Differences in `diff -u' format:
+- (create-bound) begin
+- (create-bound) create("quux.dat"): 1
+- (create-bound) end
+- create-bound: exit(0)
++ create-bound: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-normal:open-normal -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run open-normal < /dev/null 2> tests/userprog/open-normal.errors > tests/userprog/open-normal.output
+perl -I../.. ../../tests/userprog/open-normal.ck tests/userprog/open-normal tests/userprog/open-normal.result
+FAIL tests/userprog/open-normal
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (open-normal) begin
+  (open-normal) end
+  open-normal: exit(0)
+Differences in `diff -u' format:
+- (open-normal) begin
+- (open-normal) end
+- open-normal: exit(0)
++ open-normal: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-missing:open-missing --swap-disk=4 -- -q   -f run open-missing < /dev/null 2> tests/userprog/open-missing.errors > tests/userprog/open-missing.output
+perl -I../.. ../../tests/userprog/open-missing.ck tests/userprog/open-missing tests/userprog/open-missing.result
+FAIL tests/userprog/open-missing
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (open-missing) begin
+  (open-missing) end
+  open-missing: exit(0)
+Differences in `diff -u' format:
+- (open-missing) begin
+- (open-missing) end
+- open-missing: exit(0)
++ open-missing: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-boundary:open-boundary -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run open-boundary < /dev/null 2> tests/userprog/open-boundary.errors > tests/userprog/open-boundary.output
+perl -I../.. ../../tests/userprog/open-boundary.ck tests/userprog/open-boundary tests/userprog/open-boundary.result
+FAIL tests/userprog/open-boundary
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (open-boundary) begin
+  (open-boundary) open "sample.txt"
+  (open-boundary) end
+  open-boundary: exit(0)
+Differences in `diff -u' format:
+- (open-boundary) begin
+- (open-boundary) open "sample.txt"
+- (open-boundary) end
+- open-boundary: exit(0)
++ open-boundary: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-empty:open-empty --swap-disk=4 -- -q   -f run open-empty < /dev/null 2> tests/userprog/open-empty.errors > tests/userprog/open-empty.output
+perl -I../.. ../../tests/userprog/open-empty.ck tests/userprog/open-empty tests/userprog/open-empty.result
+FAIL tests/userprog/open-empty
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (open-empty) begin
+  (open-empty) end
+  open-empty: exit(0)
+Differences in `diff -u' format:
+- (open-empty) begin
+- (open-empty) end
+- open-empty: exit(0)
++ open-empty: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-null:open-null --swap-disk=4 -- -q   -f run open-null < /dev/null 2> tests/userprog/open-null.errors > tests/userprog/open-null.output
+perl -I../.. ../../tests/userprog/open-null.ck tests/userprog/open-null tests/userprog/open-null.result
+FAIL tests/userprog/open-null
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (open-null) begin
+  (open-null) end
+  open-null: exit(0)
+Differences in `diff -u' format:
+- (open-null) begin
+- (open-null) end
+- open-null: exit(0)
++ open-null: exit(-1)
+Acceptable output:
+  (open-null) begin
+  open-null: exit(-1)
+Differences in `diff -u' format:
+- (open-null) begin
+  open-null: exit(-1)
+pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-bad-ptr:open-bad-ptr --swap-disk=4 -- -q   -f run open-bad-ptr < /dev/null 2> tests/userprog/open-bad-ptr.errors > tests/userprog/open-bad-ptr.output
+perl -I../.. ../../tests/userprog/open-bad-ptr.ck tests/userprog/open-bad-ptr tests/userprog/open-bad-ptr.result
+../../tests/Make.tests:78: recipe for target 'tests/userprog/open-bad-ptr.result' failed
+../Makefile.kernel:10: recipe for target 'check' failed

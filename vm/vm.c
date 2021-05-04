@@ -66,19 +66,24 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		page = malloc(sizeof(struct page));
 
 		// TODO: malloc fail 시 처리 이게 맞나??
-		if (page == NULL)
-			goto err;
+		if (page == NULL) {
+			printf("malloc error\n");
+			goto err;	
+		}
 
 		initializer = (VM_TYPE(type) == VM_ANON) ? anon_initializer : file_backed_initializer;
 		uninit_new (page, upage, init, type, aux, initializer);
 		page->writable = writable;
 		page->is_stack = false;
+		page->is_code_seg = false;
 
 		/* TODO: Insert the page into the spt. */
 		succ = spt_insert_page(spt, page);
 		// printf("inserted: %p\n", upage);
-		if (!succ)
+		if (!succ) {
+			printf("spt insert error\n");
 			goto err;
+		}
 		if (init != NULL)
 			init(page, aux);
 		return succ;
@@ -167,9 +172,22 @@ vm_get_frame (void) {
 	return frame;
 }
 
+void
+after_stack_set(struct page *page, void *aux) {
+	page->is_stack = true;
+	thread_current()->stack_page_count++;
+}
+
 /* Growing the stack. */
 static void
 vm_stack_growth (void *addr UNUSED) {
+	void *stack_end = pg_round_down(addr);
+	bool success = vm_alloc_page_with_initializer(VM_ANON, stack_end, true, after_stack_set, NULL);
+	// printf("grow\n");
+	if (success)
+		thread_current()->tf.rsp = addr;
+	// else
+	// 	exit(-1);
 }
 
 /* Handle the fault on write_protected page */
@@ -181,10 +199,22 @@ vm_handle_wp (struct page *page UNUSED) {
 bool
 vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 		bool user UNUSED, bool write UNUSED, bool not_present UNUSED) {
-	struct supplemental_page_table *spt UNUSED = &thread_current ()->spt;
+	struct thread* curr = thread_current();
+	struct supplemental_page_table *spt UNUSED = &curr->spt;
 	struct page *page = NULL;
 	/* TODO: Validate the fault */
 	/* TODO: Your code goes here */
+	int MAX_STACK_COUNT = 256;
+
+	if (user && is_kernel_vaddr(addr))
+		return false;
+
+	if ((user && f->rsp - 8 <= (uintptr_t)addr)||(!user && curr->recent_rsp - 8 <= (uintptr_t)addr)) {
+		// printf("check: %d %d %d\n", f->rsp, thread_current()->recent_rsp, addr);
+		if (curr->stack_page_count >= MAX_STACK_COUNT)
+			exit(-1);
+		vm_stack_growth(addr);
+	}
 
 	// spt 에서 주소에 해당하는 page가 존재하는지 찾기
 	page = spt_find_page (&thread_current()->spt, pg_round_down(addr));
@@ -193,15 +223,13 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 		// printf("err1-addr: %p\n", addr);
 		return false;
 	}
-	if (is_kernel_vaddr(addr) || is_kernel_vaddr(page->va)) {
-		// printf("err 2\n");
+	// if (page->is_code_seg)
+	// 	return false;
+	if ((!not_present && write) || (!not_present && !page->writable)) {
+		// printf("%d %d %d\n", write, page->writable, not_present);
 		return false;
 	}
-	// if (!not_present) {
-	// 	printf("err 3\n");
-	// 	return false;
-	// }
-	// printf("pass\n");
+
 	return vm_do_claim_page (page);
 }
 
@@ -220,6 +248,7 @@ vm_claim_page (void *va UNUSED) {
 	/* TODO: Fill this function */
 	page = malloc(sizeof(struct page));
 	page->va = va;
+	page->writable = true;
 	spt_insert_page(&thread_current()->spt, page);
 	// printf("inserted-claim: %p\n", va);
 

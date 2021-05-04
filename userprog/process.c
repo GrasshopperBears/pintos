@@ -858,6 +858,7 @@ lazy_load_segment (struct page *page, void *aux) {
 	}
 	memset(params->upage + params->read_bytes, 0, params->zero_bytes);
 	free(aux);
+	page->is_code_seg = true;
 
 	return true;
 }
@@ -911,11 +912,6 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 	return true;
 }
 
-void
-mark_as_stack(struct page *page, void *aux) {
-	page->is_stack = true;
-}
-
 /* Create a PAGE of stack at the USER_STACK. Return true on success. */
 static bool
 setup_stack (struct intr_frame *if_) {
@@ -926,7 +922,7 @@ setup_stack (struct intr_frame *if_) {
 	 * TODO: If success, set the rsp accordingly.
 	 * TODO: You should mark the page is stack. */
 	/* TODO: Your code goes here */
-	success = vm_alloc_page_with_initializer(VM_ANON, stack_bottom, true, mark_as_stack, NULL);
+	success = vm_alloc_page_with_initializer(VM_ANON, stack_bottom, true, after_stack_set, NULL);
 
 	if (success)
 		if_->rsp = USER_STACK;
