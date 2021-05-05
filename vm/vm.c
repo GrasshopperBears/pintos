@@ -180,8 +180,18 @@ after_stack_set(struct page *page, void *aux) {
 static void
 vm_stack_growth (void *addr UNUSED) {
 	void *stack_end = pg_round_down(addr);
-	bool success = vm_alloc_page_with_initializer(VM_ANON, stack_end, true, after_stack_set, NULL);
+	void* currPtr = (void *) (((uint8_t *) USER_STACK) - PGSIZE);
+	bool success = true;
 
+	while (currPtr >= stack_end) {
+		if (spt_find_page(&thread_current()->spt, currPtr) == NULL) {
+			if (!vm_alloc_page_with_initializer(VM_ANON, currPtr, true, after_stack_set, NULL)) {
+				success = false;
+				break;
+			}
+		}
+		currPtr = (void *) (((uint8_t *) currPtr) - PGSIZE);
+	}
 	if (success)
 		thread_current()->tf.rsp = addr;
 	// else
@@ -203,21 +213,23 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 	/* TODO: Validate the fault */
 	/* TODO: Your code goes here */
 	int MAX_STACK_COUNT = 256;
+	int MAX_STACK_ADDR =  USER_STACK - (1 << 20);
 
 	if (user && is_kernel_vaddr(addr))
 		return false;
 
-	if ((user && f->rsp - 8 <= (uintptr_t)addr)||(!user && curr->recent_rsp - 8 <= (uintptr_t)addr)) {
-		if (curr->stack_page_count >= MAX_STACK_COUNT)
+	if ((user && f->rsp - 8 <= (uintptr_t)addr)||(!user && ptov(addr) > USER_STACK - (1 << 20))) {
+		if (curr->stack_page_count >= MAX_STACK_COUNT) {
 			exit(-1);
-		vm_stack_growth(addr);
+		}
+		vm_stack_growth(user ? addr : ptov(addr));
 	}
 
 	// spt 에서 주소에 해당하는 page가 존재하는지 찾기
 	page = spt_find_page (&thread_current()->spt, pg_round_down(addr));
 
 	if (page == NULL) {
-		// printf("err1-addr: %p\n", addr);
+		// printf("err1-addr: %p %p\n", addr, pg_round_down(addr));
 		return false;
 	}
 	if ((!not_present && write) || (!not_present && !page->writable)) {

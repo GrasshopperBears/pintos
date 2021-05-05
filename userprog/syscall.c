@@ -118,9 +118,9 @@ close_all_files(void) {
 		if (f_el->fd > 1 && f_el->file != NULL) {
 			if (!is_closed(closed_files, f_el->file, idx)) {
 				closed_files[idx] = f_el->file;
-				lock_acquire(&filesys_lock);
+				// lock_acquire(&filesys_lock);
 				file_close(f_el->file);
-				lock_release(&filesys_lock);
+				// lock_release(&filesys_lock);
 				idx++;
 			}
 		}
@@ -383,7 +383,6 @@ close (int fd) {
 		list_remove(&f_el->elem);
 		free(f_el);
 	}
-	// printf("%d closed fd %d\n", thread_current()->tid, fd);
 }
 
 int
@@ -427,7 +426,7 @@ dup2(int oldfd, int newfd) {
 
 void
 is_valid_user_ptr(void* ptr) {
-	if (is_kernel_vaddr(ptr) || !pml4_get_page(thread_current()->pml4, ptr) || ptr == NULL) {
+	if (is_kernel_vaddr(ptr) || ptr == NULL) {
 		exit(-1);
 	}
 }
@@ -437,7 +436,7 @@ void
 syscall_handler (struct intr_frame *f UNUSED) {
 	// TODO: Your implementation goes here.
 	// printf ("system call at %s TYPE: %d\n", thread_current()->name, f->R.rax);
-	thread_current()->recent_rsp = f->rsp;
+	// thread_current()->recent_rsp = f->rsp;
 	switch (f->R.rax)
 	{
 	case SYS_HALT:	// 0
