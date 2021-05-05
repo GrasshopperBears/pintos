@@ -75,11 +75,9 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		uninit_new (page, upage, init, type, aux, initializer);
 		page->writable = writable;
 		page->is_stack = false;
-		page->is_code_seg = false;
 
 		/* TODO: Insert the page into the spt. */
 		succ = spt_insert_page(spt, page);
-		// printf("inserted: %p\n", upage);
 		if (!succ) {
 			printf("spt insert error\n");
 			goto err;
@@ -183,7 +181,7 @@ static void
 vm_stack_growth (void *addr UNUSED) {
 	void *stack_end = pg_round_down(addr);
 	bool success = vm_alloc_page_with_initializer(VM_ANON, stack_end, true, after_stack_set, NULL);
-	// printf("grow\n");
+
 	if (success)
 		thread_current()->tf.rsp = addr;
 	// else
@@ -210,7 +208,6 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 		return false;
 
 	if ((user && f->rsp - 8 <= (uintptr_t)addr)||(!user && curr->recent_rsp - 8 <= (uintptr_t)addr)) {
-		// printf("check: %d %d %d\n", f->rsp, thread_current()->recent_rsp, addr);
 		if (curr->stack_page_count >= MAX_STACK_COUNT)
 			exit(-1);
 		vm_stack_growth(addr);
@@ -223,13 +220,10 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 		// printf("err1-addr: %p\n", addr);
 		return false;
 	}
-	// if (page->is_code_seg)
-	// 	return false;
 	if ((!not_present && write) || (!not_present && !page->writable)) {
 		// printf("%d %d %d\n", write, page->writable, not_present);
 		return false;
 	}
-
 	return vm_do_claim_page (page);
 }
 

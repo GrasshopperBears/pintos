@@ -858,7 +858,6 @@ lazy_load_segment (struct page *page, void *aux) {
 	}
 	memset(params->upage + params->read_bytes, 0, params->zero_bytes);
 	free(aux);
-	page->is_code_seg = true;
 
 	return true;
 }

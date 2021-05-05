@@ -13,6 +13,9 @@
 #include "threads/flags.h"
 #include "filesys/inode.h"
 #include "intrinsic.h"
+#ifdef VM
+#include "vm/vm.h"
+#endif
 
 void syscall_entry (void);
 void syscall_handler (struct intr_frame *);
@@ -265,6 +268,12 @@ read (int fd, void *buffer, unsigned size) {
 	} else if(fd == 1) {
 		exit(-1);
 	}	else {
+#ifdef VM
+		if (!spt_find_page (&thread_current()->spt, pg_round_down(buffer))->writable) {
+			lock_release(&filesys_lock);
+			exit(-1);
+		}
+#endif
 		read_size = file_read(f_el->file, buffer, size);
 	}
 	lock_release(&filesys_lock);
@@ -289,6 +298,12 @@ write (int fd, const void *buffer, unsigned size) {
 	} else if (fd == 0) {
 		exit(-1);
 	} else {
+#ifdef VM
+		if (!spt_find_page (&thread_current()->spt, pg_round_down(buffer))->writable) {
+			lock_release(&filesys_lock);
+			exit(-1);
+		}
+#endif
 		written_size = file_write(f_el->file, buffer, size);
 	}
 	lock_release(&filesys_lock);
