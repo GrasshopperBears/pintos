@@ -1,5 +1,3 @@
-cd build && make check
-make[1]: Entering directory '/home/kaist/pintos/vm/build'
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-none:args-none --swap-disk=4 -- -q   -f run args-none < /dev/null 2> tests/userprog/args-none.errors > tests/userprog/args-none.output
 perl -I../.. ../../tests/userprog/args-none.ck tests/userprog/args-none tests/userprog/args-none.result
 pass tests/userprog/args-none
@@ -221,56 +219,17 @@ perl -I../.. ../../tests/vm/page-parallel.ck tests/vm/page-parallel tests/vm/pag
 pass tests/vm/page-parallel
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-merge-seq:page-merge-seq -p tests/vm/child-sort:child-sort --swap-disk=4 -- -q   -f run page-merge-seq < /dev/null 2> tests/vm/page-merge-seq.errors > tests/vm/page-merge-seq.output
 perl -I../.. ../../tests/vm/page-merge-seq.ck tests/vm/page-merge-seq tests/vm/page-merge-seq.result
-FAIL tests/vm/page-merge-seq
-Kernel panic in run: PANIC at ../../vm/vm.c:161 in vm_get_frame(): todo
-Call stack: 0x8004218cfd 0x8004222f19 0x80042234f3 0x800421b636 0x8004223623 0x800421c9d4 0x8004207eb1
-Translation of call stack:
-0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222f19: vm_get_frame (vm/vm.c:164)
-0x00000080042234f3: copy_spt_hash (vm/vm.c:307)
-0x000000800421b636: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223623: supplemental_page_table_copy (vm/vm.c:327)
-0x000000800421c9d4: __do_fork (userprog/process.c:263)
-0x0000008004207eb1: kernel_thread (threads/thread.c:593)
+pass tests/vm/page-merge-seq
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-merge-par:page-merge-par -p tests/vm/child-sort:child-sort --swap-disk=4 -- -q   -f run page-merge-par < /dev/null 2> tests/vm/page-merge-par.errors > tests/vm/page-merge-par.output
 perl -I../.. ../../tests/vm/page-merge-par.ck tests/vm/page-merge-par tests/vm/page-merge-par.result
-FAIL tests/vm/page-merge-par
-Kernel panic in run: PANIC at ../../vm/vm.c:161 in vm_get_frame(): todo
-Call stack: 0x8004218cfd 0x8004222f19 0x80042234f3 0x800421b636 0x8004223623 0x800421c9d4 0x8004207eb1
-Translation of call stack:
-0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222f19: vm_get_frame (vm/vm.c:164)
-0x00000080042234f3: copy_spt_hash (vm/vm.c:307)
-0x000000800421b636: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223623: supplemental_page_table_copy (vm/vm.c:327)
-0x000000800421c9d4: __do_fork (userprog/process.c:263)
-0x0000008004207eb1: kernel_thread (threads/thread.c:593)
+pass tests/vm/page-merge-par
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-merge-stk:page-merge-stk -p tests/vm/child-qsort:child-qsort --swap-disk=4 -- -q   -f run page-merge-stk < /dev/null 2> tests/vm/page-merge-stk.errors > tests/vm/page-merge-stk.output
 perl -I../.. ../../tests/vm/page-merge-stk.ck tests/vm/page-merge-stk tests/vm/page-merge-stk.result
-FAIL tests/vm/page-merge-stk
-Kernel panic in run: PANIC at ../../vm/vm.c:161 in vm_get_frame(): todo
-Call stack: 0x8004218cfd 0x8004222f19 0x80042234f3 0x800421b636 0x8004223623 0x800421c9d4 0x8004207eb1
-Translation of call stack:
-0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222f19: vm_get_frame (vm/vm.c:164)
-0x00000080042234f3: copy_spt_hash (vm/vm.c:307)
-0x000000800421b636: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223623: supplemental_page_table_copy (vm/vm.c:327)
-0x000000800421c9d4: __do_fork (userprog/process.c:263)
-0x0000008004207eb1: kernel_thread (threads/thread.c:593)
+pass tests/vm/page-merge-stk
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-merge-mm:page-merge-mm -p tests/vm/child-qsort-mm:child-qsort-mm --swap-disk=4 -- -q   -f run page-merge-mm < /dev/null 2> tests/vm/page-merge-mm.errors > tests/vm/page-merge-mm.output
 perl -I../.. ../../tests/vm/page-merge-mm.ck tests/vm/page-merge-mm tests/vm/page-merge-mm.result
 FAIL tests/vm/page-merge-mm
-Kernel panic in run: PANIC at ../../vm/vm.c:161 in vm_get_frame(): todo
-Call stack: 0x8004218cfd 0x8004222f19 0x80042234f3 0x800421b636 0x8004223623 0x800421c9d4 0x8004207eb1
-Translation of call stack:
-0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222f19: vm_get_frame (vm/vm.c:164)
-0x00000080042234f3: copy_spt_hash (vm/vm.c:307)
-0x000000800421b636: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223623: supplemental_page_table_copy (vm/vm.c:327)
-0x000000800421c9d4: __do_fork (userprog/process.c:263)
-0x0000008004207eb1: kernel_thread (threads/thread.c:593)
+run: bad value 16 in byte 0: FAILED
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-shuffle:page-shuffle --swap-disk=4 -- -q   -f run page-shuffle < /dev/null 2> tests/vm/page-shuffle.errors > tests/vm/page-shuffle.output
 perl -I../.. ../../tests/vm/page-shuffle.ck tests/vm/page-shuffle tests/vm/page-shuffle.result
 pass tests/vm/page-shuffle
@@ -419,17 +378,17 @@ pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-anon:swap-anon --swap-d
 perl -I../.. ../../tests/vm/swap-anon.ck tests/vm/swap-anon tests/vm/swap-anon.result
 FAIL tests/vm/swap-anon
 Kernel panic in run: PANIC at ../../vm/vm.c:161 in vm_get_frame(): todo
-Call stack: 0x8004218cfd 0x8004222f19 0x800422335f 0x800422327a 0x800421e1f0 0x8004209610 0x8004209a2e 0x800421daec 0x8004222da4 0x800421dcc6 0x800421d4f5 0x800421cbd9 0x800421c501 0x8004207eb1
+Call stack: 0x8004218cfd 0x8004222f1d 0x8004223363 0x800422327e 0x800421e1f0 0x8004209610 0x8004209a2e 0x800421daec 0x8004222da8 0x800421dcc6 0x800421d4f5 0x800421cbd9 0x800421c501 0x8004207eb1
 Translation of call stack:
 0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222f19: vm_get_frame (vm/vm.c:164)
-0x000000800422335f: vm_do_claim_page (vm/vm.c:267)
-0x000000800422327a: vm_try_handle_fault (vm/vm.c:240)
+0x0000008004222f1d: vm_get_frame (vm/vm.c:164)
+0x0000008004223363: vm_do_claim_page (vm/vm.c:267)
+0x000000800422327e: vm_try_handle_fault (vm/vm.c:240)
 0x000000800421e1f0: page_fault (userprog/exception.c:145)
 0x0000008004209610: intr_handler (threads/interrupt.c:352)
 0x0000008004209a2e: intr_entry (threads/intr-stubs.o:?)
 0x000000800421daec: lazy_load_segment (userprog/process.c:860)
-0x0000008004222da4: vm_alloc_page_with_initializer (vm/vm.c:87)
+0x0000008004222da8: vm_alloc_page_with_initializer (vm/vm.c:87)
 0x000000800421dcc6: load_segment (userprog/process.c:901)
 0x000000800421d4f5: load (userprog/process.c:620)
 0x000000800421cbd9: process_exec (userprog/process.c:328)
@@ -439,17 +398,17 @@ pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-iter:swap-iter -p ../..
 perl -I../.. ../../tests/vm/swap-iter.ck tests/vm/swap-iter tests/vm/swap-iter.result
 FAIL tests/vm/swap-iter
 Kernel panic in run: PANIC at ../../vm/vm.c:161 in vm_get_frame(): todo
-Call stack: 0x8004218cfd 0x8004222f19 0x800422335f 0x800422327a 0x800421e1f0 0x8004209610 0x8004209a2e 0x800421daec 0x8004222da4 0x800421dcc6 0x800421d4f5 0x800421cbd9 0x800421c501 0x8004207eb1
+Call stack: 0x8004218cfd 0x8004222f1d 0x8004223363 0x800422327e 0x800421e1f0 0x8004209610 0x8004209a2e 0x800421daec 0x8004222da8 0x800421dcc6 0x800421d4f5 0x800421cbd9 0x800421c501 0x8004207eb1
 Translation of call stack:
 0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222f19: vm_get_frame (vm/vm.c:164)
-0x000000800422335f: vm_do_claim_page (vm/vm.c:267)
-0x000000800422327a: vm_try_handle_fault (vm/vm.c:240)
+0x0000008004222f1d: vm_get_frame (vm/vm.c:164)
+0x0000008004223363: vm_do_claim_page (vm/vm.c:267)
+0x000000800422327e: vm_try_handle_fault (vm/vm.c:240)
 0x000000800421e1f0: page_fault (userprog/exception.c:145)
 0x0000008004209610: intr_handler (threads/interrupt.c:352)
 0x0000008004209a2e: intr_entry (threads/intr-stubs.o:?)
 0x000000800421daec: lazy_load_segment (userprog/process.c:860)
-0x0000008004222da4: vm_alloc_page_with_initializer (vm/vm.c:87)
+0x0000008004222da8: vm_alloc_page_with_initializer (vm/vm.c:87)
 0x000000800421dcc6: load_segment (userprog/process.c:901)
 0x000000800421d4f5: load (userprog/process.c:620)
 0x000000800421cbd9: process_exec (userprog/process.c:328)
@@ -457,17 +416,7 @@ Translation of call stack:
 0x0000008004207eb1: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 600 -m 40   --fs-disk=10 -p tests/vm/swap-fork:swap-fork -p tests/vm/child-swap:child-swap --swap-disk=200 -- -q   -f run swap-fork < /dev/null 2> tests/vm/swap-fork.errors > tests/vm/swap-fork.output
 perl -I../.. ../../tests/vm/swap-fork.ck tests/vm/swap-fork tests/vm/swap-fork.result
-FAIL tests/vm/swap-fork
-Kernel panic in run: PANIC at ../../vm/vm.c:161 in vm_get_frame(): todo
-Call stack: 0x8004218cfd 0x8004222f19 0x80042234f3 0x800421b636 0x8004223623 0x800421c9d4 0x8004207eb1
-Translation of call stack:
-0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222f19: vm_get_frame (vm/vm.c:164)
-0x00000080042234f3: copy_spt_hash (vm/vm.c:307)
-0x000000800421b636: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x0000008004223623: supplemental_page_table_copy (vm/vm.c:327)
-0x000000800421c9d4: __do_fork (userprog/process.c:263)
-0x0000008004207eb1: kernel_thread (threads/thread.c:593)
+pass tests/vm/swap-fork
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/lg-create:lg-create --swap-disk=4 -- -q   -f run lg-create < /dev/null 2> tests/filesys/base/lg-create.errors > tests/filesys/base/lg-create.output
 perl -I../.. ../../tests/filesys/base/lg-create.ck tests/filesys/base/lg-create tests/filesys/base/lg-create.result
 pass tests/filesys/base/lg-create
@@ -638,9 +587,9 @@ pass tests/vm/pt-write-code2
 pass tests/vm/pt-grow-stk-sc
 pass tests/vm/page-linear
 pass tests/vm/page-parallel
-FAIL tests/vm/page-merge-seq
-FAIL tests/vm/page-merge-par
-FAIL tests/vm/page-merge-stk
+pass tests/vm/page-merge-seq
+pass tests/vm/page-merge-par
+pass tests/vm/page-merge-stk
 FAIL tests/vm/page-merge-mm
 pass tests/vm/page-shuffle
 FAIL tests/vm/mmap-read
@@ -673,7 +622,7 @@ FAIL tests/vm/lazy-anon
 FAIL tests/vm/swap-file
 FAIL tests/vm/swap-anon
 FAIL tests/vm/swap-iter
-FAIL tests/vm/swap-fork
+pass tests/vm/swap-fork
 pass tests/filesys/base/lg-create
 pass tests/filesys/base/lg-full
 pass tests/filesys/base/lg-random
@@ -706,7 +655,5 @@ pass tests/threads/priority-sema
 pass tests/threads/priority-condvar
 pass tests/threads/priority-donate-chain
 FAIL tests/vm/cow/cow-simple
-33 of 141 tests failed.
+29 of 141 tests failed.
 ../../tests/Make.tests:28: recipe for target 'check' failed
-make[1]: Leaving directory '/home/kaist/pintos/vm/build'
-../Makefile.kernel:10: recipe for target 'check' failed
