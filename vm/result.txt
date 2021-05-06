@@ -146,21 +146,7 @@ perl -I../.. ../../tests/userprog/exec-read.ck tests/userprog/exec-read tests/us
 pass tests/userprog/exec-read
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/wait-simple:wait-simple -p tests/userprog/child-simple:child-simple --swap-disk=4 -- -q   -f run wait-simple < /dev/null 2> tests/userprog/wait-simple.errors > tests/userprog/wait-simple.output
 perl -I../.. ../../tests/userprog/wait-simple.ck tests/userprog/wait-simple tests/userprog/wait-simple.result
-FAIL tests/userprog/wait-simple
-Kernel panic in run: PANIC at ../../threads/thread.c:327 in thread_current(): assertion `t->status == THREAD_RUNNING' failed.
-Call stack: 0x8004218cfd 0x80042074ef 0x8004206e34 0x8004212a97 0x8004209610 0x8004209a2e 0x800421f62a 0x800421e344 0x400106 0x4001b3 0x400c54
-Translation of call stack:
-0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
-0x00000080042074ef: thread_current (threads/thread.c:329)
-0x0000008004206e34: thread_tick (threads/thread.c:163)
-0x0000008004212a97: timer_interrupt (devices/timer.c:129)
-0x0000008004209610: intr_handler (threads/interrupt.c:352)
-0x0000008004209a2e: intr_entry (threads/intr-stubs.o:?)
-0x000000800421f62a: syscall_handler (userprog/syscall.c:501)
-0x000000800421e344: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400106: (unknown)
-0x00000000004001b3: (unknown)
-0x0000000000400c54: (unknown)
+pass tests/userprog/wait-simple
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/wait-twice:wait-twice -p tests/userprog/child-simple:child-simple --swap-disk=4 -- -q   -f run wait-twice < /dev/null 2> tests/userprog/wait-twice.errors > tests/userprog/wait-twice.output
 perl -I../.. ../../tests/userprog/wait-twice.ck tests/userprog/wait-twice tests/userprog/wait-twice.result
 pass tests/userprog/wait-twice
@@ -232,25 +218,7 @@ perl -I../.. ../../tests/vm/page-linear.ck tests/vm/page-linear tests/vm/page-li
 pass tests/vm/page-linear
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-parallel:page-parallel -p tests/vm/child-linear:child-linear --swap-disk=4 -- -q   -f run page-parallel < /dev/null 2> tests/vm/page-parallel.errors > tests/vm/page-parallel.output
 perl -I../.. ../../tests/vm/page-parallel.ck tests/vm/page-parallel tests/vm/page-parallel.result
-FAIL tests/vm/page-parallel
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (page-parallel) begin
-  (page-parallel) wait for child 0
-  (page-parallel) wait for child 1
-  (page-parallel) wait for child 2
-  (page-parallel) wait for child 3
-  (page-parallel) end
-Differences in `diff -u' format:
-  (page-parallel) begin
-- (page-parallel) wait for child 0
-- (page-parallel) wait for child 1
-- (page-parallel) wait for child 2
-- (page-parallel) wait for child 3
-- (page-parallel) end
-
-(Process exit codes are excluded for matching purposes.)
+pass tests/vm/page-parallel
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-merge-seq:page-merge-seq -p tests/vm/child-sort:child-sort --swap-disk=4 -- -q   -f run page-merge-seq < /dev/null 2> tests/vm/page-merge-seq.errors > tests/vm/page-merge-seq.output
 perl -I../.. ../../tests/vm/page-merge-seq.ck tests/vm/page-merge-seq tests/vm/page-merge-seq.result
 FAIL tests/vm/page-merge-seq
@@ -645,7 +613,7 @@ pass tests/userprog/exec-boundary
 pass tests/userprog/exec-missing
 pass tests/userprog/exec-bad-ptr
 pass tests/userprog/exec-read
-FAIL tests/userprog/wait-simple
+pass tests/userprog/wait-simple
 pass tests/userprog/wait-twice
 pass tests/userprog/wait-killed
 pass tests/userprog/wait-bad-pid
@@ -669,7 +637,7 @@ pass tests/vm/pt-write-code
 pass tests/vm/pt-write-code2
 pass tests/vm/pt-grow-stk-sc
 pass tests/vm/page-linear
-FAIL tests/vm/page-parallel
+pass tests/vm/page-parallel
 FAIL tests/vm/page-merge-seq
 FAIL tests/vm/page-merge-par
 FAIL tests/vm/page-merge-stk
@@ -738,7 +706,7 @@ pass tests/threads/priority-sema
 pass tests/threads/priority-condvar
 pass tests/threads/priority-donate-chain
 FAIL tests/vm/cow/cow-simple
-35 of 141 tests failed.
+33 of 141 tests failed.
 ../../tests/Make.tests:28: recipe for target 'check' failed
 make[1]: Leaving directory '/home/kaist/pintos/vm/build'
 ../Makefile.kernel:10: recipe for target 'check' failed
