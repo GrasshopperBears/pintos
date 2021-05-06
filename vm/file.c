@@ -1,10 +1,13 @@
 /* file.c: Implementation of memory backed file object (mmaped object). */
 
 #include "vm/vm.h"
+#include "threads/synch.h"
 
 static bool file_backed_swap_in (struct page *page, void *kva);
 static bool file_backed_swap_out (struct page *page);
 static void file_backed_destroy (struct page *page);
+
+extern struct lock filesys_lock;
 
 /* DO NOT MODIFY this struct */
 static const struct page_operations file_ops = {
@@ -32,6 +35,14 @@ file_backed_initializer (struct page *page, enum vm_type type, void *kva) {
 static bool
 file_backed_swap_in (struct page *page, void *kva) {
 	struct file_page *file_page UNUSED = &page->file;
+
+	// TODO: reopen 처리(file_reopen)
+	if (file_page->file == NULL)
+		return false;
+	lock_acquire(&filesys_lock);
+	file_read_at(file_page->file, page->va, file_page->data_bytes, file_page->offset);
+	lock_release(&filesys_lock);
+	return true;
 }
 
 /* Swap out the page by writeback contents to the file. */

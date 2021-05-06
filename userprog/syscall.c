@@ -456,12 +456,12 @@ mmap (void *addr, size_t length, int writable, int fd, off_t offset) {
 			aux->data_bytes = PGSIZE;
 			aux->zero_bytes = 0;
 		} else {
-			aux->data_bytes = left_size - PGSIZE;
+			aux->data_bytes = left_size;
 			aux->zero_bytes = PGSIZE - left_size;
 		}
 		if (vm_alloc_page_with_initializer(VM_FILE, addr + PGSIZE * i, writable, mmap_set_page, aux) == NULL)
 			return NULL;
-		
+		left_size -= PGSIZE;
 	}
 	for (int i = 0; i < page_number; i++) {
 		if (!vm_alloc_page(VM_FILE, addr + PGSIZE * i, writable))

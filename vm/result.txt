@@ -1,3 +1,5 @@
+cd build && make check
+make[1]: Entering directory '/home/kaist/pintos/vm/build'
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-none:args-none --swap-disk=4 -- -q   -f run args-none < /dev/null 2> tests/userprog/args-none.errors > tests/userprog/args-none.output
 perl -I../.. ../../tests/userprog/args-none.ck tests/userprog/args-none tests/userprog/args-none.result
 pass tests/userprog/args-none
@@ -235,8 +237,7 @@ perl -I../.. ../../tests/vm/page-shuffle.ck tests/vm/page-shuffle tests/vm/page-
 pass tests/vm/page-shuffle
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-read:mmap-read -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-read < /dev/null 2> tests/vm/mmap-read.errors > tests/vm/mmap-read.output
 perl -I../.. ../../tests/vm/mmap-read.ck tests/vm/mmap-read tests/vm/mmap-read.result
-FAIL tests/vm/mmap-read
-run: read of mmap'd file reported bad data: FAILED
+pass tests/vm/mmap-read
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-close:mmap-close -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-close < /dev/null 2> tests/vm/mmap-close.errors > tests/vm/mmap-close.output
 perl -I../.. ../../tests/vm/mmap-close.ck tests/vm/mmap-close tests/vm/mmap-close.result
 FAIL tests/vm/mmap-close
@@ -252,8 +253,7 @@ FAIL tests/vm/mmap-overlap
 run: try to mmap "zeros" again: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-twice:mmap-twice -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-twice < /dev/null 2> tests/vm/mmap-twice.errors > tests/vm/mmap-twice.output
 perl -I../.. ../../tests/vm/mmap-twice.ck tests/vm/mmap-twice tests/vm/mmap-twice.result
-FAIL tests/vm/mmap-twice
-run: compare mmap'd file 0 against data: FAILED
+pass tests/vm/mmap-twice
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-write:mmap-write --swap-disk=4 -- -q   -f run mmap-write < /dev/null 2> tests/vm/mmap-write.errors > tests/vm/mmap-write.output
 perl -I../.. ../../tests/vm/mmap-write.ck tests/vm/mmap-write tests/vm/mmap-write.result
 FAIL tests/vm/mmap-write
@@ -275,11 +275,33 @@ run: try to mmap invalid fd: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-clean:mmap-clean -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-clean < /dev/null 2> tests/vm/mmap-clean.errors > tests/vm/mmap-clean.output
 perl -I../.. ../../tests/vm/mmap-clean.ck tests/vm/mmap-clean tests/vm/mmap-clean.result
 FAIL tests/vm/mmap-clean
-run: read of mmap'd file reported bad data: FAILED
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (mmap-clean) begin
+  (mmap-clean) open "sample.txt"
+  (mmap-clean) mmap "sample.txt"
+  (mmap-clean) write "sample.txt"
+  (mmap-clean) munmap "sample.txt"
+  (mmap-clean) seek "sample.txt"
+  (mmap-clean) read "sample.txt"
+  (mmap-clean) file change was retained after munmap
+  (mmap-clean) end
+Differences in `diff -u' format:
+  (mmap-clean) begin
+  (mmap-clean) open "sample.txt"
+  (mmap-clean) mmap "sample.txt"
+  (mmap-clean) write "sample.txt"
+- (mmap-clean) munmap "sample.txt"
+- (mmap-clean) seek "sample.txt"
+- (mmap-clean) read "sample.txt"
+- (mmap-clean) file change was retained after munmap
+- (mmap-clean) end
+
+(Process exit codes are excluded for matching purposes.)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-inherit:mmap-inherit -p ../../tests/vm/sample.txt:sample.txt -p tests/vm/child-inherit:child-inherit --swap-disk=4 -- -q   -f run mmap-inherit < /dev/null 2> tests/vm/mmap-inherit.errors > tests/vm/mmap-inherit.output
 perl -I../.. ../../tests/vm/mmap-inherit.ck tests/vm/mmap-inherit tests/vm/mmap-inherit.result
-FAIL tests/vm/mmap-inherit
-run: read of mmap'd file reported bad data: FAILED
+pass tests/vm/mmap-inherit
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-misalign:mmap-misalign -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-misalign < /dev/null 2> tests/vm/mmap-misalign.errors > tests/vm/mmap-misalign.output
 perl -I../.. ../../tests/vm/mmap-misalign.ck tests/vm/mmap-misalign tests/vm/mmap-misalign.result
 FAIL tests/vm/mmap-misalign
@@ -364,16 +386,14 @@ Differences in `diff -u' format:
 + mmap-kernel: exit(-1)
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/lazy-file:lazy-file -p ../../tests/vm/sample.txt:sample.txt -p ../../tests/vm/small.txt:small.txt --swap-disk=4 -- -q   -f run lazy-file < /dev/null 2> tests/vm/lazy-file.errors > tests/vm/lazy-file.output
 perl -I../.. ../../tests/vm/lazy-file.ck tests/vm/lazy-file tests/vm/lazy-file.result
-FAIL tests/vm/lazy-file
-run: read of mmap'd file reported bad data: FAILED
+pass tests/vm/lazy-file
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/lazy-anon:lazy-anon --swap-disk=4 -- -q   -f run lazy-anon < /dev/null 2> tests/vm/lazy-anon.errors > tests/vm/lazy-anon.output
 perl -I../.. ../../tests/vm/lazy-anon.ck tests/vm/lazy-anon tests/vm/lazy-anon.result
 FAIL tests/vm/lazy-anon
 run: check if page is not loaded: FAILED
 pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-file:swap-file -p ../../tests/vm/large.txt:large.txt --swap-disk=10 -- -q   -f run swap-file < /dev/null 2> tests/vm/swap-file.errors > tests/vm/swap-file.output
 perl -I../.. ../../tests/vm/swap-file.ck tests/vm/swap-file tests/vm/swap-file.result
-FAIL tests/vm/swap-file
-run: read of mmap'd file reported bad data: FAILED
+pass tests/vm/swap-file
 pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-anon:swap-anon --swap-disk=30 -- -q   -f run swap-anon < /dev/null 2> tests/vm/swap-anon.errors > tests/vm/swap-anon.output
 perl -I../.. ../../tests/vm/swap-anon.ck tests/vm/swap-anon tests/vm/swap-anon.result
 FAIL tests/vm/swap-anon
@@ -592,18 +612,18 @@ pass tests/vm/page-merge-par
 pass tests/vm/page-merge-stk
 FAIL tests/vm/page-merge-mm
 pass tests/vm/page-shuffle
-FAIL tests/vm/mmap-read
+pass tests/vm/mmap-read
 FAIL tests/vm/mmap-close
 FAIL tests/vm/mmap-unmap
 FAIL tests/vm/mmap-overlap
-FAIL tests/vm/mmap-twice
+pass tests/vm/mmap-twice
 FAIL tests/vm/mmap-write
 pass tests/vm/mmap-ro
 FAIL tests/vm/mmap-exit
 pass tests/vm/mmap-shuffle
 FAIL tests/vm/mmap-bad-fd
 FAIL tests/vm/mmap-clean
-FAIL tests/vm/mmap-inherit
+pass tests/vm/mmap-inherit
 FAIL tests/vm/mmap-misalign
 FAIL tests/vm/mmap-null
 FAIL tests/vm/mmap-over-code
@@ -617,9 +637,9 @@ FAIL tests/vm/mmap-zero-len
 FAIL tests/vm/mmap-off
 FAIL tests/vm/mmap-bad-off
 FAIL tests/vm/mmap-kernel
-FAIL tests/vm/lazy-file
+pass tests/vm/lazy-file
 FAIL tests/vm/lazy-anon
-FAIL tests/vm/swap-file
+pass tests/vm/swap-file
 FAIL tests/vm/swap-anon
 FAIL tests/vm/swap-iter
 pass tests/vm/swap-fork
@@ -655,5 +675,7 @@ pass tests/threads/priority-sema
 pass tests/threads/priority-condvar
 pass tests/threads/priority-donate-chain
 FAIL tests/vm/cow/cow-simple
-29 of 141 tests failed.
+24 of 141 tests failed.
 ../../tests/Make.tests:28: recipe for target 'check' failed
+make[1]: Leaving directory '/home/kaist/pintos/vm/build'
+../Makefile.kernel:10: recipe for target 'check' failed

@@ -276,8 +276,7 @@ vm_do_claim_page (struct page *page) {
 	succ = pml4_set_page(thread_current()->pml4, page->va, frame->kva, page->writable);
 	page->uninit.page_initializer(page, page_get_type(page), frame->kva);
 
-	// return swap_in (page, frame->kva);	// TODO: swap in 구현하면 갈아끼워야 할듯?
-	return succ;
+	return swap_in (page, frame->kva);
 }
 
 unsigned
