@@ -37,9 +37,9 @@ static bool
 file_backed_swap_in (struct page *page, void *kva) {
 	struct file_page *file_page UNUSED = &page->file;
 
-	// TODO: reopen 처리(file_reopen)
-	if (file_page->file == NULL)
+	if (file_page->file == NULL || !file_page->mappable)
 		return false;
+
 	lock_acquire(&filesys_lock);
 	file_read_at(file_page->file, page->va, file_page->data_bytes, file_page->offset);
 	lock_release(&filesys_lock);
@@ -58,6 +58,7 @@ file_backed_swap_out (struct page *page) {
 static void
 file_backed_destroy (struct page *page) {
 	struct file_page *file_page UNUSED = &page->file;
+	common_clear_page(page);
 }
 
 void
@@ -69,6 +70,7 @@ mmap_set_page(struct page *page, void *aux) {
 	page->file.offset = params->offset;
 	page->file.zero_bytes = params->zero_bytes;
 	page->file.is_last = params->is_last;
+	page->file.mappable = true;
 	free(aux);
 }
 
@@ -105,7 +107,7 @@ do_mmap (void *addr, size_t length, int writable,
 void
 do_munmap (void *addr) {
 	struct page* page;
-	struct file_page fp;
+	struct file_page* fp;
 	void* curr_addr = addr;
 
 	while (true) {
@@ -113,17 +115,16 @@ do_munmap (void *addr) {
 		if (page == NULL || page_get_type(page) == VM_ANON)
 			exit(-1);
 
-		fp = page->file;
+		fp = &page->file;
 		if (page_get_type(page) == VM_FILE) {
 			lock_acquire(&filesys_lock);
-			file_write_at(fp.file, page->va, fp.data_bytes, fp.offset);
+			file_write_at(fp->file, page->va, fp->data_bytes, fp->offset);
 			lock_release(&filesys_lock);
 		}
-		file_close(fp.file);
-		if (page_get_type(page) == VM_FILE)
-			common_clear_page(page);
-
-		if (fp.is_last)
+		file_close(fp->file);
+		fp->mappable = false;
+		
+		if (fp->is_last)
 			break;
 		curr_addr += PGSIZE;
 	}

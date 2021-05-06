@@ -12,6 +12,7 @@ struct file_page {
 	uint32_t data_bytes;
 	uint32_t zero_bytes;
 	bool is_last;
+	bool mappable;
 };
 
 void vm_file_init (void);

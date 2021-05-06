@@ -1,3 +1,5 @@
+cd build && make check
+make[1]: Entering directory '/home/kaist/pintos/vm/build'
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-none:args-none --swap-disk=4 -- -q   -f run args-none < /dev/null 2> tests/userprog/args-none.errors > tests/userprog/args-none.output
 perl -I../.. ../../tests/userprog/args-none.ck tests/userprog/args-none tests/userprog/args-none.result
 pass tests/userprog/args-none
@@ -225,7 +227,8 @@ perl -I../.. ../../tests/vm/page-merge-par.ck tests/vm/page-merge-par tests/vm/p
 pass tests/vm/page-merge-par
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-merge-stk:page-merge-stk -p tests/vm/child-qsort:child-qsort --swap-disk=4 -- -q   -f run page-merge-stk < /dev/null 2> tests/vm/page-merge-stk.errors > tests/vm/page-merge-stk.output
 perl -I../.. ../../tests/vm/page-merge-stk.ck tests/vm/page-merge-stk tests/vm/page-merge-stk.result
-pass tests/vm/page-merge-stk
+FAIL tests/vm/page-merge-stk
+run: wait for child 0: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-merge-mm:page-merge-mm -p tests/vm/child-qsort-mm:child-qsort-mm --swap-disk=4 -- -q   -f run page-merge-mm < /dev/null 2> tests/vm/page-merge-mm.errors > tests/vm/page-merge-mm.output
 perl -I../.. ../../tests/vm/page-merge-mm.ck tests/vm/page-merge-mm tests/vm/page-merge-mm.result
 FAIL tests/vm/page-merge-mm
@@ -241,20 +244,17 @@ perl -I../.. ../../tests/vm/mmap-close.ck tests/vm/mmap-close tests/vm/mmap-clos
 pass tests/vm/mmap-close
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-unmap:mmap-unmap -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-unmap < /dev/null 2> tests/vm/mmap-unmap.errors > tests/vm/mmap-unmap.output
 perl -I../.. ../../tests/vm/mmap-unmap.ck tests/vm/mmap-unmap tests/vm/mmap-unmap.result
-FAIL tests/vm/mmap-unmap
-run: unmapped memory is readable (0): FAILED
+pass tests/vm/mmap-unmap
 dd if=/dev/zero of=tests/vm/zeros bs=1024 count=6
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-overlap:mmap-overlap -p tests/vm/zeros:zeros --swap-disk=4 -- -q   -f run mmap-overlap < /dev/null 2> tests/vm/mmap-overlap.errors > tests/vm/mmap-overlap.output
 perl -I../.. ../../tests/vm/mmap-overlap.ck tests/vm/mmap-overlap tests/vm/mmap-overlap.result
-FAIL tests/vm/mmap-overlap
-run: try to mmap "zeros" again: FAILED
+pass tests/vm/mmap-overlap
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-twice:mmap-twice -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-twice < /dev/null 2> tests/vm/mmap-twice.errors > tests/vm/mmap-twice.output
 perl -I../.. ../../tests/vm/mmap-twice.ck tests/vm/mmap-twice tests/vm/mmap-twice.result
 pass tests/vm/mmap-twice
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-write:mmap-write --swap-disk=4 -- -q   -f run mmap-write < /dev/null 2> tests/vm/mmap-write.errors > tests/vm/mmap-write.output
 perl -I../.. ../../tests/vm/mmap-write.ck tests/vm/mmap-write tests/vm/mmap-write.result
-FAIL tests/vm/mmap-write
-run: compare read data against written data: FAILED
+pass tests/vm/mmap-write
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-ro:mmap-ro -p ../../tests/vm/large.txt:large.txt --swap-disk=4 -- -q   -f run mmap-ro < /dev/null 2> tests/vm/mmap-ro.errors > tests/vm/mmap-ro.output
 perl -I../.. ../../tests/vm/mmap-ro.ck tests/vm/mmap-ro tests/vm/mmap-ro.result
 pass tests/vm/mmap-ro
@@ -267,8 +267,7 @@ perl -I../.. ../../tests/vm/mmap-shuffle.ck tests/vm/mmap-shuffle tests/vm/mmap-
 pass tests/vm/mmap-shuffle
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-bad-fd:mmap-bad-fd --swap-disk=4 -- -q   -f run mmap-bad-fd < /dev/null 2> tests/vm/mmap-bad-fd.errors > tests/vm/mmap-bad-fd.output
 perl -I../.. ../../tests/vm/mmap-bad-fd.ck tests/vm/mmap-bad-fd tests/vm/mmap-bad-fd.result
-FAIL tests/vm/mmap-bad-fd
-run: try to mmap invalid fd: FAILED
+pass tests/vm/mmap-bad-fd
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-clean:mmap-clean -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-clean < /dev/null 2> tests/vm/mmap-clean.errors > tests/vm/mmap-clean.output
 perl -I../.. ../../tests/vm/mmap-clean.ck tests/vm/mmap-clean tests/vm/mmap-clean.result
 FAIL tests/vm/mmap-clean
@@ -301,8 +300,7 @@ perl -I../.. ../../tests/vm/mmap-inherit.ck tests/vm/mmap-inherit tests/vm/mmap-
 pass tests/vm/mmap-inherit
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-misalign:mmap-misalign -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-misalign < /dev/null 2> tests/vm/mmap-misalign.errors > tests/vm/mmap-misalign.output
 perl -I../.. ../../tests/vm/mmap-misalign.ck tests/vm/mmap-misalign tests/vm/mmap-misalign.result
-FAIL tests/vm/mmap-misalign
-run: try to mmap at misaligned address: FAILED
+pass tests/vm/mmap-misalign
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-null:mmap-null -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-null < /dev/null 2> tests/vm/mmap-null.errors > tests/vm/mmap-null.output
 perl -I../.. ../../tests/vm/mmap-null.ck tests/vm/mmap-null tests/vm/mmap-null.result
 FAIL tests/vm/mmap-null
@@ -322,16 +320,13 @@ Differences in `diff -u' format:
 (Process exit codes are excluded for matching purposes.)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-over-code:mmap-over-code -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-over-code < /dev/null 2> tests/vm/mmap-over-code.errors > tests/vm/mmap-over-code.output
 perl -I../.. ../../tests/vm/mmap-over-code.ck tests/vm/mmap-over-code tests/vm/mmap-over-code.result
-FAIL tests/vm/mmap-over-code
-run: try to mmap over code segment: FAILED
+pass tests/vm/mmap-over-code
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-over-data:mmap-over-data -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-over-data < /dev/null 2> tests/vm/mmap-over-data.errors > tests/vm/mmap-over-data.output
 perl -I../.. ../../tests/vm/mmap-over-data.ck tests/vm/mmap-over-data tests/vm/mmap-over-data.result
-FAIL tests/vm/mmap-over-data
-run: try to mmap over data segment: FAILED
+pass tests/vm/mmap-over-data
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-over-stk:mmap-over-stk -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-over-stk < /dev/null 2> tests/vm/mmap-over-stk.errors > tests/vm/mmap-over-stk.output
 perl -I../.. ../../tests/vm/mmap-over-stk.ck tests/vm/mmap-over-stk tests/vm/mmap-over-stk.result
-FAIL tests/vm/mmap-over-stk
-run: try to mmap over stack segment: FAILED
+pass tests/vm/mmap-over-stk
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-remove:mmap-remove -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-remove < /dev/null 2> tests/vm/mmap-remove.errors > tests/vm/mmap-remove.output
 perl -I../.. ../../tests/vm/mmap-remove.ck tests/vm/mmap-remove tests/vm/mmap-remove.result
 pass tests/vm/mmap-remove
@@ -340,20 +335,16 @@ perl -I../.. ../../tests/vm/mmap-zero.ck tests/vm/mmap-zero tests/vm/mmap-zero.r
 pass tests/vm/mmap-zero
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-bad-fd2:mmap-bad-fd2 --swap-disk=4 -- -q   -f run mmap-bad-fd2 < /dev/null 2> tests/vm/mmap-bad-fd2.errors > tests/vm/mmap-bad-fd2.output
 perl -I../.. ../../tests/vm/mmap-bad-fd2.ck tests/vm/mmap-bad-fd2 tests/vm/mmap-bad-fd2.result
-FAIL tests/vm/mmap-bad-fd2
-run: try to mmap stdin: FAILED
+pass tests/vm/mmap-bad-fd2
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-bad-fd3:mmap-bad-fd3 --swap-disk=4 -- -q   -f run mmap-bad-fd3 < /dev/null 2> tests/vm/mmap-bad-fd3.errors > tests/vm/mmap-bad-fd3.output
 perl -I../.. ../../tests/vm/mmap-bad-fd3.ck tests/vm/mmap-bad-fd3 tests/vm/mmap-bad-fd3.result
-FAIL tests/vm/mmap-bad-fd3
-run: try to mmap stdout: FAILED
+pass tests/vm/mmap-bad-fd3
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-zero-len:mmap-zero-len --swap-disk=4 -- -q   -f run mmap-zero-len < /dev/null 2> tests/vm/mmap-zero-len.errors > tests/vm/mmap-zero-len.output
 perl -I../.. ../../tests/vm/mmap-zero-len.ck tests/vm/mmap-zero-len tests/vm/mmap-zero-len.result
-FAIL tests/vm/mmap-zero-len
-run: try to mmap zero length: FAILED
+pass tests/vm/mmap-zero-len
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-off:mmap-off -p ../../tests/vm/large.txt:large.txt --swap-disk=4 -- -q   -f run mmap-off < /dev/null 2> tests/vm/mmap-off.errors > tests/vm/mmap-off.output
 perl -I../.. ../../tests/vm/mmap-off.ck tests/vm/mmap-off tests/vm/mmap-off.result
-FAIL tests/vm/mmap-off
-run: try to mmap with offset 0x1000: FAILED
+pass tests/vm/mmap-off
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-bad-off:mmap-bad-off -p ../../tests/vm/large.txt:large.txt --swap-disk=4 -- -q   -f run mmap-bad-off < /dev/null 2> tests/vm/mmap-bad-off.errors > tests/vm/mmap-bad-off.output
 perl -I../.. ../../tests/vm/mmap-bad-off.ck tests/vm/mmap-bad-off tests/vm/mmap-bad-off.result
 FAIL tests/vm/mmap-bad-off
@@ -393,18 +384,18 @@ pass tests/vm/swap-file
 pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-anon:swap-anon --swap-disk=30 -- -q   -f run swap-anon < /dev/null 2> tests/vm/swap-anon.errors > tests/vm/swap-anon.output
 perl -I../.. ../../tests/vm/swap-anon.ck tests/vm/swap-anon tests/vm/swap-anon.result
 FAIL tests/vm/swap-anon
-Kernel panic in run: PANIC at ../../vm/vm.c:161 in vm_get_frame(): todo
-Call stack: 0x8004218cfd 0x8004222d6e 0x80042231b4 0x80042230cf 0x800421e1f0 0x8004209610 0x8004209a2e 0x800421daec 0x8004222bf9 0x800421dcc6 0x800421d4f5 0x800421cbd9 0x800421c501 0x8004207eb1
+Kernel panic in run: PANIC at ../../vm/vm.c:160 in vm_get_frame(): todo
+Call stack: 0x8004218cfd 0x8004222d79 0x80042231bf 0x80042230da 0x800421e1f0 0x8004209610 0x8004209a2e 0x800421daec 0x8004222c04 0x800421dcc6 0x800421d4f5 0x800421cbd9 0x800421c501 0x8004207eb1
 Translation of call stack:
 0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222d6e: vm_get_frame (vm/vm.c:164)
-0x00000080042231b4: vm_do_claim_page (vm/vm.c:267)
-0x00000080042230cf: vm_try_handle_fault (vm/vm.c:240)
+0x0000008004222d79: vm_get_frame (vm/vm.c:163)
+0x00000080042231bf: vm_do_claim_page (vm/vm.c:266)
+0x00000080042230da: vm_try_handle_fault (vm/vm.c:239)
 0x000000800421e1f0: page_fault (userprog/exception.c:145)
 0x0000008004209610: intr_handler (threads/interrupt.c:352)
 0x0000008004209a2e: intr_entry (threads/intr-stubs.o:?)
 0x000000800421daec: lazy_load_segment (userprog/process.c:860)
-0x0000008004222bf9: vm_alloc_page_with_initializer (vm/vm.c:87)
+0x0000008004222c04: vm_alloc_page_with_initializer (vm/vm.c:86)
 0x000000800421dcc6: load_segment (userprog/process.c:901)
 0x000000800421d4f5: load (userprog/process.c:620)
 0x000000800421cbd9: process_exec (userprog/process.c:328)
@@ -413,18 +404,18 @@ Translation of call stack:
 pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-iter:swap-iter -p ../../tests/vm/large.txt:large.txt --swap-disk=50 -- -q   -f run swap-iter < /dev/null 2> tests/vm/swap-iter.errors > tests/vm/swap-iter.output
 perl -I../.. ../../tests/vm/swap-iter.ck tests/vm/swap-iter tests/vm/swap-iter.result
 FAIL tests/vm/swap-iter
-Kernel panic in run: PANIC at ../../vm/vm.c:161 in vm_get_frame(): todo
-Call stack: 0x8004218cfd 0x8004222d6e 0x80042231b4 0x80042230cf 0x800421e1f0 0x8004209610 0x8004209a2e 0x800421daec 0x8004222bf9 0x800421dcc6 0x800421d4f5 0x800421cbd9 0x800421c501 0x8004207eb1
+Kernel panic in run: PANIC at ../../vm/vm.c:160 in vm_get_frame(): todo
+Call stack: 0x8004218cfd 0x8004222d79 0x80042231bf 0x80042230da 0x800421e1f0 0x8004209610 0x8004209a2e 0x800421daec 0x8004222c04 0x800421dcc6 0x800421d4f5 0x800421cbd9 0x800421c501 0x8004207eb1
 Translation of call stack:
 0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222d6e: vm_get_frame (vm/vm.c:164)
-0x00000080042231b4: vm_do_claim_page (vm/vm.c:267)
-0x00000080042230cf: vm_try_handle_fault (vm/vm.c:240)
+0x0000008004222d79: vm_get_frame (vm/vm.c:163)
+0x00000080042231bf: vm_do_claim_page (vm/vm.c:266)
+0x00000080042230da: vm_try_handle_fault (vm/vm.c:239)
 0x000000800421e1f0: page_fault (userprog/exception.c:145)
 0x0000008004209610: intr_handler (threads/interrupt.c:352)
 0x0000008004209a2e: intr_entry (threads/intr-stubs.o:?)
 0x000000800421daec: lazy_load_segment (userprog/process.c:860)
-0x0000008004222bf9: vm_alloc_page_with_initializer (vm/vm.c:87)
+0x0000008004222c04: vm_alloc_page_with_initializer (vm/vm.c:86)
 0x000000800421dcc6: load_segment (userprog/process.c:901)
 0x000000800421d4f5: load (userprog/process.c:620)
 0x000000800421cbd9: process_exec (userprog/process.c:328)
@@ -605,32 +596,32 @@ pass tests/vm/page-linear
 pass tests/vm/page-parallel
 pass tests/vm/page-merge-seq
 pass tests/vm/page-merge-par
-pass tests/vm/page-merge-stk
+FAIL tests/vm/page-merge-stk
 FAIL tests/vm/page-merge-mm
 pass tests/vm/page-shuffle
 pass tests/vm/mmap-read
 pass tests/vm/mmap-close
-FAIL tests/vm/mmap-unmap
-FAIL tests/vm/mmap-overlap
+pass tests/vm/mmap-unmap
+pass tests/vm/mmap-overlap
 pass tests/vm/mmap-twice
-FAIL tests/vm/mmap-write
+pass tests/vm/mmap-write
 pass tests/vm/mmap-ro
 FAIL tests/vm/mmap-exit
 pass tests/vm/mmap-shuffle
-FAIL tests/vm/mmap-bad-fd
+pass tests/vm/mmap-bad-fd
 FAIL tests/vm/mmap-clean
 pass tests/vm/mmap-inherit
-FAIL tests/vm/mmap-misalign
+pass tests/vm/mmap-misalign
 FAIL tests/vm/mmap-null
-FAIL tests/vm/mmap-over-code
-FAIL tests/vm/mmap-over-data
-FAIL tests/vm/mmap-over-stk
+pass tests/vm/mmap-over-code
+pass tests/vm/mmap-over-data
+pass tests/vm/mmap-over-stk
 pass tests/vm/mmap-remove
 pass tests/vm/mmap-zero
-FAIL tests/vm/mmap-bad-fd2
-FAIL tests/vm/mmap-bad-fd3
-FAIL tests/vm/mmap-zero-len
-FAIL tests/vm/mmap-off
+pass tests/vm/mmap-bad-fd2
+pass tests/vm/mmap-bad-fd3
+pass tests/vm/mmap-zero-len
+pass tests/vm/mmap-off
 FAIL tests/vm/mmap-bad-off
 FAIL tests/vm/mmap-kernel
 pass tests/vm/lazy-file
@@ -671,5 +662,7 @@ pass tests/threads/priority-sema
 pass tests/threads/priority-condvar
 pass tests/threads/priority-donate-chain
 FAIL tests/vm/cow/cow-simple
-22 of 141 tests failed.
+11 of 141 tests failed.
 ../../tests/Make.tests:28: recipe for target 'check' failed
+make[1]: Leaving directory '/home/kaist/pintos/vm/build'
+../Makefile.kernel:10: recipe for target 'check' failed
