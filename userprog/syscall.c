@@ -429,7 +429,7 @@ mmap_set_page(struct page *page, void *aux) {
 	struct mmap_parameter *params = (struct mmap_parameter *)aux;
 
 	page->file.data_bytes = params->data_bytes;
-	page->file.file = params->file;
+	page->file.file = file_reopen(params->file);
 	page->file.offset = params->offset;
 	page->file.zero_bytes = params->zero_bytes;
 	free(aux);
