@@ -2,6 +2,7 @@
 
 #include "vm/vm.h"
 #include "threads/synch.h"
+#include "threads/vaddr.h"
 
 static bool file_backed_swap_in (struct page *page, void *kva);
 static bool file_backed_swap_out (struct page *page);
@@ -57,10 +58,45 @@ file_backed_destroy (struct page *page) {
 	struct file_page *file_page UNUSED = &page->file;
 }
 
+void
+mmap_set_page(struct page *page, void *aux) {
+	struct mmap_parameter *params = (struct mmap_parameter *)aux;
+
+	page->file.data_bytes = params->data_bytes;
+	page->file.file = file_reopen(params->file);
+	page->file.offset = params->offset;
+	page->file.zero_bytes = params->zero_bytes;
+	free(aux);
+}
+
 /* Do the mmap */
 void *
 do_mmap (void *addr, size_t length, int writable,
 		struct file *file, off_t offset) {
+	int page_number = length / PGSIZE + (length % PGSIZE == 0 ? 0 : 1);
+	size_t left_size = length;
+	struct mmap_parameter *aux;
+
+	for (int i = 0; i < page_number; i++) {
+		aux = malloc(sizeof(struct mmap_parameter));
+		aux->file = file;
+		aux->offset = offset + PGSIZE * i;
+		if (left_size >= PGSIZE) {
+			aux->data_bytes = PGSIZE;
+			aux->zero_bytes = 0;
+		} else {
+			aux->data_bytes = left_size;
+			aux->zero_bytes = PGSIZE - left_size;
+		}
+		if (vm_alloc_page_with_initializer(VM_FILE, addr + PGSIZE * i, writable, mmap_set_page, aux) == NULL)
+			return NULL;
+		left_size -= PGSIZE;
+	}
+	for (int i = 0; i < page_number; i++) {
+		if (!vm_alloc_page(VM_FILE, addr + PGSIZE * i, writable))
+			return NULL;
+	}
+	return addr;
 }
 
 /* Do the munmap */

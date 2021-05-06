@@ -424,55 +424,20 @@ dup2(int oldfd, int newfd) {
 	return newfd;
 }
 
-void
-mmap_set_page(struct page *page, void *aux) {
-	struct mmap_parameter *params = (struct mmap_parameter *)aux;
-
-	page->file.data_bytes = params->data_bytes;
-	page->file.file = file_reopen(params->file);
-	page->file.offset = params->offset;
-	page->file.zero_bytes = params->zero_bytes;
-	free(aux);
-}
-
 void *
 mmap (void *addr, size_t length, int writable, int fd, off_t offset) {
-	struct thread* curr = thread_current();
 	struct file_elem* f_el = file_elem_by_fd(fd);
-	int page_number = length / PGSIZE + (length % PGSIZE == 0 ? 0 : 1);
-	size_t left_size = length;
-	struct mmap_parameter *aux;
 
 	if (f_el == NULL || fd == 0 || fd == 1 || addr == 0 || length == 0 || !file_length(f_el->file))
 		return NULL;
 	if (pg_round_down(addr) != addr)	// addr is not alligned
 		return NULL;
-
-	for (int i = 0; i < page_number; i++) {
-		aux = malloc(sizeof(struct mmap_parameter));
-		aux->file = f_el->file;
-		aux->offset = offset + PGSIZE * i;
-		if (left_size >= PGSIZE) {
-			aux->data_bytes = PGSIZE;
-			aux->zero_bytes = 0;
-		} else {
-			aux->data_bytes = left_size;
-			aux->zero_bytes = PGSIZE - left_size;
-		}
-		if (vm_alloc_page_with_initializer(VM_FILE, addr + PGSIZE * i, writable, mmap_set_page, aux) == NULL)
-			return NULL;
-		left_size -= PGSIZE;
-	}
-	for (int i = 0; i < page_number; i++) {
-		if (!vm_alloc_page(VM_FILE, addr + PGSIZE * i, writable))
-			return NULL;
-	}
-	return addr;
+	return do_mmap(addr, length, writable, f_el->file, offset);
 }
 
 void
 munmap (void *addr) {
-
+	do_munmap(pg_round_down(addr));
 }
 
 void

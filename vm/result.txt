@@ -1,5 +1,3 @@
-cd build && make check
-make[1]: Entering directory '/home/kaist/pintos/vm/build'
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-none:args-none --swap-disk=4 -- -q   -f run args-none < /dev/null 2> tests/userprog/args-none.errors > tests/userprog/args-none.output
 perl -I../.. ../../tests/userprog/args-none.ck tests/userprog/args-none tests/userprog/args-none.result
 pass tests/userprog/args-none
@@ -240,8 +238,7 @@ perl -I../.. ../../tests/vm/mmap-read.ck tests/vm/mmap-read tests/vm/mmap-read.r
 pass tests/vm/mmap-read
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-close:mmap-close -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-close < /dev/null 2> tests/vm/mmap-close.errors > tests/vm/mmap-close.output
 perl -I../.. ../../tests/vm/mmap-close.ck tests/vm/mmap-close tests/vm/mmap-close.result
-FAIL tests/vm/mmap-close
-run: read of mmap'd file reported bad data: FAILED
+pass tests/vm/mmap-close
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-unmap:mmap-unmap -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-unmap < /dev/null 2> tests/vm/mmap-unmap.errors > tests/vm/mmap-unmap.output
 perl -I../.. ../../tests/vm/mmap-unmap.ck tests/vm/mmap-unmap tests/vm/mmap-unmap.result
 FAIL tests/vm/mmap-unmap
@@ -337,8 +334,7 @@ FAIL tests/vm/mmap-over-stk
 run: try to mmap over stack segment: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-remove:mmap-remove -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-remove < /dev/null 2> tests/vm/mmap-remove.errors > tests/vm/mmap-remove.output
 perl -I../.. ../../tests/vm/mmap-remove.ck tests/vm/mmap-remove tests/vm/mmap-remove.result
-FAIL tests/vm/mmap-remove
-run: read of mmap'd file reported bad data: FAILED
+pass tests/vm/mmap-remove
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-zero:mmap-zero --swap-disk=4 -- -q   -f run mmap-zero < /dev/null 2> tests/vm/mmap-zero.errors > tests/vm/mmap-zero.output
 perl -I../.. ../../tests/vm/mmap-zero.ck tests/vm/mmap-zero tests/vm/mmap-zero.result
 pass tests/vm/mmap-zero
@@ -398,17 +394,17 @@ pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-anon:swap-anon --swap-d
 perl -I../.. ../../tests/vm/swap-anon.ck tests/vm/swap-anon tests/vm/swap-anon.result
 FAIL tests/vm/swap-anon
 Kernel panic in run: PANIC at ../../vm/vm.c:161 in vm_get_frame(): todo
-Call stack: 0x8004218cfd 0x8004222f1d 0x8004223363 0x800422327e 0x800421e1f0 0x8004209610 0x8004209a2e 0x800421daec 0x8004222da8 0x800421dcc6 0x800421d4f5 0x800421cbd9 0x800421c501 0x8004207eb1
+Call stack: 0x8004218cfd 0x8004222d6e 0x80042231b4 0x80042230cf 0x800421e1f0 0x8004209610 0x8004209a2e 0x800421daec 0x8004222bf9 0x800421dcc6 0x800421d4f5 0x800421cbd9 0x800421c501 0x8004207eb1
 Translation of call stack:
 0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222f1d: vm_get_frame (vm/vm.c:164)
-0x0000008004223363: vm_do_claim_page (vm/vm.c:267)
-0x000000800422327e: vm_try_handle_fault (vm/vm.c:240)
+0x0000008004222d6e: vm_get_frame (vm/vm.c:164)
+0x00000080042231b4: vm_do_claim_page (vm/vm.c:267)
+0x00000080042230cf: vm_try_handle_fault (vm/vm.c:240)
 0x000000800421e1f0: page_fault (userprog/exception.c:145)
 0x0000008004209610: intr_handler (threads/interrupt.c:352)
 0x0000008004209a2e: intr_entry (threads/intr-stubs.o:?)
 0x000000800421daec: lazy_load_segment (userprog/process.c:860)
-0x0000008004222da8: vm_alloc_page_with_initializer (vm/vm.c:87)
+0x0000008004222bf9: vm_alloc_page_with_initializer (vm/vm.c:87)
 0x000000800421dcc6: load_segment (userprog/process.c:901)
 0x000000800421d4f5: load (userprog/process.c:620)
 0x000000800421cbd9: process_exec (userprog/process.c:328)
@@ -418,17 +414,17 @@ pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-iter:swap-iter -p ../..
 perl -I../.. ../../tests/vm/swap-iter.ck tests/vm/swap-iter tests/vm/swap-iter.result
 FAIL tests/vm/swap-iter
 Kernel panic in run: PANIC at ../../vm/vm.c:161 in vm_get_frame(): todo
-Call stack: 0x8004218cfd 0x8004222f1d 0x8004223363 0x800422327e 0x800421e1f0 0x8004209610 0x8004209a2e 0x800421daec 0x8004222da8 0x800421dcc6 0x800421d4f5 0x800421cbd9 0x800421c501 0x8004207eb1
+Call stack: 0x8004218cfd 0x8004222d6e 0x80042231b4 0x80042230cf 0x800421e1f0 0x8004209610 0x8004209a2e 0x800421daec 0x8004222bf9 0x800421dcc6 0x800421d4f5 0x800421cbd9 0x800421c501 0x8004207eb1
 Translation of call stack:
 0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222f1d: vm_get_frame (vm/vm.c:164)
-0x0000008004223363: vm_do_claim_page (vm/vm.c:267)
-0x000000800422327e: vm_try_handle_fault (vm/vm.c:240)
+0x0000008004222d6e: vm_get_frame (vm/vm.c:164)
+0x00000080042231b4: vm_do_claim_page (vm/vm.c:267)
+0x00000080042230cf: vm_try_handle_fault (vm/vm.c:240)
 0x000000800421e1f0: page_fault (userprog/exception.c:145)
 0x0000008004209610: intr_handler (threads/interrupt.c:352)
 0x0000008004209a2e: intr_entry (threads/intr-stubs.o:?)
 0x000000800421daec: lazy_load_segment (userprog/process.c:860)
-0x0000008004222da8: vm_alloc_page_with_initializer (vm/vm.c:87)
+0x0000008004222bf9: vm_alloc_page_with_initializer (vm/vm.c:87)
 0x000000800421dcc6: load_segment (userprog/process.c:901)
 0x000000800421d4f5: load (userprog/process.c:620)
 0x000000800421cbd9: process_exec (userprog/process.c:328)
@@ -613,7 +609,7 @@ pass tests/vm/page-merge-stk
 FAIL tests/vm/page-merge-mm
 pass tests/vm/page-shuffle
 pass tests/vm/mmap-read
-FAIL tests/vm/mmap-close
+pass tests/vm/mmap-close
 FAIL tests/vm/mmap-unmap
 FAIL tests/vm/mmap-overlap
 pass tests/vm/mmap-twice
@@ -629,7 +625,7 @@ FAIL tests/vm/mmap-null
 FAIL tests/vm/mmap-over-code
 FAIL tests/vm/mmap-over-data
 FAIL tests/vm/mmap-over-stk
-FAIL tests/vm/mmap-remove
+pass tests/vm/mmap-remove
 pass tests/vm/mmap-zero
 FAIL tests/vm/mmap-bad-fd2
 FAIL tests/vm/mmap-bad-fd3
@@ -675,7 +671,5 @@ pass tests/threads/priority-sema
 pass tests/threads/priority-condvar
 pass tests/threads/priority-donate-chain
 FAIL tests/vm/cow/cow-simple
-24 of 141 tests failed.
+22 of 141 tests failed.
 ../../tests/Make.tests:28: recipe for target 'check' failed
-make[1]: Leaving directory '/home/kaist/pintos/vm/build'
-../Makefile.kernel:10: recipe for target 'check' failed
