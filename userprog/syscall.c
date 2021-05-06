@@ -459,7 +459,7 @@ mmap (void *addr, size_t length, int writable, int fd, off_t offset) {
 			aux->data_bytes = left_size - PGSIZE;
 			aux->zero_bytes = PGSIZE - left_size;
 		}
-		if (vm_alloc_page_with_initializer(&curr->spt, addr + PGSIZE * i, writable, mmap_set_page, aux) == NULL)
+		if (vm_alloc_page_with_initializer(VM_FILE, addr + PGSIZE * i, writable, mmap_set_page, aux) == NULL)
 			return NULL;
 		
 	}
