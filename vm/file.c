@@ -43,6 +43,8 @@ file_backed_swap_in (struct page *page, void *kva) {
 	lock_acquire(&filesys_lock);
 	file_read_at(file_page->file, page->va, file_page->data_bytes, file_page->offset);
 	lock_release(&filesys_lock);
+	if (file_page->zero_bytes > 0)
+		memset(page->va + file_page->data_bytes, 0, file_page->zero_bytes);
 	return true;
 }
 
@@ -66,6 +68,7 @@ mmap_set_page(struct page *page, void *aux) {
 	page->file.file = file_reopen(params->file);
 	page->file.offset = params->offset;
 	page->file.zero_bytes = params->zero_bytes;
+	page->file.is_last = params->is_last;
 	free(aux);
 }
 
@@ -77,6 +80,7 @@ do_mmap (void *addr, size_t length, int writable,
 	size_t left_size = length;
 	struct mmap_parameter *aux;
 
+	// 연속 가능 확인?
 	for (int i = 0; i < page_number; i++) {
 		aux = malloc(sizeof(struct mmap_parameter));
 		aux->file = file;
@@ -84,17 +88,15 @@ do_mmap (void *addr, size_t length, int writable,
 		if (left_size >= PGSIZE) {
 			aux->data_bytes = PGSIZE;
 			aux->zero_bytes = 0;
+			aux->is_last = left_size == PGSIZE ? true : false;
 		} else {
 			aux->data_bytes = left_size;
 			aux->zero_bytes = PGSIZE - left_size;
+			aux->is_last = true;
 		}
 		if (vm_alloc_page_with_initializer(VM_FILE, addr + PGSIZE * i, writable, mmap_set_page, aux) == NULL)
 			return NULL;
 		left_size -= PGSIZE;
-	}
-	for (int i = 0; i < page_number; i++) {
-		if (!vm_alloc_page(VM_FILE, addr + PGSIZE * i, writable))
-			return NULL;
 	}
 	return addr;
 }
@@ -102,4 +104,27 @@ do_mmap (void *addr, size_t length, int writable,
 /* Do the munmap */
 void
 do_munmap (void *addr) {
+	struct page* page;
+	struct file_page fp;
+	void* curr_addr = addr;
+
+	while (true) {
+		page = spt_find_page(&thread_current()->spt, curr_addr);
+		if (page == NULL || page_get_type(page) == VM_ANON)
+			exit(-1);
+
+		fp = page->file;
+		if (page_get_type(page) == VM_FILE) {
+			lock_acquire(&filesys_lock);
+			file_write_at(fp.file, page->va, fp.data_bytes, fp.offset);
+			lock_release(&filesys_lock);
+		}
+		file_close(fp.file);
+		if (page_get_type(page) == VM_FILE)
+			common_clear_page(page);
+
+		if (fp.is_last)
+			break;
+		curr_addr += PGSIZE;
+	}
 }

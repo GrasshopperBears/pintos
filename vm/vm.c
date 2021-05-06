@@ -70,7 +70,6 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 			printf("malloc error\n");
 			goto err;	
 		}
-
 		initializer = (VM_TYPE(type) == VM_ANON) ? anon_initializer : file_backed_initializer;
 		uninit_new (page, upage, init, type, aux, initializer);
 		page->writable = writable;
@@ -266,7 +265,6 @@ bool
 vm_do_claim_page (struct page *page) {
 	struct frame *frame = vm_get_frame ();
 	bool succ;
-
 	/* Set links */
 	frame->page = page;
 	page->frame = frame;
@@ -331,6 +329,7 @@ void
 kill_spt_hash(struct hash_elem *e, void *aux) {
 	struct page* page = hash_entry(e, struct page, spt_hash_elem);
 	destroy(page);
+	free(page);
 }
 
 /* Free the resource hold by the supplemental page table */
@@ -339,4 +338,11 @@ supplemental_page_table_kill (struct supplemental_page_table *spt UNUSED) {
 	/* TODO: Destroy all the supplemental_page_table hold by thread and
 	 * TODO: writeback all the modified contents to the storage. */
 	hash_clear(spt, kill_spt_hash);
+}
+
+void
+common_clear_page(struct page *page) {
+	pml4_clear_page(thread_current()->pml4, page->va);
+	palloc_free_page(page->frame->kva);
+	free(page->frame);
 }

@@ -50,9 +50,5 @@ anon_swap_out (struct page *page) {
 static void
 anon_destroy (struct page *page) {
 	struct anon_page *anon_page = &page->anon;
-	pml4_clear_page(thread_current()->pml4, page->va);
-	palloc_free_page(page->frame->kva);
-	free(page->frame);
-	free(page);
-	return;
+	common_clear_page(page);
 }

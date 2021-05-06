@@ -11,6 +11,7 @@ struct file_page {
 	off_t offset;
 	uint32_t data_bytes;
 	uint32_t zero_bytes;
+	bool is_last;
 };
 
 void vm_file_init (void);

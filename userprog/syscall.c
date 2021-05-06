@@ -509,7 +509,7 @@ syscall_handler (struct intr_frame *f UNUSED) {
 		break;
 	case SYS_MMAP:
 		is_valid_user_ptr(f->R.rdi);
-		mmap (f->R.rdi, f->R.rsi, f->R.rdx, f->R.r10, f->R.r8);
+		f->R.rax = mmap (f->R.rdi, f->R.rsi, f->R.rdx, f->R.r10, f->R.r8);
 		break;
 	case SYS_MUNMAP:
 		is_valid_user_ptr(f->R.rdi);
