@@ -116,4 +116,11 @@ bool vm_do_claim_page (struct page *page);
 enum vm_type page_get_type (struct page *page);
 void after_stack_set(struct page *page, void *aux);
 
+struct mmap_parameter {
+	struct file* file;
+	off_t offset;
+	uint32_t data_bytes;
+	uint32_t zero_bytes;
+};
+
 #endif  /* VM_VM_H */
