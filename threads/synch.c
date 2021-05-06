@@ -200,7 +200,6 @@ delete_waiting_list(struct lock* lock) {
 		lock_list_el = list_entry(el, struct lock_list_elem, elem);
 		if (lock_list_el->lock == lock) {
 			list_remove(el);
-			free(lock_list_el);
 			break;
 		}
 		el = el->next;
@@ -224,7 +223,10 @@ update_donation_list(struct lock* lock) {
 
 void
 add_donation_list(struct lock* lock, int prev) {
-	struct donate_elem* new_el = malloc(sizeof(struct donate_elem));
+	struct donate_elem* new_el;
+	enum intr_level old_level = intr_disable();
+	new_el = malloc(sizeof(struct donate_elem));
+	intr_set_level(old_level);
 
 	lock->original_priority = prev;
 	lock->donated = true;
@@ -260,32 +262,30 @@ lock_acquire (struct lock *lock) {
 	bool success = false;
 	enum intr_level old_level;
 	struct semaphore* sema = &lock->semaphore;
-	struct lock_list_elem* new_lock_elem;
+	struct lock_list_elem new_lock_elem;
 
 	ASSERT (lock != NULL);
 	ASSERT (!intr_context ());
 	ASSERT (!lock_held_by_current_thread (lock));
 
+	old_level = intr_disable ();
 	while (!success) {
 		success = sema_try_down(&lock->semaphore);
 		if (success) {
 			lock->holder = thread_current ();
-			delete_waiting_list(lock);
 			break;
 		}
-
-		new_lock_elem = malloc(sizeof(struct lock_list_elem));
-		new_lock_elem->lock = lock;
-		list_push_front(&thread_current()->waiting_list, &new_lock_elem->elem);
-		old_level = intr_disable ();
+		new_lock_elem.lock = lock;
+		list_push_front(&thread_current()->waiting_list, &new_lock_elem.elem);
 		list_push_front(&sema->waiters, &thread_current ()->elem);
 		if (lock->holder->priority < thread_current()->priority && thread_mlfqs == false) {
 			donate(lock);
 			donation_propagation(lock, 0);
 		}
 		thread_block();
-		intr_set_level(old_level);
+		delete_waiting_list(lock);
 	}
+	intr_set_level(old_level);
 }
 
 void

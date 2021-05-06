@@ -146,7 +146,21 @@ perl -I../.. ../../tests/userprog/exec-read.ck tests/userprog/exec-read tests/us
 pass tests/userprog/exec-read
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/wait-simple:wait-simple -p tests/userprog/child-simple:child-simple --swap-disk=4 -- -q   -f run wait-simple < /dev/null 2> tests/userprog/wait-simple.errors > tests/userprog/wait-simple.output
 perl -I../.. ../../tests/userprog/wait-simple.ck tests/userprog/wait-simple tests/userprog/wait-simple.result
-pass tests/userprog/wait-simple
+FAIL tests/userprog/wait-simple
+Kernel panic in run: PANIC at ../../threads/thread.c:327 in thread_current(): assertion `t->status == THREAD_RUNNING' failed.
+Call stack: 0x8004218cfd 0x80042074ef 0x8004206e34 0x8004212a97 0x8004209610 0x8004209a2e 0x800421f62a 0x800421e344 0x400106 0x4001b3 0x400c54
+Translation of call stack:
+0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
+0x00000080042074ef: thread_current (threads/thread.c:329)
+0x0000008004206e34: thread_tick (threads/thread.c:163)
+0x0000008004212a97: timer_interrupt (devices/timer.c:129)
+0x0000008004209610: intr_handler (threads/interrupt.c:352)
+0x0000008004209a2e: intr_entry (threads/intr-stubs.o:?)
+0x000000800421f62a: syscall_handler (userprog/syscall.c:501)
+0x000000800421e344: no_sti (userprog/syscall-entry.o:?)
+0x0000000000400106: (unknown)
+0x00000000004001b3: (unknown)
+0x0000000000400c54: (unknown)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/wait-twice:wait-twice -p tests/userprog/child-simple:child-simple --swap-disk=4 -- -q   -f run wait-twice < /dev/null 2> tests/userprog/wait-twice.errors > tests/userprog/wait-twice.output
 perl -I../.. ../../tests/userprog/wait-twice.ck tests/userprog/wait-twice tests/userprog/wait-twice.result
 pass tests/userprog/wait-twice
@@ -219,111 +233,75 @@ pass tests/vm/page-linear
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-parallel:page-parallel -p tests/vm/child-linear:child-linear --swap-disk=4 -- -q   -f run page-parallel < /dev/null 2> tests/vm/page-parallel.errors > tests/vm/page-parallel.output
 perl -I../.. ../../tests/vm/page-parallel.ck tests/vm/page-parallel tests/vm/page-parallel.result
 FAIL tests/vm/page-parallel
-Kernel panic in run: PANIC at ../../threads/thread.c:326 in thread_current(): assertion `is_thread (t)' failed.
-Call stack: 0x8004218d07 0x80042074a5 0x800420b432 0x800420ad40 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420c3b1 0x800420c4b5 0x800421c884 0x800421e78a 0x800421f3ae 0x800421e34e 0x40010f 0x400c8c 0x400cd5
-Translation of call stack:
-0x0000008004218d07: debug_panic (lib/kernel/debug.c:32)
-0x00000080042074a5: thread_current (threads/thread.c:327)
-0x000000800420b432: lock_held_by_current_thread (threads/synch.c:397)
-0x000000800420ad40: lock_acquire (threads/synch.c:267)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420c3b1: palloc_get_multiple (threads/palloc.c:267 (discriminator 4))
-0x000000800420c4b5: palloc_get_page (threads/palloc.c:297)
-0x000000800421c884: process_fork (userprog/process.c:184)
-0x000000800421e78a: fork (userprog/syscall.c:152)
-0x000000800421f3ae: syscall_handler (userprog/syscall.c:450)
-0x000000800421e34e: no_sti (userprog/syscall-entry.o:?)
-0x000000000040010f: (unknown)
-0x0000000000400c8c: (unknown)
-0x0000000000400cd5: (unknown)
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (page-parallel) begin
+  (page-parallel) wait for child 0
+  (page-parallel) wait for child 1
+  (page-parallel) wait for child 2
+  (page-parallel) wait for child 3
+  (page-parallel) end
+Differences in `diff -u' format:
+  (page-parallel) begin
+- (page-parallel) wait for child 0
+- (page-parallel) wait for child 1
+- (page-parallel) wait for child 2
+- (page-parallel) wait for child 3
+- (page-parallel) end
+
+(Process exit codes are excluded for matching purposes.)
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-merge-seq:page-merge-seq -p tests/vm/child-sort:child-sort --swap-disk=4 -- -q   -f run page-merge-seq < /dev/null 2> tests/vm/page-merge-seq.errors > tests/vm/page-merge-seq.output
 perl -I../.. ../../tests/vm/page-merge-seq.ck tests/vm/page-merge-seq tests/vm/page-merge-seq.result
 FAIL tests/vm/page-merge-seq
 Kernel panic in run: PANIC at ../../vm/vm.c:161 in vm_get_frame(): todo
-Call stack: 0x8004218d07 0x8004222c05 0x80042231df 0x800421b640 0x800422330f 0x800421c9de 0x8004207eb1
+Call stack: 0x8004218cfd 0x8004222f19 0x80042234f3 0x800421b636 0x8004223623 0x800421c9d4 0x8004207eb1
 Translation of call stack:
-0x0000008004218d07: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222c05: vm_get_frame (vm/vm.c:164)
-0x00000080042231df: copy_spt_hash (vm/vm.c:307)
-0x000000800421b640: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x000000800422330f: supplemental_page_table_copy (vm/vm.c:327)
-0x000000800421c9de: __do_fork (userprog/process.c:263)
+0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
+0x0000008004222f19: vm_get_frame (vm/vm.c:164)
+0x00000080042234f3: copy_spt_hash (vm/vm.c:307)
+0x000000800421b636: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223623: supplemental_page_table_copy (vm/vm.c:327)
+0x000000800421c9d4: __do_fork (userprog/process.c:263)
 0x0000008004207eb1: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-merge-par:page-merge-par -p tests/vm/child-sort:child-sort --swap-disk=4 -- -q   -f run page-merge-par < /dev/null 2> tests/vm/page-merge-par.errors > tests/vm/page-merge-par.output
 perl -I../.. ../../tests/vm/page-merge-par.ck tests/vm/page-merge-par tests/vm/page-merge-par.result
 FAIL tests/vm/page-merge-par
 Kernel panic in run: PANIC at ../../vm/vm.c:161 in vm_get_frame(): todo
-Call stack: 0x8004218d07 0x8004222c05 0x80042231df 0x800421b640 0x800422330f 0x800421c9de 0x8004207eb1
+Call stack: 0x8004218cfd 0x8004222f19 0x80042234f3 0x800421b636 0x8004223623 0x800421c9d4 0x8004207eb1
 Translation of call stack:
-0x0000008004218d07: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222c05: vm_get_frame (vm/vm.c:164)
-0x00000080042231df: copy_spt_hash (vm/vm.c:307)
-0x000000800421b640: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x000000800422330f: supplemental_page_table_copy (vm/vm.c:327)
-0x000000800421c9de: __do_fork (userprog/process.c:263)
+0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
+0x0000008004222f19: vm_get_frame (vm/vm.c:164)
+0x00000080042234f3: copy_spt_hash (vm/vm.c:307)
+0x000000800421b636: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223623: supplemental_page_table_copy (vm/vm.c:327)
+0x000000800421c9d4: __do_fork (userprog/process.c:263)
 0x0000008004207eb1: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-merge-stk:page-merge-stk -p tests/vm/child-qsort:child-qsort --swap-disk=4 -- -q   -f run page-merge-stk < /dev/null 2> tests/vm/page-merge-stk.errors > tests/vm/page-merge-stk.output
 perl -I../.. ../../tests/vm/page-merge-stk.ck tests/vm/page-merge-stk tests/vm/page-merge-stk.result
 FAIL tests/vm/page-merge-stk
 Kernel panic in run: PANIC at ../../vm/vm.c:161 in vm_get_frame(): todo
-Call stack: 0x8004218d07 0x8004222c05 0x80042231df 0x800421b640 0x800422330f 0x800421c9de 0x8004207eb1
+Call stack: 0x8004218cfd 0x8004222f19 0x80042234f3 0x800421b636 0x8004223623 0x800421c9d4 0x8004207eb1
 Translation of call stack:
-0x0000008004218d07: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222c05: vm_get_frame (vm/vm.c:164)
-0x00000080042231df: copy_spt_hash (vm/vm.c:307)
-0x000000800421b640: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x000000800422330f: supplemental_page_table_copy (vm/vm.c:327)
-0x000000800421c9de: __do_fork (userprog/process.c:263)
+0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
+0x0000008004222f19: vm_get_frame (vm/vm.c:164)
+0x00000080042234f3: copy_spt_hash (vm/vm.c:307)
+0x000000800421b636: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223623: supplemental_page_table_copy (vm/vm.c:327)
+0x000000800421c9d4: __do_fork (userprog/process.c:263)
 0x0000008004207eb1: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-merge-mm:page-merge-mm -p tests/vm/child-qsort-mm:child-qsort-mm --swap-disk=4 -- -q   -f run page-merge-mm < /dev/null 2> tests/vm/page-merge-mm.errors > tests/vm/page-merge-mm.output
 perl -I../.. ../../tests/vm/page-merge-mm.ck tests/vm/page-merge-mm tests/vm/page-merge-mm.result
 FAIL tests/vm/page-merge-mm
 Kernel panic in run: PANIC at ../../vm/vm.c:161 in vm_get_frame(): todo
-Call stack: 0x8004218d07 0x8004222c05 0x80042231df 0x800421b640 0x800422330f 0x800421c9de 0x8004207eb1
+Call stack: 0x8004218cfd 0x8004222f19 0x80042234f3 0x800421b636 0x8004223623 0x800421c9d4 0x8004207eb1
 Translation of call stack:
-0x0000008004218d07: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222c05: vm_get_frame (vm/vm.c:164)
-0x00000080042231df: copy_spt_hash (vm/vm.c:307)
-0x000000800421b640: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
-0x000000800422330f: supplemental_page_table_copy (vm/vm.c:327)
-0x000000800421c9de: __do_fork (userprog/process.c:263)
+0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
+0x0000008004222f19: vm_get_frame (vm/vm.c:164)
+0x00000080042234f3: copy_spt_hash (vm/vm.c:307)
+0x000000800421b636: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223623: supplemental_page_table_copy (vm/vm.c:327)
+0x000000800421c9d4: __do_fork (userprog/process.c:263)
 0x0000008004207eb1: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-shuffle:page-shuffle --swap-disk=4 -- -q   -f run page-shuffle < /dev/null 2> tests/vm/page-shuffle.errors > tests/vm/page-shuffle.output
 perl -I../.. ../../tests/vm/page-shuffle.ck tests/vm/page-shuffle tests/vm/page-shuffle.result
@@ -331,282 +309,54 @@ pass tests/vm/page-shuffle
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-read:mmap-read -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-read < /dev/null 2> tests/vm/mmap-read.errors > tests/vm/mmap-read.output
 perl -I../.. ../../tests/vm/mmap-read.ck tests/vm/mmap-read tests/vm/mmap-read.result
 FAIL tests/vm/mmap-read
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-read) begin
-  (mmap-read) open "sample.txt"
-  (mmap-read) mmap "sample.txt"
-  (mmap-read) end
-Differences in `diff -u' format:
-  (mmap-read) begin
-  (mmap-read) open "sample.txt"
-  (mmap-read) mmap "sample.txt"
-- (mmap-read) end
-
-(Process exit codes are excluded for matching purposes.)
+run: read of mmap'd file reported bad data: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-close:mmap-close -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-close < /dev/null 2> tests/vm/mmap-close.errors > tests/vm/mmap-close.output
 perl -I../.. ../../tests/vm/mmap-close.ck tests/vm/mmap-close tests/vm/mmap-close.result
 FAIL tests/vm/mmap-close
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-close) begin
-  (mmap-close) open "sample.txt"
-  (mmap-close) mmap "sample.txt"
-  (mmap-close) end
-Differences in `diff -u' format:
-  (mmap-close) begin
-  (mmap-close) open "sample.txt"
-  (mmap-close) mmap "sample.txt"
-- (mmap-close) end
-
-(Process exit codes are excluded for matching purposes.)
+run: read of mmap'd file reported bad data: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-unmap:mmap-unmap -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-unmap < /dev/null 2> tests/vm/mmap-unmap.errors > tests/vm/mmap-unmap.output
 perl -I../.. ../../tests/vm/mmap-unmap.ck tests/vm/mmap-unmap tests/vm/mmap-unmap.result
 FAIL tests/vm/mmap-unmap
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-unmap) begin
-  (mmap-unmap) open "sample.txt"
-  (mmap-unmap) mmap "sample.txt"
-  (mmap-unmap) memory is readable 540884285
-  (mmap-unmap) memory is readable 540888381
-  mmap-unmap: exit(-1)
-Differences in `diff -u' format:
-  (mmap-unmap) begin
-  (mmap-unmap) open "sample.txt"
-  (mmap-unmap) mmap "sample.txt"
-- (mmap-unmap) memory is readable 540884285
-- (mmap-unmap) memory is readable 540888381
-- mmap-unmap: exit(-1)
-+ mmap-unmap: exit(0)
+run: unmapped memory is readable (0): FAILED
 dd if=/dev/zero of=tests/vm/zeros bs=1024 count=6
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-overlap:mmap-overlap -p tests/vm/zeros:zeros --swap-disk=4 -- -q   -f run mmap-overlap < /dev/null 2> tests/vm/mmap-overlap.errors > tests/vm/mmap-overlap.output
 perl -I../.. ../../tests/vm/mmap-overlap.ck tests/vm/mmap-overlap tests/vm/mmap-overlap.result
 FAIL tests/vm/mmap-overlap
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-overlap) begin
-  (mmap-overlap) open "zeros" once
-  (mmap-overlap) mmap "zeros"
-  (mmap-overlap) open "zeros" again
-  (mmap-overlap) try to mmap "zeros" again
-  (mmap-overlap) end
-Differences in `diff -u' format:
-  (mmap-overlap) begin
-  (mmap-overlap) open "zeros" once
-  (mmap-overlap) mmap "zeros"
-- (mmap-overlap) open "zeros" again
-- (mmap-overlap) try to mmap "zeros" again
-- (mmap-overlap) end
-
-(Process exit codes are excluded for matching purposes.)
+run: try to mmap "zeros" again: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-twice:mmap-twice -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-twice < /dev/null 2> tests/vm/mmap-twice.errors > tests/vm/mmap-twice.output
 perl -I../.. ../../tests/vm/mmap-twice.ck tests/vm/mmap-twice tests/vm/mmap-twice.result
 FAIL tests/vm/mmap-twice
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-twice) begin
-  (mmap-twice) open "sample.txt" #0
-  (mmap-twice) mmap "sample.txt" #0 at 0x10000000
-  (mmap-twice) open "sample.txt" #1
-  (mmap-twice) mmap "sample.txt" #1 at 0x20000000
-  (mmap-twice) compare mmap'd file 0 against data
-  (mmap-twice) compare mmap'd file 1 against data
-  (mmap-twice) end
-Differences in `diff -u' format:
-  (mmap-twice) begin
-  (mmap-twice) open "sample.txt" #0
-  (mmap-twice) mmap "sample.txt" #0 at 0x10000000
-- (mmap-twice) open "sample.txt" #1
-- (mmap-twice) mmap "sample.txt" #1 at 0x20000000
-- (mmap-twice) compare mmap'd file 0 against data
-- (mmap-twice) compare mmap'd file 1 against data
-- (mmap-twice) end
-
-(Process exit codes are excluded for matching purposes.)
+run: compare mmap'd file 0 against data: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-write:mmap-write --swap-disk=4 -- -q   -f run mmap-write < /dev/null 2> tests/vm/mmap-write.errors > tests/vm/mmap-write.output
 perl -I../.. ../../tests/vm/mmap-write.ck tests/vm/mmap-write tests/vm/mmap-write.result
 FAIL tests/vm/mmap-write
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-write) begin
-  (mmap-write) create "sample.txt"
-  (mmap-write) open "sample.txt"
-  (mmap-write) mmap "sample.txt"
-  (mmap-write) compare read data against written data
-  (mmap-write) end
-Differences in `diff -u' format:
-  (mmap-write) begin
-  (mmap-write) create "sample.txt"
-  (mmap-write) open "sample.txt"
-  (mmap-write) mmap "sample.txt"
-- (mmap-write) compare read data against written data
-- (mmap-write) end
-
-(Process exit codes are excluded for matching purposes.)
+run: compare read data against written data: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-ro:mmap-ro -p ../../tests/vm/large.txt:large.txt --swap-disk=4 -- -q   -f run mmap-ro < /dev/null 2> tests/vm/mmap-ro.errors > tests/vm/mmap-ro.output
 perl -I../.. ../../tests/vm/mmap-ro.ck tests/vm/mmap-ro tests/vm/mmap-ro.result
-FAIL tests/vm/mmap-ro
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-ro) begin
-  (mmap-ro) open "large.txt"
-  (mmap-ro) mmap "large.txt" with writable=0
-  (mmap-ro) about to write into read-only mmap'd memory
-Differences in `diff -u' format:
-  (mmap-ro) begin
-  (mmap-ro) open "large.txt"
-  (mmap-ro) mmap "large.txt" with writable=0
-- (mmap-ro) about to write into read-only mmap'd memory
-
-(Process exit codes are excluded for matching purposes.)
+pass tests/vm/mmap-ro
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-exit:mmap-exit -p tests/vm/child-mm-wrt:child-mm-wrt --swap-disk=4 -- -q   -f run mmap-exit < /dev/null 2> tests/vm/mmap-exit.errors > tests/vm/mmap-exit.output
 perl -I../.. ../../tests/vm/mmap-exit.ck tests/vm/mmap-exit tests/vm/mmap-exit.result
 FAIL tests/vm/mmap-exit
 run: 512 bytes read starting at offset 0 in "sample.txt" differ from expected: FAILED
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/mmap-shuffle:mmap-shuffle --swap-disk=4 -- -q   -f run mmap-shuffle < /dev/null 2> tests/vm/mmap-shuffle.errors > tests/vm/mmap-shuffle.output
 perl -I../.. ../../tests/vm/mmap-shuffle.ck tests/vm/mmap-shuffle tests/vm/mmap-shuffle.result
-FAIL tests/vm/mmap-shuffle
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-shuffle) begin
-  (mmap-shuffle) create "buffer"
-  (mmap-shuffle) open "buffer"
-  (mmap-shuffle) mmap "buffer"
-  (mmap-shuffle) init: cksum=3115322833
-  (mmap-shuffle) shuffle 0: cksum=2274652418
-  (mmap-shuffle) shuffle 1: cksum=2281360714
-  (mmap-shuffle) shuffle 2: cksum=3504443700
-  (mmap-shuffle) shuffle 3: cksum=2850516818
-  (mmap-shuffle) shuffle 4: cksum=2406916757
-  (mmap-shuffle) shuffle 5: cksum=3377643430
-  (mmap-shuffle) shuffle 6: cksum=658047850
-  (mmap-shuffle) shuffle 7: cksum=493716582
-  (mmap-shuffle) shuffle 8: cksum=3359519593
-  (mmap-shuffle) shuffle 9: cksum=143675990
-  (mmap-shuffle) end
-Differences in `diff -u' format:
-  (mmap-shuffle) begin
-  (mmap-shuffle) create "buffer"
-  (mmap-shuffle) open "buffer"
-  (mmap-shuffle) mmap "buffer"
-- (mmap-shuffle) init: cksum=3115322833
-- (mmap-shuffle) shuffle 0: cksum=2274652418
-- (mmap-shuffle) shuffle 1: cksum=2281360714
-- (mmap-shuffle) shuffle 2: cksum=3504443700
-- (mmap-shuffle) shuffle 3: cksum=2850516818
-- (mmap-shuffle) shuffle 4: cksum=2406916757
-- (mmap-shuffle) shuffle 5: cksum=3377643430
-- (mmap-shuffle) shuffle 6: cksum=658047850
-- (mmap-shuffle) shuffle 7: cksum=493716582
-- (mmap-shuffle) shuffle 8: cksum=3359519593
-- (mmap-shuffle) shuffle 9: cksum=143675990
-- (mmap-shuffle) end
-
-(Process exit codes are excluded for matching purposes.)
+pass tests/vm/mmap-shuffle
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-bad-fd:mmap-bad-fd --swap-disk=4 -- -q   -f run mmap-bad-fd < /dev/null 2> tests/vm/mmap-bad-fd.errors > tests/vm/mmap-bad-fd.output
 perl -I../.. ../../tests/vm/mmap-bad-fd.ck tests/vm/mmap-bad-fd tests/vm/mmap-bad-fd.result
 FAIL tests/vm/mmap-bad-fd
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-bad-fd) begin
-  (mmap-bad-fd) try to mmap invalid fd
-  mmap-bad-fd: exit(-1)
-Differences in `diff -u' format:
-  (mmap-bad-fd) begin
-  (mmap-bad-fd) try to mmap invalid fd
-- mmap-bad-fd: exit(-1)
-+ mmap-bad-fd: exit(0)
-Acceptable output:
-  (mmap-bad-fd) begin
-  (mmap-bad-fd) try to mmap invalid fd
-  (mmap-bad-fd) end
-  mmap-bad-fd: exit(0)
-Differences in `diff -u' format:
-  (mmap-bad-fd) begin
-  (mmap-bad-fd) try to mmap invalid fd
-- (mmap-bad-fd) end
-  mmap-bad-fd: exit(0)
+run: try to mmap invalid fd: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-clean:mmap-clean -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-clean < /dev/null 2> tests/vm/mmap-clean.errors > tests/vm/mmap-clean.output
 perl -I../.. ../../tests/vm/mmap-clean.ck tests/vm/mmap-clean tests/vm/mmap-clean.result
 FAIL tests/vm/mmap-clean
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-clean) begin
-  (mmap-clean) open "sample.txt"
-  (mmap-clean) mmap "sample.txt"
-  (mmap-clean) write "sample.txt"
-  (mmap-clean) munmap "sample.txt"
-  (mmap-clean) seek "sample.txt"
-  (mmap-clean) read "sample.txt"
-  (mmap-clean) file change was retained after munmap
-  (mmap-clean) end
-Differences in `diff -u' format:
-  (mmap-clean) begin
-  (mmap-clean) open "sample.txt"
-  (mmap-clean) mmap "sample.txt"
-- (mmap-clean) write "sample.txt"
-- (mmap-clean) munmap "sample.txt"
-- (mmap-clean) seek "sample.txt"
-- (mmap-clean) read "sample.txt"
-- (mmap-clean) file change was retained after munmap
-- (mmap-clean) end
-
-(Process exit codes are excluded for matching purposes.)
+run: read of mmap'd file reported bad data: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-inherit:mmap-inherit -p ../../tests/vm/sample.txt:sample.txt -p tests/vm/child-inherit:child-inherit --swap-disk=4 -- -q   -f run mmap-inherit < /dev/null 2> tests/vm/mmap-inherit.errors > tests/vm/mmap-inherit.output
 perl -I../.. ../../tests/vm/mmap-inherit.ck tests/vm/mmap-inherit tests/vm/mmap-inherit.result
 FAIL tests/vm/mmap-inherit
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-inherit) begin
-  (mmap-inherit) open "sample.txt"
-  (mmap-inherit) mmap "sample.txt"
-  (mmap-inherit) exec "child-inherit"
-  (child-inherit) begin
-  child-inherit: exit(-1)
-  (mmap-inherit) checking that mmap'd file still has same data
-  (mmap-inherit) end
-  mmap-inherit: exit(0)
-Differences in `diff -u' format:
-  (mmap-inherit) begin
-  (mmap-inherit) open "sample.txt"
-  (mmap-inherit) mmap "sample.txt"
-- (mmap-inherit) exec "child-inherit"
-- (child-inherit) begin
-- child-inherit: exit(-1)
-- (mmap-inherit) checking that mmap'd file still has same data
-- (mmap-inherit) end
-  mmap-inherit: exit(0)
-
-(User fault messages are excluded for matching purposes.)
+run: read of mmap'd file reported bad data: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-misalign:mmap-misalign -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-misalign < /dev/null 2> tests/vm/mmap-misalign.errors > tests/vm/mmap-misalign.output
 perl -I../.. ../../tests/vm/mmap-misalign.ck tests/vm/mmap-misalign tests/vm/mmap-misalign.result
 FAIL tests/vm/mmap-misalign
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-misalign) begin
-  (mmap-misalign) open "sample.txt"
-  (mmap-misalign) try to mmap at misaligned address
-  (mmap-misalign) end
-Differences in `diff -u' format:
-  (mmap-misalign) begin
-  (mmap-misalign) open "sample.txt"
-  (mmap-misalign) try to mmap at misaligned address
-- (mmap-misalign) end
-
-(Process exit codes are excluded for matching purposes.)
+run: try to mmap at misaligned address: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-null:mmap-null -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-null < /dev/null 2> tests/vm/mmap-null.errors > tests/vm/mmap-null.output
 perl -I../.. ../../tests/vm/mmap-null.ck tests/vm/mmap-null tests/vm/mmap-null.result
 FAIL tests/vm/mmap-null
@@ -627,235 +377,42 @@ Differences in `diff -u' format:
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-over-code:mmap-over-code -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-over-code < /dev/null 2> tests/vm/mmap-over-code.errors > tests/vm/mmap-over-code.output
 perl -I../.. ../../tests/vm/mmap-over-code.ck tests/vm/mmap-over-code tests/vm/mmap-over-code.result
 FAIL tests/vm/mmap-over-code
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-over-code) begin
-  (mmap-over-code) open "sample.txt"
-  (mmap-over-code) try to mmap over code segment
-  (mmap-over-code) end
-Differences in `diff -u' format:
-  (mmap-over-code) begin
-  (mmap-over-code) open "sample.txt"
-  (mmap-over-code) try to mmap over code segment
-- (mmap-over-code) end
-
-(Process exit codes are excluded for matching purposes.)
+run: try to mmap over code segment: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-over-data:mmap-over-data -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-over-data < /dev/null 2> tests/vm/mmap-over-data.errors > tests/vm/mmap-over-data.output
 perl -I../.. ../../tests/vm/mmap-over-data.ck tests/vm/mmap-over-data tests/vm/mmap-over-data.result
 FAIL tests/vm/mmap-over-data
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-over-data) begin
-  (mmap-over-data) open "sample.txt"
-  (mmap-over-data) try to mmap over data segment
-  (mmap-over-data) end
-Differences in `diff -u' format:
-  (mmap-over-data) begin
-  (mmap-over-data) open "sample.txt"
-  (mmap-over-data) try to mmap over data segment
-- (mmap-over-data) end
-
-(Process exit codes are excluded for matching purposes.)
+run: try to mmap over data segment: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-over-stk:mmap-over-stk -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-over-stk < /dev/null 2> tests/vm/mmap-over-stk.errors > tests/vm/mmap-over-stk.output
 perl -I../.. ../../tests/vm/mmap-over-stk.ck tests/vm/mmap-over-stk tests/vm/mmap-over-stk.result
 FAIL tests/vm/mmap-over-stk
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-over-stk) begin
-  (mmap-over-stk) open "sample.txt"
-  (mmap-over-stk) try to mmap over stack segment
-  (mmap-over-stk) end
-Differences in `diff -u' format:
-  (mmap-over-stk) begin
-  (mmap-over-stk) open "sample.txt"
-  (mmap-over-stk) try to mmap over stack segment
-- (mmap-over-stk) end
-
-(Process exit codes are excluded for matching purposes.)
+run: try to mmap over stack segment: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-remove:mmap-remove -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-remove < /dev/null 2> tests/vm/mmap-remove.errors > tests/vm/mmap-remove.output
 perl -I../.. ../../tests/vm/mmap-remove.ck tests/vm/mmap-remove tests/vm/mmap-remove.result
 FAIL tests/vm/mmap-remove
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-remove) begin
-  (mmap-remove) open "sample.txt"
-  (mmap-remove) mmap "sample.txt"
-  (mmap-remove) remove "sample.txt"
-  (mmap-remove) try to open "sample.txt"
-  (mmap-remove) create "another"
-  (mmap-remove) end
-Differences in `diff -u' format:
-  (mmap-remove) begin
-  (mmap-remove) open "sample.txt"
-  (mmap-remove) mmap "sample.txt"
-- (mmap-remove) remove "sample.txt"
-- (mmap-remove) try to open "sample.txt"
-- (mmap-remove) create "another"
-- (mmap-remove) end
-
-(Process exit codes are excluded for matching purposes.)
+run: read of mmap'd file reported bad data: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-zero:mmap-zero --swap-disk=4 -- -q   -f run mmap-zero < /dev/null 2> tests/vm/mmap-zero.errors > tests/vm/mmap-zero.output
 perl -I../.. ../../tests/vm/mmap-zero.ck tests/vm/mmap-zero tests/vm/mmap-zero.result
-FAIL tests/vm/mmap-zero
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-zero) begin
-  (mmap-zero) create empty file "empty"
-  (mmap-zero) open "empty"
-  (mmap-zero) mmap "empty"
-  mmap-zero: exit(-1)
-Differences in `diff -u' format:
-  (mmap-zero) begin
-  (mmap-zero) create empty file "empty"
-  (mmap-zero) open "empty"
-  (mmap-zero) mmap "empty"
-- mmap-zero: exit(-1)
-+ mmap-zero: exit(0)
-
-(User fault messages are excluded for matching purposes.)
+pass tests/vm/mmap-zero
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-bad-fd2:mmap-bad-fd2 --swap-disk=4 -- -q   -f run mmap-bad-fd2 < /dev/null 2> tests/vm/mmap-bad-fd2.errors > tests/vm/mmap-bad-fd2.output
 perl -I../.. ../../tests/vm/mmap-bad-fd2.ck tests/vm/mmap-bad-fd2 tests/vm/mmap-bad-fd2.result
 FAIL tests/vm/mmap-bad-fd2
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-bad-fd2) begin
-  (mmap-bad-fd2) try to mmap stdin
-  mmap-bad-fd2: exit(-1)
-Differences in `diff -u' format:
-  (mmap-bad-fd2) begin
-  (mmap-bad-fd2) try to mmap stdin
-- mmap-bad-fd2: exit(-1)
-+ mmap-bad-fd2: exit(0)
-Acceptable output:
-  (mmap-bad-fd2) begin
-  (mmap-bad-fd2) try to mmap stdin
-  (mmap-bad-fd2) end
-  mmap-bad-fd2: exit(0)
-Differences in `diff -u' format:
-  (mmap-bad-fd2) begin
-  (mmap-bad-fd2) try to mmap stdin
-- (mmap-bad-fd2) end
-  mmap-bad-fd2: exit(0)
+run: try to mmap stdin: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-bad-fd3:mmap-bad-fd3 --swap-disk=4 -- -q   -f run mmap-bad-fd3 < /dev/null 2> tests/vm/mmap-bad-fd3.errors > tests/vm/mmap-bad-fd3.output
 perl -I../.. ../../tests/vm/mmap-bad-fd3.ck tests/vm/mmap-bad-fd3 tests/vm/mmap-bad-fd3.result
 FAIL tests/vm/mmap-bad-fd3
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-bad-fd3) begin
-  (mmap-bad-fd3) try to mmap stdout
-  (mmap-bad-fd3) end
-  mmap-bad-fd3: exit(0)
-Differences in `diff -u' format:
-  (mmap-bad-fd3) begin
-  (mmap-bad-fd3) try to mmap stdout
-- (mmap-bad-fd3) end
-  mmap-bad-fd3: exit(0)
-Acceptable output:
-  (mmap-bad-fd3) begin
-  (mmap-bad-fd3) try to mmap stdout
-  mmap-bad-fd3: exit(-1)
-Differences in `diff -u' format:
-  (mmap-bad-fd3) begin
-  (mmap-bad-fd3) try to mmap stdout
-- mmap-bad-fd3: exit(-1)
-+ mmap-bad-fd3: exit(0)
+run: try to mmap stdout: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-zero-len:mmap-zero-len --swap-disk=4 -- -q   -f run mmap-zero-len < /dev/null 2> tests/vm/mmap-zero-len.errors > tests/vm/mmap-zero-len.output
 perl -I../.. ../../tests/vm/mmap-zero-len.ck tests/vm/mmap-zero-len tests/vm/mmap-zero-len.result
 FAIL tests/vm/mmap-zero-len
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-zero-len) begin
-  (mmap-zero-len) create "sample.txt"
-  (mmap-zero-len) open "sample.txt"
-  (mmap-zero-len) try to mmap zero length
-  mmap-zero-len: exit(-1)
-Differences in `diff -u' format:
-  (mmap-zero-len) begin
-  (mmap-zero-len) create "sample.txt"
-  (mmap-zero-len) open "sample.txt"
-  (mmap-zero-len) try to mmap zero length
-- mmap-zero-len: exit(-1)
-+ mmap-zero-len: exit(0)
-Acceptable output:
-  (mmap-zero-len) begin
-  (mmap-zero-len) create "sample.txt"
-  (mmap-zero-len) open "sample.txt"
-  (mmap-zero-len) try to mmap zero length
-  (mmap-zero-len) end
-  mmap-zero-len: exit(0)
-Differences in `diff -u' format:
-  (mmap-zero-len) begin
-  (mmap-zero-len) create "sample.txt"
-  (mmap-zero-len) open "sample.txt"
-  (mmap-zero-len) try to mmap zero length
-- (mmap-zero-len) end
-  mmap-zero-len: exit(0)
+run: try to mmap zero length: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-off:mmap-off -p ../../tests/vm/large.txt:large.txt --swap-disk=4 -- -q   -f run mmap-off < /dev/null 2> tests/vm/mmap-off.errors > tests/vm/mmap-off.output
 perl -I../.. ../../tests/vm/mmap-off.ck tests/vm/mmap-off tests/vm/mmap-off.result
 FAIL tests/vm/mmap-off
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-off) begin
-  (mmap-off) open "large.txt"
-  (mmap-off) try to mmap with offset 0x1000
-  (mmap-off) validate mmap.
-  (mmap-off) validated.
-  (mmap-off) write to mmap
-  (mmap-off) validate contents.
-  (mmap-off) open "large.txt"
-  (mmap-off) read "large.txt" Page 0
-  (mmap-off) validate page 0.
-  (mmap-off) validated.
-  (mmap-off) read "large.txt" Page 1
-  (mmap-off) validate page 1.
-  (mmap-off) validated.
-  (mmap-off) success
-  (mmap-off) end
-  mmap-off: exit(0)
-Differences in `diff -u' format:
-  (mmap-off) begin
-  (mmap-off) open "large.txt"
-  (mmap-off) try to mmap with offset 0x1000
-- (mmap-off) validate mmap.
-- (mmap-off) validated.
-- (mmap-off) write to mmap
-- (mmap-off) validate contents.
-- (mmap-off) open "large.txt"
-- (mmap-off) read "large.txt" Page 0
-- (mmap-off) validate page 0.
-- (mmap-off) validated.
-- (mmap-off) read "large.txt" Page 1
-- (mmap-off) validate page 1.
-- (mmap-off) validated.
-- (mmap-off) success
-- (mmap-off) end
-  mmap-off: exit(0)
+run: try to mmap with offset 0x1000: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-bad-off:mmap-bad-off -p ../../tests/vm/large.txt:large.txt --swap-disk=4 -- -q   -f run mmap-bad-off < /dev/null 2> tests/vm/mmap-bad-off.errors > tests/vm/mmap-bad-off.output
 perl -I../.. ../../tests/vm/mmap-bad-off.ck tests/vm/mmap-bad-off tests/vm/mmap-bad-off.result
 FAIL tests/vm/mmap-bad-off
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-bad-off) begin
-  (mmap-bad-off) open "large.txt"
-  (mmap-bad-off) try to mmap invalid offset
-  (mmap-bad-off) end
-  mmap-bad-off: exit(0)
-Differences in `diff -u' format:
-  (mmap-bad-off) begin
-  (mmap-bad-off) open "large.txt"
-  (mmap-bad-off) try to mmap invalid offset
-- (mmap-bad-off) end
-  mmap-bad-off: exit(0)
+run: try to mmap invalid offset: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-kernel:mmap-kernel -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-kernel < /dev/null 2> tests/vm/mmap-kernel.errors > tests/vm/mmap-kernel.output
 perl -I../.. ../../tests/vm/mmap-kernel.ck tests/vm/mmap-kernel tests/vm/mmap-kernel.result
 FAIL tests/vm/mmap-kernel
@@ -876,62 +433,12 @@ Differences in `diff -u' format:
 - (mmap-kernel) try to mmap over kernel 1
 - (mmap-kernel) try to mmap over kernel 2
 - (mmap-kernel) end
-  mmap-kernel: exit(0)
+- mmap-kernel: exit(0)
++ mmap-kernel: exit(-1)
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/lazy-file:lazy-file -p ../../tests/vm/sample.txt:sample.txt -p ../../tests/vm/small.txt:small.txt --swap-disk=4 -- -q   -f run lazy-file < /dev/null 2> tests/vm/lazy-file.errors > tests/vm/lazy-file.output
 perl -I../.. ../../tests/vm/lazy-file.ck tests/vm/lazy-file tests/vm/lazy-file.result
 FAIL tests/vm/lazy-file
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (lazy-file) begin
-  (lazy-file) open "small.txt"
-  (lazy-file) sizeof small: 10017
-  (lazy-file) page aligned size of small: 12288
-  (lazy-file) mmap "small.txt"
-  (lazy-file) initial pages status
-  (lazy-file) check if page is not loaded
-  (lazy-file) check if page is not loaded
-  (lazy-file) check if page is not loaded
-  (lazy-file) load pages (3)
-  (lazy-file) load page [0]
-  (lazy-file) check if page is loaded
-  (lazy-file) check if page is not loaded
-  (lazy-file) check if page is not loaded
-  (lazy-file) load page [1]
-  (lazy-file) check if page is loaded
-  (lazy-file) check if page is loaded
-  (lazy-file) check if page is not loaded
-  (lazy-file) load page [2]
-  (lazy-file) check if page is loaded
-  (lazy-file) check if page is loaded
-  (lazy-file) check if page is loaded
-  (lazy-file) end
-Differences in `diff -u' format:
-  (lazy-file) begin
-  (lazy-file) open "small.txt"
-  (lazy-file) sizeof small: 10017
-  (lazy-file) page aligned size of small: 12288
-  (lazy-file) mmap "small.txt"
-- (lazy-file) initial pages status
-- (lazy-file) check if page is not loaded
-- (lazy-file) check if page is not loaded
-- (lazy-file) check if page is not loaded
-- (lazy-file) load pages (3)
-- (lazy-file) load page [0]
-- (lazy-file) check if page is loaded
-- (lazy-file) check if page is not loaded
-- (lazy-file) check if page is not loaded
-- (lazy-file) load page [1]
-- (lazy-file) check if page is loaded
-- (lazy-file) check if page is loaded
-- (lazy-file) check if page is not loaded
-- (lazy-file) load page [2]
-- (lazy-file) check if page is loaded
-- (lazy-file) check if page is loaded
-- (lazy-file) check if page is loaded
-- (lazy-file) end
-
-(Process exit codes are excluded for matching purposes.)
+run: read of mmap'd file reported bad data: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/lazy-anon:lazy-anon --swap-disk=4 -- -q   -f run lazy-anon < /dev/null 2> tests/vm/lazy-anon.errors > tests/vm/lazy-anon.output
 perl -I../.. ../../tests/vm/lazy-anon.ck tests/vm/lazy-anon tests/vm/lazy-anon.result
 FAIL tests/vm/lazy-anon
@@ -939,112 +446,59 @@ run: check if page is not loaded: FAILED
 pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-file:swap-file -p ../../tests/vm/large.txt:large.txt --swap-disk=10 -- -q   -f run swap-file < /dev/null 2> tests/vm/swap-file.errors > tests/vm/swap-file.output
 perl -I../.. ../../tests/vm/swap-file.ck tests/vm/swap-file tests/vm/swap-file.result
 FAIL tests/vm/swap-file
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (swap-file) begin
-  (swap-file) open "large.txt"
-  (swap-file) mmap "large.txt"
-  (swap-file) end
-Differences in `diff -u' format:
-  (swap-file) begin
-  (swap-file) open "large.txt"
-  (swap-file) mmap "large.txt"
-- (swap-file) end
-
-(Process exit codes are excluded for matching purposes.)
+run: read of mmap'd file reported bad data: FAILED
 pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-anon:swap-anon --swap-disk=30 -- -q   -f run swap-anon < /dev/null 2> tests/vm/swap-anon.errors > tests/vm/swap-anon.output
 perl -I../.. ../../tests/vm/swap-anon.ck tests/vm/swap-anon tests/vm/swap-anon.result
 FAIL tests/vm/swap-anon
 Kernel panic in run: PANIC at ../../vm/vm.c:161 in vm_get_frame(): todo
-Call stack: 0x8004218d07 0x8004222c05 0x800422304b 0x8004222f66 0x800421e1fa 0x8004209610 0x8004209a2e 0x800421daf6 0x8004222a90 0x800421dcd0 0x800421d4ff 0x800421cbe3 0x800421c50b 0x8004207eb1
+Call stack: 0x8004218cfd 0x8004222f19 0x800422335f 0x800422327a 0x800421e1f0 0x8004209610 0x8004209a2e 0x800421daec 0x8004222da4 0x800421dcc6 0x800421d4f5 0x800421cbd9 0x800421c501 0x8004207eb1
 Translation of call stack:
-0x0000008004218d07: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222c05: vm_get_frame (vm/vm.c:164)
-0x000000800422304b: vm_do_claim_page (vm/vm.c:267)
-0x0000008004222f66: vm_try_handle_fault (vm/vm.c:240)
-0x000000800421e1fa: page_fault (userprog/exception.c:145)
+0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
+0x0000008004222f19: vm_get_frame (vm/vm.c:164)
+0x000000800422335f: vm_do_claim_page (vm/vm.c:267)
+0x000000800422327a: vm_try_handle_fault (vm/vm.c:240)
+0x000000800421e1f0: page_fault (userprog/exception.c:145)
 0x0000008004209610: intr_handler (threads/interrupt.c:352)
 0x0000008004209a2e: intr_entry (threads/intr-stubs.o:?)
-0x000000800421daf6: lazy_load_segment (userprog/process.c:860)
-0x0000008004222a90: vm_alloc_page_with_initializer (vm/vm.c:87)
-0x000000800421dcd0: load_segment (userprog/process.c:901)
-0x000000800421d4ff: load (userprog/process.c:620)
-0x000000800421cbe3: process_exec (userprog/process.c:328)
-0x000000800421c50b: initd (userprog/process.c:100)
+0x000000800421daec: lazy_load_segment (userprog/process.c:860)
+0x0000008004222da4: vm_alloc_page_with_initializer (vm/vm.c:87)
+0x000000800421dcc6: load_segment (userprog/process.c:901)
+0x000000800421d4f5: load (userprog/process.c:620)
+0x000000800421cbd9: process_exec (userprog/process.c:328)
+0x000000800421c501: initd (userprog/process.c:100)
 0x0000008004207eb1: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-iter:swap-iter -p ../../tests/vm/large.txt:large.txt --swap-disk=50 -- -q   -f run swap-iter < /dev/null 2> tests/vm/swap-iter.errors > tests/vm/swap-iter.output
 perl -I../.. ../../tests/vm/swap-iter.ck tests/vm/swap-iter tests/vm/swap-iter.result
 FAIL tests/vm/swap-iter
 Kernel panic in run: PANIC at ../../vm/vm.c:161 in vm_get_frame(): todo
-Call stack: 0x8004218d07 0x8004222c05 0x800422304b 0x8004222f66 0x800421e1fa 0x8004209610 0x8004209a2e 0x800421daf6 0x8004222a90 0x800421dcd0 0x800421d4ff 0x800421cbe3 0x800421c50b 0x8004207eb1
+Call stack: 0x8004218cfd 0x8004222f19 0x800422335f 0x800422327a 0x800421e1f0 0x8004209610 0x8004209a2e 0x800421daec 0x8004222da4 0x800421dcc6 0x800421d4f5 0x800421cbd9 0x800421c501 0x8004207eb1
 Translation of call stack:
-0x0000008004218d07: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222c05: vm_get_frame (vm/vm.c:164)
-0x000000800422304b: vm_do_claim_page (vm/vm.c:267)
-0x0000008004222f66: vm_try_handle_fault (vm/vm.c:240)
-0x000000800421e1fa: page_fault (userprog/exception.c:145)
+0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
+0x0000008004222f19: vm_get_frame (vm/vm.c:164)
+0x000000800422335f: vm_do_claim_page (vm/vm.c:267)
+0x000000800422327a: vm_try_handle_fault (vm/vm.c:240)
+0x000000800421e1f0: page_fault (userprog/exception.c:145)
 0x0000008004209610: intr_handler (threads/interrupt.c:352)
 0x0000008004209a2e: intr_entry (threads/intr-stubs.o:?)
-0x000000800421daf6: lazy_load_segment (userprog/process.c:860)
-0x0000008004222a90: vm_alloc_page_with_initializer (vm/vm.c:87)
-0x000000800421dcd0: load_segment (userprog/process.c:901)
-0x000000800421d4ff: load (userprog/process.c:620)
-0x000000800421cbe3: process_exec (userprog/process.c:328)
-0x000000800421c50b: initd (userprog/process.c:100)
+0x000000800421daec: lazy_load_segment (userprog/process.c:860)
+0x0000008004222da4: vm_alloc_page_with_initializer (vm/vm.c:87)
+0x000000800421dcc6: load_segment (userprog/process.c:901)
+0x000000800421d4f5: load (userprog/process.c:620)
+0x000000800421cbd9: process_exec (userprog/process.c:328)
+0x000000800421c501: initd (userprog/process.c:100)
 0x0000008004207eb1: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 600 -m 40   --fs-disk=10 -p tests/vm/swap-fork:swap-fork -p tests/vm/child-swap:child-swap --swap-disk=200 -- -q   -f run swap-fork < /dev/null 2> tests/vm/swap-fork.errors > tests/vm/swap-fork.output
 perl -I../.. ../../tests/vm/swap-fork.ck tests/vm/swap-fork tests/vm/swap-fork.result
 FAIL tests/vm/swap-fork
-Kernel panic in run: PANIC at ../../threads/thread.c:326 in thread_current(): assertion `is_thread (t)' failed.
-Call stack: 0x8004218d07 0x80042074a5 0x800420b432 0x800420ad40 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420ca40 0x800420adea 0x800420c3b1 0x800420c4b5 0x800420d6c3 0x800421c969 0x8004207eb1
+Kernel panic in run: PANIC at ../../vm/vm.c:161 in vm_get_frame(): todo
+Call stack: 0x8004218cfd 0x8004222f19 0x80042234f3 0x800421b636 0x8004223623 0x800421c9d4 0x8004207eb1
 Translation of call stack:
-0x0000008004218d07: debug_panic (lib/kernel/debug.c:32)
-0x00000080042074a5: thread_current (threads/thread.c:327)
-0x000000800420b432: lock_held_by_current_thread (threads/synch.c:397)
-0x000000800420ad40: lock_acquire (threads/synch.c:267)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420c3b1: palloc_get_multiple (threads/palloc.c:267 (discriminator 4))
-0x000000800420c4b5: palloc_get_page (threads/palloc.c:297)
-0x000000800420d6c3: pml4_create (threads/mmu.c:97)
-0x000000800421c969: __do_fork (userprog/process.c:257)
+0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
+0x0000008004222f19: vm_get_frame (vm/vm.c:164)
+0x00000080042234f3: copy_spt_hash (vm/vm.c:307)
+0x000000800421b636: hash_apply (lib/kernel/hash.c:160 (discriminator 3))
+0x0000008004223623: supplemental_page_table_copy (vm/vm.c:327)
+0x000000800421c9d4: __do_fork (userprog/process.c:263)
 0x0000008004207eb1: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/lg-create:lg-create --swap-disk=4 -- -q   -f run lg-create < /dev/null 2> tests/filesys/base/lg-create.errors > tests/filesys/base/lg-create.output
 perl -I../.. ../../tests/filesys/base/lg-create.ck tests/filesys/base/lg-create tests/filesys/base/lg-create.result
@@ -1078,27 +532,7 @@ perl -I../.. ../../tests/filesys/base/sm-seq-random.ck tests/filesys/base/sm-seq
 pass tests/filesys/base/sm-seq-random
 pintos -v -k -T 300 -m 20   --fs-disk=10 -p tests/filesys/base/syn-read:syn-read -p tests/filesys/base/child-syn-read:child-syn-read --swap-disk=4 -- -q   -f run syn-read < /dev/null 2> tests/filesys/base/syn-read.errors > tests/filesys/base/syn-read.output
 perl -I../.. ../../tests/filesys/base/syn-read.ck tests/filesys/base/syn-read tests/filesys/base/syn-read.result
-FAIL tests/filesys/base/syn-read
-Kernel panic in run: PANIC at ../../threads/synch.c:267 in lock_acquire(): assertion `!lock_held_by_current_thread (lock)' failed.
-Call stack: 0x8004218d07 0x800420ad8a 0x800420ca40 0x800420adea 0x800420c3b1 0x800420c4b5 0x800420ca70 0x800420adea 0x800421ed00 0x800421f5a8 0x800421e34e 0x40040a 0x40047e 0x4006ed 0x4002a6 0x400fa7 0x400ff0
-Translation of call stack:
-0x0000008004218d07: debug_panic (lib/kernel/debug.c:32)
-0x000000800420ad8a: lock_acquire (threads/synch.c:270)
-0x000000800420ca40: malloc (threads/malloc.c:118)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800420c3b1: palloc_get_multiple (threads/palloc.c:267 (discriminator 4))
-0x000000800420c4b5: palloc_get_page (threads/palloc.c:297)
-0x000000800420ca70: malloc (threads/malloc.c:122)
-0x000000800420adea: lock_acquire (threads/synch.c:277)
-0x000000800421ed00: write (userprog/syscall.c:293)
-0x000000800421f5a8: syscall_handler (userprog/syscall.c:480)
-0x000000800421e34e: no_sti (userprog/syscall-entry.o:?)
-0x000000000040040a: (unknown)
-0x000000000040047e: (unknown)
-0x00000000004006ed: (unknown)
-0x00000000004002a6: (unknown)
-0x0000000000400fa7: (unknown)
-0x0000000000400ff0: (unknown)
+pass tests/filesys/base/syn-read
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/syn-remove:syn-remove --swap-disk=4 -- -q   -f run syn-remove < /dev/null 2> tests/filesys/base/syn-remove.errors > tests/filesys/base/syn-remove.output
 perl -I../.. ../../tests/filesys/base/syn-remove.ck tests/filesys/base/syn-remove tests/filesys/base/syn-remove.result
 pass tests/filesys/base/syn-remove
@@ -1211,7 +645,7 @@ pass tests/userprog/exec-boundary
 pass tests/userprog/exec-missing
 pass tests/userprog/exec-bad-ptr
 pass tests/userprog/exec-read
-pass tests/userprog/wait-simple
+FAIL tests/userprog/wait-simple
 pass tests/userprog/wait-twice
 pass tests/userprog/wait-killed
 pass tests/userprog/wait-bad-pid
@@ -1247,9 +681,9 @@ FAIL tests/vm/mmap-unmap
 FAIL tests/vm/mmap-overlap
 FAIL tests/vm/mmap-twice
 FAIL tests/vm/mmap-write
-FAIL tests/vm/mmap-ro
+pass tests/vm/mmap-ro
 FAIL tests/vm/mmap-exit
-FAIL tests/vm/mmap-shuffle
+pass tests/vm/mmap-shuffle
 FAIL tests/vm/mmap-bad-fd
 FAIL tests/vm/mmap-clean
 FAIL tests/vm/mmap-inherit
@@ -1259,7 +693,7 @@ FAIL tests/vm/mmap-over-code
 FAIL tests/vm/mmap-over-data
 FAIL tests/vm/mmap-over-stk
 FAIL tests/vm/mmap-remove
-FAIL tests/vm/mmap-zero
+pass tests/vm/mmap-zero
 FAIL tests/vm/mmap-bad-fd2
 FAIL tests/vm/mmap-bad-fd3
 FAIL tests/vm/mmap-zero-len
@@ -1282,7 +716,7 @@ pass tests/filesys/base/sm-full
 pass tests/filesys/base/sm-random
 pass tests/filesys/base/sm-seq-block
 pass tests/filesys/base/sm-seq-random
-FAIL tests/filesys/base/syn-read
+pass tests/filesys/base/syn-read
 pass tests/filesys/base/syn-remove
 pass tests/filesys/base/syn-write
 pass tests/threads/alarm-single
@@ -1304,7 +738,7 @@ pass tests/threads/priority-sema
 pass tests/threads/priority-condvar
 pass tests/threads/priority-donate-chain
 FAIL tests/vm/cow/cow-simple
-38 of 141 tests failed.
+35 of 141 tests failed.
 ../../tests/Make.tests:28: recipe for target 'check' failed
 make[1]: Leaving directory '/home/kaist/pintos/vm/build'
 ../Makefile.kernel:10: recipe for target 'check' failed
