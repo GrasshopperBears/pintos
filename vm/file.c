@@ -58,6 +58,11 @@ file_backed_swap_out (struct page *page) {
 static void
 file_backed_destroy (struct page *page) {
 	struct file_page *file_page UNUSED = &page->file;
+	if (file_page->mappable) {
+		lock_acquire(&filesys_lock);
+		file_write_at(file_page->file, page->va, file_page->data_bytes, file_page->offset);
+		lock_release(&filesys_lock);
+	}
 	common_clear_page(page);
 }
 
