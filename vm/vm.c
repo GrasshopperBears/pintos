@@ -213,12 +213,12 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 	/* TODO: Validate the fault */
 	/* TODO: Your code goes here */
 	int MAX_STACK_COUNT = 256;
-	int MAX_STACK_ADDR =  USER_STACK - (1 << 20);
+	int MAX_STACK_ADDR = USER_STACK - 1 << 20;	// limit stack size to 1mb
 
 	if (user && is_kernel_vaddr(addr))
 		return false;
 
-	if ((user && f->rsp - 8 <= (uintptr_t)addr)||(!user && ptov(addr) > USER_STACK - (1 << 20))) {
+	if ((user && f->rsp - 8 <= (uintptr_t)addr) || (!user && ptov(addr) >= MAX_STACK_ADDR)) {
 		if (curr->stack_page_count >= MAX_STACK_COUNT) {
 			exit(-1);
 		}
