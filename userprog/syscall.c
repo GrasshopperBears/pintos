@@ -424,6 +424,24 @@ dup2(int oldfd, int newfd) {
 	return newfd;
 }
 
+void *
+mmap (void *addr, size_t length, int writable, int fd, off_t offset) {
+	struct thread* curr = thread_current();
+	struct file_elem* f_el = file_elem_by_fd(fd);
+
+	if (f_el == NULL || fd == 0 || fd == 1 || addr == 0 || length == 0 || !file_length(f_el->file))
+		exit(-1);
+	if (pg_round_down(addr) != addr)	// addr is not alligned
+		exit(-1);
+
+	return;
+}
+
+void
+munmap (void *addr) {
+
+}
+
 void
 is_valid_user_ptr(void* ptr) {
 	if (is_kernel_vaddr(ptr) || ptr == NULL) {
@@ -490,6 +508,14 @@ syscall_handler (struct intr_frame *f UNUSED) {
 		break;
 	case SYS_DUP2:
 		f->R.rax = dup2(f->R.rdi, f->R.rsi);
+		break;
+	case SYS_MMAP:
+		is_valid_user_ptr(f->R.rdi);
+		mmap (f->R.rdi, f->R.rsi, f->R.rdx, f->R.r10, f->R.r8);
+		break;
+	case SYS_MUNMAP:
+		is_valid_user_ptr(f->R.rdi);
+		munmap (f->R.rdi);
 		break;
 	default:
 		thread_exit ();
