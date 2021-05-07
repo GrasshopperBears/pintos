@@ -26,7 +26,6 @@
 static void process_cleanup (void);
 static bool load (const char *file_name, struct intr_frame *if_);
 static void initd (void *f_name);
-static void __do_fork (void *);
 
 extern struct lock filesys_lock;
 
@@ -239,7 +238,7 @@ duplicate_pte (uint64_t *pte, void *va, void *aux) {
  * Hint) parent->tf does not hold the userland context of the process.
  *       That is, you are required to pass second argument of process_fork to
  *       this function. */
-static void
+void
 __do_fork (void *aux) {
 	struct intr_frame if_;
 	struct thread *current = thread_current ();

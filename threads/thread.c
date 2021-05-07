@@ -230,7 +230,12 @@ thread_create (const char *name, int priority,
 
 	/* Add to run queue. */
 	thread_unblock (t);
+#ifdef USERPROG
+	if (function != __do_fork)
+		thread_kick ();
+#else
 	thread_kick ();
+#endif
 	
 	return tid;
 }
