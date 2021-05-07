@@ -270,7 +270,6 @@ read (int fd, void *buffer, unsigned size) {
 #ifdef VM
 		if (!spt_find_page (&thread_current()->spt, pg_round_down(buffer))->writable) {
 			lock_release(&filesys_lock);
-			// printf("error\n");
 			exit(-1);
 		}
 #endif
