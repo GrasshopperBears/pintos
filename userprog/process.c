@@ -844,17 +844,19 @@ lazy_load_segment (struct page *page, void *aux) {
 	/* TODO: This called when the first page fault occurs on address VA. */
 	/* TODO: VA is available when calling this function. */
 	struct lazy_parameter * params = (struct lazy_parameter *)aux;
-	int size;
+	bool acquired = false;
 	
 	if (params->file == NULL)
 		return false;
-
 	//TODO: success 여부 어떻게 체크할까?
 	if (params->read_bytes > 0) {
-		lock_acquire(&filesys_lock);
-		file_seek(params->file, params->ofs);
-		size = file_read(params->file, params->upage, params->read_bytes);
-		lock_release(&filesys_lock);
+		if (!lock_held_by_current_thread(&filesys_lock)) {
+			lock_acquire(&filesys_lock);
+			acquired = true;
+		}
+		file_read_at(params->file, params->upage, params->read_bytes, params->ofs);
+		if (acquired)
+			lock_release(&filesys_lock);
 	}
 	memset(params->upage + params->read_bytes, 0, params->zero_bytes);
 	free(aux);

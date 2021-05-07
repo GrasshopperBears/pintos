@@ -81,7 +81,7 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 			printf("spt insert error\n");
 			goto err;
 		}
-		if (init != NULL)
+		if (VM_TYPE(type) != VM_ANON && init != NULL)
 			init(page, aux);
 		return succ;
 	}
@@ -272,6 +272,9 @@ vm_do_claim_page (struct page *page) {
 	/* TODO: Insert page table entry to map page's VA to frame's PA. */
 	// setup MMU = add the mapping from the virtual address to the physical address in the page table
 	succ = pml4_set_page(thread_current()->pml4, page->va, frame->kva, page->writable);
+	if (page_get_type(page) == VM_ANON)
+		page->uninit.init(page, page->uninit.aux);
+
 	page->uninit.page_initializer(page, page_get_type(page), frame->kva);
 
 	return swap_in (page, frame->kva);
@@ -303,7 +306,7 @@ copy_spt_hash(struct hash_elem *e, void *aux) {
 	struct page* page_original = hash_entry(e, struct page, spt_hash_elem);
 	struct frame *frame = vm_get_frame();
 	struct page* page_copy = malloc(sizeof(struct page));
-
+	printf("type: %d\n", VM_TYPE(page_original->operations->type));
 	frame->page = page_copy;
 	page_copy->frame = frame;
 	page_copy->va = page_original->va;
