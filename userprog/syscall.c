@@ -428,7 +428,7 @@ void *
 mmap (void *addr, size_t length, int writable, int fd, off_t offset) {
 	struct file_elem* f_el = file_elem_by_fd(fd);
 
-	if (f_el == NULL || fd == 0 || fd == 1 || addr == 0 || length == 0 || !file_length(f_el->file))
+	if (f_el == NULL || fd == 0 || fd == 1 || addr == NULL || is_kernel_vaddr(addr) || length == 0 || !file_length(f_el->file))
 		return NULL;
 	if (pg_round_down(addr) != addr)	// addr is not alligned
 		return NULL;
@@ -508,7 +508,6 @@ syscall_handler (struct intr_frame *f UNUSED) {
 		f->R.rax = dup2(f->R.rdi, f->R.rsi);
 		break;
 	case SYS_MMAP:
-		is_valid_user_ptr(f->R.rdi);
 		f->R.rax = mmap (f->R.rdi, f->R.rsi, f->R.rdx, f->R.r10, f->R.r8);
 		break;
 	case SYS_MUNMAP:

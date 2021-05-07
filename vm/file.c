@@ -83,11 +83,17 @@ mmap_set_page(struct page *page, void *aux) {
 void *
 do_mmap (void *addr, size_t length, int writable,
 		struct file *file, off_t offset) {
-	int page_number = length / PGSIZE + (length % PGSIZE == 0 ? 0 : 1);
+	size_t page_number = length / PGSIZE + (length % PGSIZE == 0 ? 0 : 1);
 	size_t left_size = length;
 	struct mmap_parameter *aux;
 
-	// 연속 가능 확인?
+	for (int i = 0; i < page_number; i++) {
+		if (addr + PGSIZE * i == NULL || is_kernel_vaddr(addr + PGSIZE * i))
+			return NULL;
+		if (spt_find_page(&thread_current()->spt, addr + PGSIZE * i) != NULL)
+			return NULL;
+	}
+
 	for (int i = 0; i < page_number; i++) {
 		aux = malloc(sizeof(struct mmap_parameter));
 		aux->file = file;
