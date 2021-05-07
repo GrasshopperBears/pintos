@@ -330,7 +330,7 @@ process_exec (void *f_name) {
 	palloc_free_page (file_name);
 	if (!success)
 		return -1;
-	// printf("load done\n");
+	
 	/* Start switched process. */
 	do_iret (&_if);
 	NOT_REACHED ();
@@ -844,7 +844,7 @@ lazy_load_segment (struct page *page, void *aux) {
 	/* TODO: VA is available when calling this function. */
 	struct lazy_parameter * params = (struct lazy_parameter *)aux;
 	bool acquired = false;
-	// printf("lazy_load_seg\n");
+
 	if (params->file == NULL)
 		return false;
 	//TODO: success 여부 어떻게 체크할까?
@@ -857,12 +857,9 @@ lazy_load_segment (struct page *page, void *aux) {
 		if (acquired)
 			lock_release(&filesys_lock);
 	}
-	// printf("lazy_load_seg 5: prt: %p %d bytes\n", page->va + params->read_bytes, params->zero_bytes);
 	if (params->zero_bytes > 0)
 		memset(page->va + params->read_bytes, 0, params->zero_bytes);
-	// printf("lazy_load_seg 6\n");
 	free(aux);
-	// printf("lazy_load_seg end\n");
 	return true;
 }
 
@@ -876,7 +873,6 @@ copy_lazy_parameter(struct page* src, void* dst) {
 	aux->read_bytes = src_aux->read_bytes;
 	aux->zero_bytes = src_aux->zero_bytes;
 	aux->upage = src_aux->upage;
-	// printf("anon copied zero_byes=%d\n", src_aux->zero_bytes);
 	return aux;
 }
 

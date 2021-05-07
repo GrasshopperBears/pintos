@@ -222,15 +222,15 @@ perl -I../.. ../../tests/vm/page-merge-seq.ck tests/vm/page-merge-seq tests/vm/p
 pass tests/vm/page-merge-seq
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-merge-par:page-merge-par -p tests/vm/child-sort:child-sort --swap-disk=4 -- -q   -f run page-merge-par < /dev/null 2> tests/vm/page-merge-par.errors > tests/vm/page-merge-par.output
 perl -I../.. ../../tests/vm/page-merge-par.ck tests/vm/page-merge-par tests/vm/page-merge-par.result
-pass tests/vm/page-merge-par
+FAIL tests/vm/page-merge-par
+run: wait for child 0: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-merge-stk:page-merge-stk -p tests/vm/child-qsort:child-qsort --swap-disk=4 -- -q   -f run page-merge-stk < /dev/null 2> tests/vm/page-merge-stk.errors > tests/vm/page-merge-stk.output
 perl -I../.. ../../tests/vm/page-merge-stk.ck tests/vm/page-merge-stk tests/vm/page-merge-stk.result
-FAIL tests/vm/page-merge-stk
-run: wait for child 1: FAILED
+pass tests/vm/page-merge-stk
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-merge-mm:page-merge-mm -p tests/vm/child-qsort-mm:child-qsort-mm --swap-disk=4 -- -q   -f run page-merge-mm < /dev/null 2> tests/vm/page-merge-mm.errors > tests/vm/page-merge-mm.output
 perl -I../.. ../../tests/vm/page-merge-mm.ck tests/vm/page-merge-mm tests/vm/page-merge-mm.result
 FAIL tests/vm/page-merge-mm
-run: wait for child 4: FAILED
+run: wait for child 3: FAILED
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-shuffle:page-shuffle --swap-disk=4 -- -q   -f run page-shuffle < /dev/null 2> tests/vm/page-shuffle.errors > tests/vm/page-shuffle.output
 perl -I../.. ../../tests/vm/page-shuffle.ck tests/vm/page-shuffle tests/vm/page-shuffle.result
 pass tests/vm/page-shuffle
@@ -346,13 +346,13 @@ pass tests/vm/swap-file
 pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-anon:swap-anon --swap-disk=30 -- -q   -f run swap-anon < /dev/null 2> tests/vm/swap-anon.errors > tests/vm/swap-anon.output
 perl -I../.. ../../tests/vm/swap-anon.ck tests/vm/swap-anon tests/vm/swap-anon.result
 FAIL tests/vm/swap-anon
-Kernel panic in run: PANIC at ../../vm/vm.c:166 in vm_get_frame(): todo
+Kernel panic in run: PANIC at ../../vm/vm.c:159 in vm_get_frame(): todo
 Call stack: 0x8004218d0d 0x8004222e61 0x80042232d3 0x80042231ee 0x800421e2c2 0x8004209620 0x8004209a3e 0x400cac 0x400cf5
 Translation of call stack:
 0x0000008004218d0d: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222e61: vm_get_frame (vm/vm.c:169)
-0x00000080042232d3: vm_do_claim_page (vm/vm.c:282)
-0x00000080042231ee: vm_try_handle_fault (vm/vm.c:255)
+0x0000008004222e61: vm_get_frame (vm/vm.c:162)
+0x00000080042232d3: vm_do_claim_page (vm/vm.c:268)
+0x00000080042231ee: vm_try_handle_fault (vm/vm.c:241)
 0x000000800421e2c2: page_fault (userprog/exception.c:145)
 0x0000008004209620: intr_handler (threads/interrupt.c:352)
 0x0000008004209a3e: intr_entry (threads/intr-stubs.o:?)
@@ -361,13 +361,13 @@ Translation of call stack:
 pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-iter:swap-iter -p ../../tests/vm/large.txt:large.txt --swap-disk=50 -- -q   -f run swap-iter < /dev/null 2> tests/vm/swap-iter.errors > tests/vm/swap-iter.output
 perl -I../.. ../../tests/vm/swap-iter.ck tests/vm/swap-iter tests/vm/swap-iter.result
 FAIL tests/vm/swap-iter
-Kernel panic in run: PANIC at ../../vm/vm.c:166 in vm_get_frame(): todo
+Kernel panic in run: PANIC at ../../vm/vm.c:159 in vm_get_frame(): todo
 Call stack: 0x8004218d0d 0x8004222e61 0x80042232d3 0x80042231ee 0x800421e2c2 0x8004209620 0x8004209a3e 0x400e2e 0x400e77
 Translation of call stack:
 0x0000008004218d0d: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222e61: vm_get_frame (vm/vm.c:169)
-0x00000080042232d3: vm_do_claim_page (vm/vm.c:282)
-0x00000080042231ee: vm_try_handle_fault (vm/vm.c:255)
+0x0000008004222e61: vm_get_frame (vm/vm.c:162)
+0x00000080042232d3: vm_do_claim_page (vm/vm.c:268)
+0x00000080042231ee: vm_try_handle_fault (vm/vm.c:241)
 0x000000800421e2c2: page_fault (userprog/exception.c:145)
 0x0000008004209620: intr_handler (threads/interrupt.c:352)
 0x0000008004209a3e: intr_entry (threads/intr-stubs.o:?)
@@ -547,8 +547,8 @@ pass tests/vm/pt-grow-stk-sc
 pass tests/vm/page-linear
 pass tests/vm/page-parallel
 pass tests/vm/page-merge-seq
-pass tests/vm/page-merge-par
-FAIL tests/vm/page-merge-stk
+FAIL tests/vm/page-merge-par
+pass tests/vm/page-merge-stk
 FAIL tests/vm/page-merge-mm
 pass tests/vm/page-shuffle
 pass tests/vm/mmap-read

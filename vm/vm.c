@@ -77,17 +77,12 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		page->is_stack = false;
 		page->uninit.copy = (VM_TYPE(type) == VM_ANON) ? copy_lazy_parameter : copy_mmap_parameter;
 
-		// if (VM_TYPE(type) == VM_FILE)
-		// 	page->file.mappable = true;
-
 		/* TODO: Insert the page into the spt. */
 		succ = spt_insert_page(spt, page);
 		if (!succ) {
 			printf("spt insert error\n");
 			goto err;
 		}
-		// if (VM_TYPE(type) != VM_ANON && init != NULL)
-		// 	init(page, aux);
 		// printf("initiallize type at %p: %d\n", page->va, page_get_type(page));
 		return succ;
 	}
@@ -118,8 +113,6 @@ spt_insert_page (struct supplemental_page_table *spt UNUSED,
 	/* TODO: Fill this function. */
 	struct hash_elem* result;
 
-	// if (spt_find_page(spt, page->va))
-	// 	return false;
 	result = hash_insert(&spt->hash, &page->spt_hash_elem);
 	if (result == NULL)
 		succ = true;
@@ -219,6 +212,7 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 	/* TODO: Your code goes here */
 	int MAX_STACK_COUNT = 256;
 	int MAX_STACK_ADDR = USER_STACK - 1 << 20;	// limit stack size to 1mb
+
 	// printf("fault handler at %p\n", addr);
 	if (user && is_kernel_vaddr(addr))
 		return false;
@@ -232,25 +226,17 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 
 	// spt 에서 주소에 해당하는 page가 존재하는지 찾기
 	page = spt_find_page (&thread_current()->spt, pg_round_down(addr));
-	// printf("check 1\n");
 	if (page == NULL) {
 		// printf("err1-addr: %p %p\n", addr, pg_round_down(addr));
 		return false;
 	}
-	// printf("check 2\n");
 	if ((!not_present && write) || (!not_present && !page->writable)) {
 		// printf("%d %d %d\n", write, page->writable, not_present);
 		return false;
 	}
-	if (page_get_type(page) == VM_FILE && page->file.file == NULL) {
-		// printf("check 3: mappable=%d\n",page->file.mappable );
-
+	if (page_get_type(page) == VM_FILE && page->file.file == NULL)
 		return false;
-	} 
-	// else if (page_get_type(page) == VM_FILE) {
-
-	// 	printf("passed %d %d %d\n", page_get_type(page), VM_TYPE(page->operations->type), !page->file.mappable);
-	// }
+	
 	return vm_do_claim_page (page);
 }
 
@@ -284,18 +270,14 @@ vm_do_claim_page (struct page *page) {
 	/* Set links */
 	frame->page = page;
 	page->frame = frame;
-	// printf("do claim page\n");
+
 	/* TODO: Insert page table entry to map page's VA to frame's PA. */
 	// setup MMU = add the mapping from the virtual address to the physical address in the page table
 	succ = pml4_set_page(thread_current()->pml4, page->va, frame->kva, page->writable);
-	// printf("check type: %d\n", page_get_type(page));
 	if (page->uninit.init != NULL)
 		page->uninit.init(page, page->uninit.aux);
-	// printf("check 2\n");
 
 	page->uninit.page_initializer(page, page_get_type(page), frame->kva);
-	// printf("do_claim_page type at %p: %d\n", page->va, page_get_type(page));
-
 	return swap_in (page, frame->kva);
 }
 

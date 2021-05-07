@@ -273,11 +273,9 @@ read (int fd, void *buffer, unsigned size) {
 			exit(-1);
 		}
 #endif
-		// printf("Start read\n");
 		read_size = file_read(f_el->file, buffer, size);
 	}
 	lock_release(&filesys_lock);
-	// printf("read done\n");
 	return read_size;
 }
 

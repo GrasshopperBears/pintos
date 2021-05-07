@@ -37,7 +37,7 @@ static bool
 file_backed_swap_in (struct page *page, void *kva) {
 	struct file_page *file_page UNUSED = &page->file;
 
-	if (file_page->file == NULL || !file_page->mappable)
+	if (file_page->file == NULL)
 		return false;
 
 	lock_acquire(&filesys_lock);
@@ -58,7 +58,7 @@ file_backed_swap_out (struct page *page) {
 static void
 file_backed_destroy (struct page *page) {
 	struct file_page *file_page UNUSED = &page->file;
-	if (file_page->mappable) {
+	if (file_page->file != NULL) {
 		lock_acquire(&filesys_lock);
 		file_write_at(file_page->file, page->va, file_page->data_bytes, file_page->offset);
 		lock_release(&filesys_lock);
@@ -69,20 +69,13 @@ file_backed_destroy (struct page *page) {
 void
 mmap_set_page(struct page *page, void *aux) {
 	struct mmap_parameter *params = (struct mmap_parameter *)aux;
-	// printf("set page\n");
+
 	page->file.data_bytes = params->data_bytes;
-	// printf("check 1\n");
-	// lock_acquire(&filesys_lock);
 	page->file.file = params->file;
-	// lock_release(&filesys_lock);
 	page->file.offset = params->offset;
-	// printf("check 2\n");
 	page->file.zero_bytes = params->zero_bytes;
 	page->file.is_last = params->is_last;
-	// printf("check 3\n");
-	page->file.mappable = true;
 	free(aux);
-	// printf("set page done\n");
 }
 
 void *
@@ -95,7 +88,7 @@ copy_mmap_parameter(struct page* src, void* dst) {
 	aux->data_bytes = src_aux->data_bytes;
 	aux->zero_bytes = src_aux->zero_bytes;
 	aux->is_last = src_aux->is_last;
-	// printf("file copied\n");
+
 	return aux;
 }
 
@@ -132,7 +125,6 @@ do_mmap (void *addr, size_t length, int writable,
 			aux->zero_bytes = PGSIZE - left_size;
 			aux->is_last = true;
 		}
-		// printf("mmap set at %p: %p, %d %d %d\n", addr + PGSIZE * i, aux->file, aux->offset, aux->data_bytes, aux->zero_bytes);
 		if (vm_alloc_page_with_initializer(VM_FILE, addr + PGSIZE * i, writable, mmap_set_page, aux) == NULL)
 			return NULL;
 		left_size -= PGSIZE;
@@ -148,24 +140,18 @@ do_munmap (void *addr) {
 	void* curr_addr = addr;
 
 	while (true) {
-		// printf("check 1\n");
 		page = spt_find_page(&thread_current()->spt, curr_addr);
 		if (page == NULL || page_get_type(page) == VM_ANON)
 			exit(-1);
 
-		// printf("check 2\n");
 		fp = &page->file;
 		if (VM_TYPE(page->operations->type) == VM_FILE) {
-			// printf("check 3: %p %p %d %d\n", fp->file, page->va, fp->data_bytes, fp->offset);
 			lock_acquire(&filesys_lock);
 			file_write_at(fp->file, page->va, fp->data_bytes, fp->offset);
 			lock_release(&filesys_lock);
 			file_close(fp->file);
 		}
-		// printf("check 4\n");
-		fp->mappable = false;
 		fp->file = NULL;
-		// printf("check 5\n");
 		
 		if (fp->is_last)
 			break;
