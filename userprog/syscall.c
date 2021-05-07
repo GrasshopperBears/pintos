@@ -297,12 +297,6 @@ write (int fd, const void *buffer, unsigned size) {
 	} else if (fd == 0) {
 		exit(-1);
 	} else {
-#ifdef VM
-		if (!spt_find_page (&thread_current()->spt, pg_round_down(buffer))->writable) {
-			lock_release(&filesys_lock);
-			exit(-1);
-		}
-#endif
 		written_size = file_write(f_el->file, buffer, size);
 	}
 	lock_release(&filesys_lock);

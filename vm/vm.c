@@ -213,7 +213,8 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 	int MAX_STACK_COUNT = 256;
 	int MAX_STACK_ADDR = USER_STACK - 1 << 20;	// limit stack size to 1mb
 
-	// printf("fault handler at %p\n", addr);
+	// printf("fault handler at %p by %d\n", addr, user);
+	// printf("is writing? %d\n", write);
 	if (user && is_kernel_vaddr(addr))
 		return false;
 
@@ -234,8 +235,12 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 		// printf("%d %d %d\n", write, page->writable, not_present);
 		return false;
 	}
-	if (page_get_type(page) == VM_FILE && page->file.file == NULL)
+	if (page_get_type(page) == VM_FILE && page->file.file == NULL) {
+		// printf("error of file unmmaped check\n");
 		return false;
+	} else if (page_get_type(page) == VM_FILE) {
+		page->fault_by_writing = write;
+	}
 	
 	return vm_do_claim_page (page);
 }
@@ -278,6 +283,7 @@ vm_do_claim_page (struct page *page) {
 		page->uninit.init(page, page->uninit.aux);
 
 	page->uninit.page_initializer(page, page_get_type(page), frame->kva);
+	// printf("claimed page type: %d\n", VM_TYPE(page->operations->type));
 	return swap_in (page, frame->kva);
 }
 

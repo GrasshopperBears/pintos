@@ -1,6 +1,7 @@
 /* file.c: Implementation of memory backed file object (mmaped object). */
 
 #include "vm/vm.h"
+#include "threads/mmu.h"
 #include "threads/synch.h"
 #include "threads/vaddr.h"
 
@@ -145,12 +146,13 @@ do_munmap (void *addr) {
 			exit(-1);
 
 		fp = &page->file;
-		if (VM_TYPE(page->operations->type) == VM_FILE) {
+		// printf("unmap: %d\n", VM_TYPE(page->operations->type));
+		if (VM_TYPE(page->operations->type) == VM_FILE && page->fault_by_writing) {
 			lock_acquire(&filesys_lock);
 			file_write_at(fp->file, page->va, fp->data_bytes, fp->offset);
 			lock_release(&filesys_lock);
 			file_close(fp->file);
-		}
+		} 
 		fp->file = NULL;
 		
 		if (fp->is_last)

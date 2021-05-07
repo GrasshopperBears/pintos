@@ -50,6 +50,7 @@ struct page {
 	struct hash_elem spt_hash_elem;
 	bool writable;
 	bool is_stack;
+	bool fault_by_writing;
 
 	/* Per-type data are binded into the union.
 	 * Each function automatically detects the current union */
