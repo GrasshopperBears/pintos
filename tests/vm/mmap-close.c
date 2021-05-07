@@ -19,7 +19,6 @@ test_main (void)
   CHECK ((map = mmap(ACTUAL, 4096, 0, handle, 0)) != MAP_FAILED, "mmap \"sample.txt\"");
 
   close (handle);
-  msg("closed");
 
   if (memcmp (ACTUAL, sample, strlen (sample)))
     fail ("read of mmap'd file reported bad data");
