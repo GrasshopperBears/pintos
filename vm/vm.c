@@ -7,6 +7,7 @@
 #include "threads/mmu.h"
 #include "threads/synch.h"
 #include <string.h>
+#include "userprog/process.h"
 
 struct lock hash_lock;
 
@@ -74,6 +75,7 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		uninit_new (page, upage, init, type, aux, initializer);
 		page->writable = writable;
 		page->is_stack = false;
+		page->uninit.copy = (VM_TYPE(type) == VM_ANON) ? copy_lazy_parameter : copy_mmap_parameter;
 
 		/* TODO: Insert the page into the spt. */
 		succ = spt_insert_page(spt, page);
@@ -81,8 +83,8 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 			printf("spt insert error\n");
 			goto err;
 		}
-		if (VM_TYPE(type) != VM_ANON && init != NULL)
-			init(page, aux);
+		// if (VM_TYPE(type) != VM_ANON && init != NULL)
+		// 	init(page, aux);
 		return succ;
 	}
 err:
@@ -213,7 +215,7 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 	/* TODO: Your code goes here */
 	int MAX_STACK_COUNT = 256;
 	int MAX_STACK_ADDR = USER_STACK - 1 << 20;	// limit stack size to 1mb
-
+	// printf("fault handler\n");
 	if (user && is_kernel_vaddr(addr))
 		return false;
 
@@ -268,14 +270,17 @@ vm_do_claim_page (struct page *page) {
 	/* Set links */
 	frame->page = page;
 	page->frame = frame;
-
+	// printf("do claim page\n");
 	/* TODO: Insert page table entry to map page's VA to frame's PA. */
 	// setup MMU = add the mapping from the virtual address to the physical address in the page table
 	succ = pml4_set_page(thread_current()->pml4, page->va, frame->kva, page->writable);
-	if (page_get_type(page) == VM_ANON)
+	// printf("check type: %d\n", page_get_type(page));
+	if (page->uninit.init != NULL)
 		page->uninit.init(page, page->uninit.aux);
+	// printf("check 2\n");
 
 	page->uninit.page_initializer(page, page_get_type(page), frame->kva);
+	// printf("check 3\n");
 
 	return swap_in (page, frame->kva);
 }
@@ -304,18 +309,27 @@ void
 copy_spt_hash(struct hash_elem *e, void *aux) {
 	struct supplemental_page_table *dst = (struct supplemental_page_table*)aux;
 	struct page* page_original = hash_entry(e, struct page, spt_hash_elem);
-	struct frame *frame = vm_get_frame();
-	struct page* page_copy = malloc(sizeof(struct page));
-	printf("type: %d\n", VM_TYPE(page_original->operations->type));
-	frame->page = page_copy;
-	page_copy->frame = frame;
-	page_copy->va = page_original->va;
-	page_copy->writable = page_original->writable;
-	page_copy->operations = page_original->operations;
-	memcpy(frame->kva, page_original->frame->kva, PGSIZE);
+	struct frame *frame;
+	struct page* page_copy;
+	void *copied_aux;
 
-	spt_insert_page(dst, page_copy);
-	pml4_set_page(thread_current()->pml4, page_copy->va, page_copy->frame->kva, page_copy->writable);
+
+	if (VM_TYPE(page_original->operations->type) == VM_UNINIT) {
+		copied_aux = page_original->uninit.copy(page_original, NULL);
+		vm_alloc_page_with_initializer (page_get_type(page_original), page_original->va,	
+										page_original->writable, page_original->uninit.init, copied_aux);
+	}	else {
+		page_copy = malloc(sizeof(struct page));
+		frame = vm_get_frame();
+		page_copy->frame = frame;
+		page_copy->va = page_original->va;
+		page_copy->writable = page_original->writable;
+		page_copy->operations = page_original->operations;
+		pml4_set_page(thread_current()->pml4, page_copy->va, page_copy->frame->kva, page_copy->writable);
+		spt_insert_page(&thread_current()->spt.hash, page_copy);
+		memcpy(frame->kva, page_original->frame->kva, PGSIZE);
+		frame->page = page_copy;
+	}
 }
 
 /* Copy supplemental page table from src to dst */

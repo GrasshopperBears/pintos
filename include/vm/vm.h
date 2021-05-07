@@ -117,12 +117,24 @@ enum vm_type page_get_type (struct page *page);
 void after_stack_set(struct page *page, void *aux);
 void common_clear_page(struct page *page);
 
+void* copy_lazy_parameter(struct page* src, void* dst);
+void* copy_mmap_parameter(struct page* src, void* dst);
+
 struct mmap_parameter {
 	struct file* file;
 	off_t offset;
 	uint32_t data_bytes;
 	uint32_t zero_bytes;
 	bool is_last;
+};
+
+struct lazy_parameter {
+  struct file *file;
+  off_t ofs;
+	uint32_t read_bytes;
+  uint32_t zero_bytes;
+  uint8_t *upage;
+	void (*copy) (struct page*, void*);
 };
 
 #endif  /* VM_VM_H */

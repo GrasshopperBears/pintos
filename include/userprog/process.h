@@ -32,12 +32,4 @@ struct file_elem {
   int reference;
 };
 
-struct lazy_parameter {
-  struct file *file;
-  off_t ofs;
-	uint32_t read_bytes;
-  uint32_t zero_bytes;
-  uint8_t *upage;
-};
-
 #endif /* userprog/process.h */

@@ -79,6 +79,20 @@ mmap_set_page(struct page *page, void *aux) {
 	free(aux);
 }
 
+void *
+copy_mmap_parameter(struct page* src, void* dst) {
+	struct mmap_parameter* aux = malloc(sizeof(struct mmap_parameter));
+	struct mmap_parameter *src_aux = (struct mmap_parameter *)src->uninit.aux;
+
+	aux->file = src_aux->file;
+	aux->offset = src_aux->offset;
+	aux->data_bytes = src_aux->data_bytes;
+	aux->zero_bytes = src_aux->zero_bytes;
+	aux->is_last = src_aux->is_last;
+	// printf("file copied\n");
+	return aux;
+}
+
 /* Do the mmap */
 void *
 do_mmap (void *addr, size_t length, int writable,

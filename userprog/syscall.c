@@ -255,7 +255,6 @@ read (int fd, void *buffer, unsigned size) {
 	struct thread* curr = thread_current();
 	struct file_elem* f_el = file_elem_by_fd(fd);
 	int read_size;
-
 	if (f_el == NULL)
 		exit(-1);
 
@@ -271,12 +270,15 @@ read (int fd, void *buffer, unsigned size) {
 #ifdef VM
 		if (!spt_find_page (&thread_current()->spt, pg_round_down(buffer))->writable) {
 			lock_release(&filesys_lock);
+			// printf("error\n");
 			exit(-1);
 		}
 #endif
+		// printf("Start read\n");
 		read_size = file_read(f_el->file, buffer, size);
 	}
 	lock_release(&filesys_lock);
+	// printf("read done\n");
 	return read_size;
 }
 

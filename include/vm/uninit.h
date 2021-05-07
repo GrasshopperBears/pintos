@@ -16,6 +16,7 @@ struct uninit_page {
 	void *aux;
 	/* Initiate the struct page and maps the pa to the va */
 	bool (*page_initializer) (struct page *, enum vm_type, void *kva);
+	void* (*copy) (struct page *, void *);
 };
 
 void uninit_new (struct page *page, void *va, vm_initializer *init,

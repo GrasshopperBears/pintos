@@ -845,7 +845,7 @@ lazy_load_segment (struct page *page, void *aux) {
 	/* TODO: VA is available when calling this function. */
 	struct lazy_parameter * params = (struct lazy_parameter *)aux;
 	bool acquired = false;
-	
+	// printf("lazy_load_seg\n");
 	if (params->file == NULL)
 		return false;
 	//TODO: success 여부 어떻게 체크할까?
@@ -858,10 +858,27 @@ lazy_load_segment (struct page *page, void *aux) {
 		if (acquired)
 			lock_release(&filesys_lock);
 	}
-	memset(params->upage + params->read_bytes, 0, params->zero_bytes);
+	// printf("lazy_load_seg 5: prt: %p %d bytes\n", page->va + params->read_bytes, params->zero_bytes);
+	if (params->zero_bytes > 0)
+		memset(page->va + params->read_bytes, 0, params->zero_bytes);
+	// printf("lazy_load_seg 6\n");
 	free(aux);
-
+	// printf("lazy_load_seg end\n");
 	return true;
+}
+
+void *
+copy_lazy_parameter(struct page* src, void* dst) {
+	struct lazy_parameter *aux = malloc(sizeof(struct lazy_parameter));
+	struct lazy_parameter *src_aux = (struct lazy_parameter *)src->uninit.aux;
+
+	aux->file = src_aux->file;
+	aux->ofs = src_aux->ofs;
+	aux->read_bytes = src_aux->read_bytes;
+	aux->zero_bytes = src_aux->zero_bytes;
+	aux->upage = src_aux->upage;
+	// printf("anon copied zero_byes=%d\n", src_aux->zero_bytes);
+	return aux;
 }
 
 /* Loads a segment starting at offset OFS in FILE at address
@@ -891,8 +908,8 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 		 * We will read PAGE_READ_BYTES bytes from FILE
 		 * and zero the final PAGE_ZERO_BYTES bytes. */
 		size_t page_read_bytes = read_bytes < PGSIZE ? read_bytes : PGSIZE;
-		size_t page_zero_bytes = PGSIZE - page_read_bytes;
-
+		size_t page_zero_bytes = page_read_bytes < PGSIZE ? PGSIZE - page_read_bytes : 0;
+		// printf("zero_bytes: %d\n", page_zero_bytes);
 		/* TODO: Set up aux to pass information to the lazy_load_segment. */
 		struct lazy_parameter *aux = malloc(sizeof(struct lazy_parameter));
 		aux->file = file;
@@ -900,6 +917,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 		aux->read_bytes = page_read_bytes;
 		aux->zero_bytes = page_zero_bytes;
 		aux->upage = upage;
+		aux->copy = copy_lazy_parameter;
 		if (!vm_alloc_page_with_initializer (VM_ANON, upage,
 					writable, lazy_load_segment, aux))
 			return false;
