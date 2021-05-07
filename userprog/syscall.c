@@ -428,7 +428,8 @@ void *
 mmap (void *addr, size_t length, int writable, int fd, off_t offset) {
 	struct file_elem* f_el = file_elem_by_fd(fd);
 
-	if (f_el == NULL || fd == 0 || fd == 1 || addr == NULL || is_kernel_vaddr(addr) || length == 0 || !file_length(f_el->file))
+	if (f_el == NULL || fd == 0 || fd == 1 || addr == NULL || is_kernel_vaddr(addr) || 
+			length == 0 || !file_length(f_el->file) || offset % PGSIZE != 0)
 		return NULL;
 	if (pg_round_down(addr) != addr)	// addr is not alligned
 		return NULL;

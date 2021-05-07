@@ -87,6 +87,9 @@ do_mmap (void *addr, size_t length, int writable,
 	size_t left_size = length;
 	struct mmap_parameter *aux;
 
+	if (file_length(file) <= offset)	// 글쎄??
+		return NULL;
+
 	for (int i = 0; i < page_number; i++) {
 		if (addr + PGSIZE * i == NULL || is_kernel_vaddr(addr + PGSIZE * i))
 			return NULL;

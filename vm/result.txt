@@ -147,21 +147,7 @@ perl -I../.. ../../tests/userprog/wait-simple.ck tests/userprog/wait-simple test
 pass tests/userprog/wait-simple
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/wait-twice:wait-twice -p tests/userprog/child-simple:child-simple --swap-disk=4 -- -q   -f run wait-twice < /dev/null 2> tests/userprog/wait-twice.errors > tests/userprog/wait-twice.output
 perl -I../.. ../../tests/userprog/wait-twice.ck tests/userprog/wait-twice tests/userprog/wait-twice.result
-FAIL tests/userprog/wait-twice
-Kernel panic in run: PANIC at ../../threads/thread.c:327 in thread_current(): assertion `t->status == THREAD_RUNNING' failed.
-Call stack: 0x8004218cfd 0x80042074ef 0x8004206e34 0x8004212a97 0x8004209610 0x8004209a2e 0x800421f492 0x800421e344 0x400106 0x4001e1 0x400c82
-Translation of call stack:
-0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
-0x00000080042074ef: thread_current (threads/thread.c:329)
-0x0000008004206e34: thread_tick (threads/thread.c:163)
-0x0000008004212a97: timer_interrupt (devices/timer.c:129)
-0x0000008004209610: intr_handler (threads/interrupt.c:352)
-0x0000008004209a2e: intr_entry (threads/intr-stubs.o:?)
-0x000000800421f492: syscall_handler (userprog/syscall.c:466)
-0x000000800421e344: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400106: (unknown)
-0x00000000004001e1: (unknown)
-0x0000000000400c82: (unknown)
+pass tests/userprog/wait-twice
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/wait-killed:wait-killed -p tests/userprog/child-bad:child-bad --swap-disk=4 -- -q   -f run wait-killed < /dev/null 2> tests/userprog/wait-killed.errors > tests/userprog/wait-killed.output
 perl -I../.. ../../tests/userprog/wait-killed.ck tests/userprog/wait-killed tests/userprog/wait-killed.result
 pass tests/userprog/wait-killed
@@ -236,25 +222,15 @@ perl -I../.. ../../tests/vm/page-merge-seq.ck tests/vm/page-merge-seq tests/vm/p
 pass tests/vm/page-merge-seq
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-merge-par:page-merge-par -p tests/vm/child-sort:child-sort --swap-disk=4 -- -q   -f run page-merge-par < /dev/null 2> tests/vm/page-merge-par.errors > tests/vm/page-merge-par.output
 perl -I../.. ../../tests/vm/page-merge-par.ck tests/vm/page-merge-par tests/vm/page-merge-par.result
-pass tests/vm/page-merge-par
+FAIL tests/vm/page-merge-par
+run: wait for child 6: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-merge-stk:page-merge-stk -p tests/vm/child-qsort:child-qsort --swap-disk=4 -- -q   -f run page-merge-stk < /dev/null 2> tests/vm/page-merge-stk.errors > tests/vm/page-merge-stk.output
 perl -I../.. ../../tests/vm/page-merge-stk.ck tests/vm/page-merge-stk tests/vm/page-merge-stk.result
-FAIL tests/vm/page-merge-stk
-Kernel panic in run: PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
-Call stack: 0x8004218cfd 0x800421e0f9 0x8004209610 0x8004209a2e 0x800420756b 0x800421e722 0x800421f464 0x800421e344 0x4010bd
-Translation of call stack:
-0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e0f9: kill (userprog/exception.c:103)
-0x0000008004209610: intr_handler (threads/interrupt.c:352)
-0x0000008004209a2e: intr_entry (threads/intr-stubs.o:?)
-0x000000800420756b: thread_exit (threads/thread.c:350)
-0x000000800421e722: fork (userprog/syscall.c:143)
-0x000000800421f464: syscall_handler (userprog/syscall.c:465)
-0x000000800421e344: no_sti (userprog/syscall-entry.o:?)
-0x00000000004010bd: (unknown)
+pass tests/vm/page-merge-stk
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-merge-mm:page-merge-mm -p tests/vm/child-qsort-mm:child-qsort-mm --swap-disk=4 -- -q   -f run page-merge-mm < /dev/null 2> tests/vm/page-merge-mm.errors > tests/vm/page-merge-mm.output
 perl -I../.. ../../tests/vm/page-merge-mm.ck tests/vm/page-merge-mm tests/vm/page-merge-mm.result
-pass tests/vm/page-merge-mm
+FAIL tests/vm/page-merge-mm
+run: bad value 1 in byte 3558: FAILED
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-shuffle:page-shuffle --swap-disk=4 -- -q   -f run page-shuffle < /dev/null 2> tests/vm/page-shuffle.errors > tests/vm/page-shuffle.output
 perl -I../.. ../../tests/vm/page-shuffle.ck tests/vm/page-shuffle tests/vm/page-shuffle.result
 pass tests/vm/page-shuffle
@@ -354,8 +330,7 @@ perl -I../.. ../../tests/vm/mmap-off.ck tests/vm/mmap-off tests/vm/mmap-off.resu
 pass tests/vm/mmap-off
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-bad-off:mmap-bad-off -p ../../tests/vm/large.txt:large.txt --swap-disk=4 -- -q   -f run mmap-bad-off < /dev/null 2> tests/vm/mmap-bad-off.errors > tests/vm/mmap-bad-off.output
 perl -I../.. ../../tests/vm/mmap-bad-off.ck tests/vm/mmap-bad-off tests/vm/mmap-bad-off.result
-FAIL tests/vm/mmap-bad-off
-run: try to mmap invalid offset: FAILED
+pass tests/vm/mmap-bad-off
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-kernel:mmap-kernel -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-kernel < /dev/null 2> tests/vm/mmap-kernel.errors > tests/vm/mmap-kernel.output
 perl -I../.. ../../tests/vm/mmap-kernel.ck tests/vm/mmap-kernel tests/vm/mmap-kernel.result
 pass tests/vm/mmap-kernel
@@ -373,17 +348,17 @@ pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-anon:swap-anon --swap-d
 perl -I../.. ../../tests/vm/swap-anon.ck tests/vm/swap-anon tests/vm/swap-anon.result
 FAIL tests/vm/swap-anon
 Kernel panic in run: PANIC at ../../vm/vm.c:160 in vm_get_frame(): todo
-Call stack: 0x8004218cfd 0x8004222d75 0x80042231bb 0x80042230d6 0x800421e1f0 0x8004209610 0x8004209a2e 0x800421daec 0x8004222c00 0x800421dcc6 0x800421d4f5 0x800421cbd9 0x800421c501 0x8004207eb1
+Call stack: 0x8004218cfd 0x8004222d81 0x80042231c7 0x80042230e2 0x800421e1f0 0x8004209610 0x8004209a2e 0x800421daec 0x8004222c0c 0x800421dcc6 0x800421d4f5 0x800421cbd9 0x800421c501 0x8004207eb1
 Translation of call stack:
 0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222d75: vm_get_frame (vm/vm.c:163)
-0x00000080042231bb: vm_do_claim_page (vm/vm.c:266)
-0x00000080042230d6: vm_try_handle_fault (vm/vm.c:239)
+0x0000008004222d81: vm_get_frame (vm/vm.c:163)
+0x00000080042231c7: vm_do_claim_page (vm/vm.c:266)
+0x00000080042230e2: vm_try_handle_fault (vm/vm.c:239)
 0x000000800421e1f0: page_fault (userprog/exception.c:145)
 0x0000008004209610: intr_handler (threads/interrupt.c:352)
 0x0000008004209a2e: intr_entry (threads/intr-stubs.o:?)
 0x000000800421daec: lazy_load_segment (userprog/process.c:860)
-0x0000008004222c00: vm_alloc_page_with_initializer (vm/vm.c:86)
+0x0000008004222c0c: vm_alloc_page_with_initializer (vm/vm.c:86)
 0x000000800421dcc6: load_segment (userprog/process.c:901)
 0x000000800421d4f5: load (userprog/process.c:620)
 0x000000800421cbd9: process_exec (userprog/process.c:328)
@@ -393,17 +368,17 @@ pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-iter:swap-iter -p ../..
 perl -I../.. ../../tests/vm/swap-iter.ck tests/vm/swap-iter tests/vm/swap-iter.result
 FAIL tests/vm/swap-iter
 Kernel panic in run: PANIC at ../../vm/vm.c:160 in vm_get_frame(): todo
-Call stack: 0x8004218cfd 0x8004222d75 0x80042231bb 0x80042230d6 0x800421e1f0 0x8004209610 0x8004209a2e 0x800421daec 0x8004222c00 0x800421dcc6 0x800421d4f5 0x800421cbd9 0x800421c501 0x8004207eb1
+Call stack: 0x8004218cfd 0x8004222d81 0x80042231c7 0x80042230e2 0x800421e1f0 0x8004209610 0x8004209a2e 0x800421daec 0x8004222c0c 0x800421dcc6 0x800421d4f5 0x800421cbd9 0x800421c501 0x8004207eb1
 Translation of call stack:
 0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222d75: vm_get_frame (vm/vm.c:163)
-0x00000080042231bb: vm_do_claim_page (vm/vm.c:266)
-0x00000080042230d6: vm_try_handle_fault (vm/vm.c:239)
+0x0000008004222d81: vm_get_frame (vm/vm.c:163)
+0x00000080042231c7: vm_do_claim_page (vm/vm.c:266)
+0x00000080042230e2: vm_try_handle_fault (vm/vm.c:239)
 0x000000800421e1f0: page_fault (userprog/exception.c:145)
 0x0000008004209610: intr_handler (threads/interrupt.c:352)
 0x0000008004209a2e: intr_entry (threads/intr-stubs.o:?)
 0x000000800421daec: lazy_load_segment (userprog/process.c:860)
-0x0000008004222c00: vm_alloc_page_with_initializer (vm/vm.c:86)
+0x0000008004222c0c: vm_alloc_page_with_initializer (vm/vm.c:86)
 0x000000800421dcc6: load_segment (userprog/process.c:901)
 0x000000800421d4f5: load (userprog/process.c:620)
 0x000000800421cbd9: process_exec (userprog/process.c:328)
@@ -411,7 +386,19 @@ Translation of call stack:
 0x0000008004207eb1: kernel_thread (threads/thread.c:593)
 pintos -v -k -T 600 -m 40   --fs-disk=10 -p tests/vm/swap-fork:swap-fork -p tests/vm/child-swap:child-swap --swap-disk=200 -- -q   -f run swap-fork < /dev/null 2> tests/vm/swap-fork.errors > tests/vm/swap-fork.output
 perl -I../.. ../../tests/vm/swap-fork.ck tests/vm/swap-fork tests/vm/swap-fork.result
-pass tests/vm/swap-fork
+FAIL tests/vm/swap-fork
+Kernel panic in run: PANIC at ../../threads/thread.c:327 in thread_current(): assertion `t->status == THREAD_RUNNING' failed.
+Call stack: 0x8004218cfd 0x80042074ef 0x8004207149 0x800421e7a0 0x800421f49e 0x800421e344 0x400110 0x400c69 0x400cb2
+Translation of call stack:
+0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
+0x00000080042074ef: thread_current (threads/thread.c:329)
+0x0000008004207149: thread_block (threads/thread.c:248)
+0x000000800421e7a0: fork (userprog/syscall.c:156)
+0x000000800421f49e: syscall_handler (userprog/syscall.c:467)
+0x000000800421e344: no_sti (userprog/syscall-entry.o:?)
+0x0000000000400110: (unknown)
+0x0000000000400c69: (unknown)
+0x0000000000400cb2: (unknown)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/lg-create:lg-create --swap-disk=4 -- -q   -f run lg-create < /dev/null 2> tests/filesys/base/lg-create.errors > tests/filesys/base/lg-create.output
 perl -I../.. ../../tests/filesys/base/lg-create.ck tests/filesys/base/lg-create tests/filesys/base/lg-create.result
 pass tests/filesys/base/lg-create
@@ -459,22 +446,7 @@ perl -I../.. ../../tests/threads/alarm-multiple.ck tests/threads/alarm-multiple 
 pass tests/threads/alarm-multiple
 pintos -v -k -T 60 -m 20   --fs-disk=10  --swap-disk=4 -- -q  -threads-tests -f run alarm-simultaneous < /dev/null 2> tests/threads/alarm-simultaneous.errors > tests/threads/alarm-simultaneous.output
 perl -I../.. ../../tests/threads/alarm-simultaneous.ck tests/threads/alarm-simultaneous tests/threads/alarm-simultaneous.result
-FAIL tests/threads/alarm-simultaneous
-Kernel panic in run: PANIC at ../../lib/kernel/list.c:78 in list_next(): assertion `is_head (elem) || is_interior (elem)' failed.
-Call stack: 0x8004218cfd 0x8004218f79 0x8004219a4e 0x8004219e1e 0x800420792b 0x8004207093 0x800420ee5b 0x800420ec75 0x800420e419 0x800420675c 0x80042068cc 0x8004206186
-Translation of call stack:
-0x0000008004218cfd: debug_panic (lib/kernel/debug.c:32)
-0x0000008004218f79: list_next (lib/kernel/list.c:79)
-0x0000008004219a4e: find_end_of_run (lib/kernel/list.c:347 (discriminator 2))
-0x0000008004219e1e: list_sort (lib/kernel/list.c:401)
-0x000000800420792b: thread_kick (threads/thread.c:433)
-0x0000008004207093: thread_create (threads/thread.c:235)
-0x000000800420ee5b: test_sleep (tests/threads/alarm-simultaneous.c:58 (discriminator 3))
-0x000000800420ec75: test_alarm_simultaneous (tests/threads/alarm-simultaneous.c:19)
-0x000000800420e419: run_test (tests/threads/tests.c:57)
-0x000000800420675c: run_task (threads/init.c:245)
-0x00000080042068cc: run_actions (threads/init.c:297)
-0x0000008004206186: main (threads/init.c:125)
+pass tests/threads/alarm-simultaneous
 pintos -v -k -T 60 -m 20   --fs-disk=10  --swap-disk=4 -- -q  -threads-tests -f run alarm-priority < /dev/null 2> tests/threads/alarm-priority.errors > tests/threads/alarm-priority.output
 perl -I../.. ../../tests/threads/alarm-priority.ck tests/threads/alarm-priority tests/threads/alarm-priority.result
 pass tests/threads/alarm-priority
@@ -573,7 +545,7 @@ pass tests/userprog/exec-missing
 pass tests/userprog/exec-bad-ptr
 pass tests/userprog/exec-read
 pass tests/userprog/wait-simple
-FAIL tests/userprog/wait-twice
+pass tests/userprog/wait-twice
 pass tests/userprog/wait-killed
 pass tests/userprog/wait-bad-pid
 pass tests/userprog/multi-recurse
@@ -598,9 +570,9 @@ pass tests/vm/pt-grow-stk-sc
 pass tests/vm/page-linear
 pass tests/vm/page-parallel
 pass tests/vm/page-merge-seq
-pass tests/vm/page-merge-par
-FAIL tests/vm/page-merge-stk
-pass tests/vm/page-merge-mm
+FAIL tests/vm/page-merge-par
+pass tests/vm/page-merge-stk
+FAIL tests/vm/page-merge-mm
 pass tests/vm/page-shuffle
 pass tests/vm/mmap-read
 pass tests/vm/mmap-close
@@ -625,14 +597,14 @@ pass tests/vm/mmap-bad-fd2
 pass tests/vm/mmap-bad-fd3
 pass tests/vm/mmap-zero-len
 pass tests/vm/mmap-off
-FAIL tests/vm/mmap-bad-off
+pass tests/vm/mmap-bad-off
 pass tests/vm/mmap-kernel
 pass tests/vm/lazy-file
 FAIL tests/vm/lazy-anon
 pass tests/vm/swap-file
 FAIL tests/vm/swap-anon
 FAIL tests/vm/swap-iter
-pass tests/vm/swap-fork
+FAIL tests/vm/swap-fork
 pass tests/filesys/base/lg-create
 pass tests/filesys/base/lg-full
 pass tests/filesys/base/lg-random
@@ -648,7 +620,7 @@ pass tests/filesys/base/syn-remove
 pass tests/filesys/base/syn-write
 pass tests/threads/alarm-single
 pass tests/threads/alarm-multiple
-FAIL tests/threads/alarm-simultaneous
+pass tests/threads/alarm-simultaneous
 pass tests/threads/alarm-priority
 pass tests/threads/alarm-zero
 pass tests/threads/alarm-negative
@@ -665,5 +637,5 @@ pass tests/threads/priority-sema
 pass tests/threads/priority-condvar
 pass tests/threads/priority-donate-chain
 FAIL tests/vm/cow/cow-simple
-9 of 141 tests failed.
+8 of 141 tests failed.
 ../../tests/Make.tests:28: recipe for target 'check' failed
