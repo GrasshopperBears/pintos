@@ -10,7 +10,9 @@
 #include "userprog/process.h"
 
 struct lock hash_lock;
+struct lock frames_list_lock;
 struct list frames_list;
+extern struct lock filesys_lock;
 
 /* Initializes the virtual memory subsystem by invoking each subsystem's
  * intialize codes. */
@@ -25,6 +27,7 @@ vm_init (void) {
 	/* DO NOT MODIFY UPPER LINES. */
 	/* TODO: Your code goes here. */
 	lock_init(&hash_lock);
+	lock_init(&frames_list_lock);
 	list_init(&frames_list);
 }
 
@@ -78,6 +81,7 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		page->writable = writable;
 		page->is_stack = false;
 		page->uninit.copy = (VM_TYPE(type) == VM_ANON) ? copy_lazy_parameter : copy_mmap_parameter;
+		page->swapped_out = false;
 
 		/* TODO: Insert the page into the spt. */
 		lock_acquire(&hash_lock);
@@ -153,16 +157,22 @@ vm_get_victim (void) {
  * Return NULL on error.*/
 static struct frame *
 vm_evict_frame (void) {
-	struct frame *victim UNUSED = vm_get_victim ();
+	struct frame *victim UNUSED;
+	struct page* page_to_evict;
 	/* TODO: swap out the victim and return the evicted frame. */
-	struct page* page_to_evict = victim->page;
+	lock_acquire(&frames_list_lock);
+	victim = vm_get_victim ();
+	lock_release(&frames_list_lock);
+	page_to_evict = victim->page;
 
 	swap_out(page_to_evict);
-
+	page_to_evict->swapped_out = true;
 	page_to_evict->frame = NULL;
 	victim->page = NULL;
 	victim->kva = victim->original_kva;
+	lock_acquire(&frames_list_lock);
 	list_push_front(&frames_list, &victim->elem);
+	lock_release(&frames_list_lock);
 	pml4_clear_page(thread_current()->pml4, page_to_evict->va);
 
 	return victim;
@@ -188,7 +198,9 @@ vm_get_frame (void) {
 	frame->kva = newpage;
 	frame->original_kva = newpage;
 	frame->page = NULL;
+	lock_acquire(&frames_list_lock);
 	list_push_front(&frames_list, &frame->elem);
+	lock_release(&frames_list_lock);
 
 	ASSERT (frame != NULL);
 	ASSERT (frame->page == NULL);
@@ -314,6 +326,7 @@ vm_do_claim_page (struct page *page) {
 
 	page->uninit.page_initializer(page, page_get_type(page), frame->kva);
 	// printf("claimed page type: %d\n", VM_TYPE(page->operations->type));
+	page->swapped_out = false;
 	return swap_in (page, frame->kva);
 }
 
@@ -358,13 +371,17 @@ copy_spt_hash(struct hash_elem *e, void *aux) {
 		page_copy->frame = frame;
 		page_copy->va = page_original->va;
 		page_copy->writable = page_original->writable;
+		page_copy->swapped_out = page_original->swapped_out;
 		page_copy->operations = page_original->operations;
-		pml4_set_page(thread_current()->pml4, page_copy->va, page_copy->frame->kva, page_copy->writable);
+		pml4_set_page(thread_current()->pml4, page_copy->va, frame->kva, page_copy->writable);
 		spt_insert_page(&thread_current()->spt.hash, page_copy);
 		memcpy(frame->kva, page_original->frame->kva, PGSIZE);
 		frame->page = page_copy;
-		// if (VM_TYPE(page_original->operations->type) == VM_ANON) {
-		// 	copy_anon_page(page_original, page_copy);
+		if (VM_TYPE(page_original->operations->type) == VM_FILE) {
+			lock_acquire(&filesys_lock);
+			page_copy->file.file = file_reopen(page_original->file.file);
+			lock_release(&filesys_lock);
+		}
 	
 	}
 }
@@ -374,9 +391,7 @@ bool
 supplemental_page_table_copy (struct supplemental_page_table *dst UNUSED,
 		struct supplemental_page_table *src UNUSED) {
 	src->hash.aux = dst;
-	// lock_acquire(&hash_lock);
 	hash_apply(&src->hash, copy_spt_hash);
-	// lock_release(&hash_lock);
 	src->hash.aux = NULL;
 	return true;
 }

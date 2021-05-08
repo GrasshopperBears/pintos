@@ -49,7 +49,7 @@ anon_initializer (struct page *page, enum vm_type type, void *kva) {
 	page->operations = &anon_ops;
 
 	struct anon_page *anon_page = &page->anon;
-	anon_page->swapped_out = false;
+	
 	// printf("init to false %p\n", page);
 }
 
@@ -58,7 +58,7 @@ static bool
 anon_swap_in (struct page *page, void *kva) {
 	struct anon_page *anon_page = &page->anon;
 
-	anon_page->swapped_out = false;
+	page->swapped_out = false;
 
 	if (hash_find(&swap_disk_info.swapped_page_hash, &page->swapped_disk_hash_elem) == NULL)
 		return true;
@@ -119,15 +119,10 @@ anon_swap_out (struct page *page) {
 	list_insert_ordered(&swap_disk_info.using_sectors, &page->anon.elem, compare_anon_page, NULL);
 	hash_insert(&swap_disk_info.swapped_page_hash, &page->swapped_disk_hash_elem);
 	swap_disk_info.current_using++;
-	anon_page->swapped_out = true;
+	page->swapped_out = true;
 	lock_release(&swap_disk_lock);
 
 	return true;
-}
-
-void
-copy_anon_page(struct page* src, struct page* dst) {
-	
 }
 
 /* Destroy the anonymous page. PAGE will be freed by the caller. */
@@ -135,9 +130,6 @@ static void
 anon_destroy (struct page *page) {
 	struct anon_page *anon_page = &page->anon;
 
-	// if (VM_TYPE(page->operations->type) == VM_ANON && anon_page->swapped_out) {
-	// 	printf("check %p--type: %d\n", page, VM_TYPE(page->operations->type));
-	// } 
 	if (page->frame != NULL)
 		common_clear_page(page);
 	else {

@@ -50,6 +50,7 @@ struct page {
 	struct hash_elem spt_hash_elem;
 	bool writable;
 	bool is_stack;
+	bool swapped_out;
 	struct hash_elem swapped_disk_hash_elem;
 
 	/* Per-type data are binded into the union.
@@ -125,7 +126,6 @@ void* copy_mmap_parameter(struct page* src, void* dst);
 
 unsigned page_hash (const struct hash_elem *h_el, void *aux UNUSED);
 bool page_less (const struct hash_elem *a_, const struct hash_elem *b_, void *aux UNUSED);
-void copy_anon_page(struct page* src, struct page* dst);
 struct mmap_parameter {
 	struct file* file;
 	off_t offset;

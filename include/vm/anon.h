@@ -6,7 +6,6 @@ struct page;
 enum vm_type;
 
 struct anon_page {
-  bool swapped_out;
   disk_sector_t page_sec_idx;
   struct list_elem elem;
 };

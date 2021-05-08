@@ -31,6 +31,13 @@ file_backed_initializer (struct page *page, enum vm_type type, void *kva) {
 	page->operations = &file_ops;
 
 	struct file_page *file_page = &page->file;
+	return true;
+}
+
+/* Swap in the page by read contents from the file. */
+static bool
+file_backed_swap_in (struct page *page, void *kva) {
+	struct file_page *file_page UNUSED = &page->file;
 	if (file_page->file == NULL)
 		return false;
 
@@ -42,28 +49,28 @@ file_backed_initializer (struct page *page, enum vm_type type, void *kva) {
 	return true;
 }
 
-/* Swap in the page by read contents from the file. */
-static bool
-file_backed_swap_in (struct page *page, void *kva) {
-	struct file_page *file_page UNUSED = &page->file;
-}
-
 /* Swap out the page by writeback contents to the file. */
 static bool
 file_backed_swap_out (struct page *page) {
 	struct file_page *file_page UNUSED = &page->file;
+
+	if (file_page->file != NULL) {
+		lock_acquire(&filesys_lock);
+		file_write_at(file_page->file, page->va, file_page->data_bytes, file_page->offset);
+		lock_release(&filesys_lock);
+	}
+	return true;
 }
 
 /* Destory the file backed page. PAGE will be freed by the caller. */
 static void
 file_backed_destroy (struct page *page) {
 	struct file_page *file_page UNUSED = &page->file;
-	if (file_page->file != NULL) {
-		lock_acquire(&filesys_lock);
-		file_write_at(file_page->file, page->va, file_page->data_bytes, file_page->offset);
-		lock_release(&filesys_lock);
+
+	if (!page->swapped_out) {
+		file_backed_swap_out(page);
+		common_clear_page(page);
 	}
-	common_clear_page(page);
 }
 
 void
