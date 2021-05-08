@@ -69,8 +69,9 @@ file_backed_destroy (struct page *page) {
 
 	if (!page->swapped_out) {
 		file_backed_swap_out(page);
-		common_clear_page(page);
 	}
+	if (page->frame != NULL)
+		common_clear_page(page);
 }
 
 void

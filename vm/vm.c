@@ -139,17 +139,6 @@ static struct frame *
 vm_get_victim (void) {
 	struct frame *victim = NULL;
 	 /* TODO: The policy for eviction is up to you. */
-	struct frame* current_frame;
-	struct list_elem* el = list_begin(&frames_list);
-
-	while (el != list_end(el)) {
-		current_frame = list_entry(el, struct frame, elem);
-		if (page_get_type(current_frame->page) == VM_ANON) {
-			list_remove(&el);
-			return current_frame;
-		}
-		el = el->next;
-	}
 	return list_entry(list_pop_back(&frames_list), struct frame, elem);
 }
 
@@ -374,7 +363,9 @@ copy_spt_hash(struct hash_elem *e, void *aux) {
 		page_copy->swapped_out = page_original->swapped_out;
 		page_copy->operations = page_original->operations;
 		pml4_set_page(thread_current()->pml4, page_copy->va, frame->kva, page_copy->writable);
+		lock_acquire(&hash_lock);
 		spt_insert_page(&thread_current()->spt.hash, page_copy);
+		lock_release(&hash_lock);
 		memcpy(frame->kva, page_original->frame->kva, PGSIZE);
 		frame->page = page_copy;
 		if (VM_TYPE(page_original->operations->type) == VM_FILE) {
