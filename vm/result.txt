@@ -1,3 +1,5 @@
+cd build && make check
+make[1]: Entering directory '/home/kaist/pintos/vm/build'
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-none:args-none --swap-disk=4 -- -q   -f run args-none < /dev/null 2> tests/userprog/args-none.errors > tests/userprog/args-none.output
 perl -I../.. ../../tests/userprog/args-none.ck tests/userprog/args-none tests/userprog/args-none.result
 pass tests/userprog/args-none
@@ -222,15 +224,15 @@ perl -I../.. ../../tests/vm/page-merge-seq.ck tests/vm/page-merge-seq tests/vm/p
 pass tests/vm/page-merge-seq
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-merge-par:page-merge-par -p tests/vm/child-sort:child-sort --swap-disk=4 -- -q   -f run page-merge-par < /dev/null 2> tests/vm/page-merge-par.errors > tests/vm/page-merge-par.output
 perl -I../.. ../../tests/vm/page-merge-par.ck tests/vm/page-merge-par tests/vm/page-merge-par.result
-FAIL tests/vm/page-merge-par
-run: wait for child 0: FAILED
+pass tests/vm/page-merge-par
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-merge-stk:page-merge-stk -p tests/vm/child-qsort:child-qsort --swap-disk=4 -- -q   -f run page-merge-stk < /dev/null 2> tests/vm/page-merge-stk.errors > tests/vm/page-merge-stk.output
 perl -I../.. ../../tests/vm/page-merge-stk.ck tests/vm/page-merge-stk tests/vm/page-merge-stk.result
-pass tests/vm/page-merge-stk
+FAIL tests/vm/page-merge-stk
+run: wait for child 0: FAILED
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-merge-mm:page-merge-mm -p tests/vm/child-qsort-mm:child-qsort-mm --swap-disk=4 -- -q   -f run page-merge-mm < /dev/null 2> tests/vm/page-merge-mm.errors > tests/vm/page-merge-mm.output
 perl -I../.. ../../tests/vm/page-merge-mm.ck tests/vm/page-merge-mm tests/vm/page-merge-mm.result
 FAIL tests/vm/page-merge-mm
-run: wait for child 3: FAILED
+run: wait for child 5: FAILED
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-shuffle:page-shuffle --swap-disk=4 -- -q   -f run page-shuffle < /dev/null 2> tests/vm/page-shuffle.errors > tests/vm/page-shuffle.output
 perl -I../.. ../../tests/vm/page-shuffle.ck tests/vm/page-shuffle tests/vm/page-shuffle.result
 pass tests/vm/page-shuffle
@@ -267,31 +269,7 @@ perl -I../.. ../../tests/vm/mmap-bad-fd.ck tests/vm/mmap-bad-fd tests/vm/mmap-ba
 pass tests/vm/mmap-bad-fd
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-clean:mmap-clean -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-clean < /dev/null 2> tests/vm/mmap-clean.errors > tests/vm/mmap-clean.output
 perl -I../.. ../../tests/vm/mmap-clean.ck tests/vm/mmap-clean tests/vm/mmap-clean.result
-FAIL tests/vm/mmap-clean
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (mmap-clean) begin
-  (mmap-clean) open "sample.txt"
-  (mmap-clean) mmap "sample.txt"
-  (mmap-clean) write "sample.txt"
-  (mmap-clean) munmap "sample.txt"
-  (mmap-clean) seek "sample.txt"
-  (mmap-clean) read "sample.txt"
-  (mmap-clean) file change was retained after munmap
-  (mmap-clean) end
-Differences in `diff -u' format:
-  (mmap-clean) begin
-  (mmap-clean) open "sample.txt"
-  (mmap-clean) mmap "sample.txt"
-  (mmap-clean) write "sample.txt"
-- (mmap-clean) munmap "sample.txt"
-- (mmap-clean) seek "sample.txt"
-- (mmap-clean) read "sample.txt"
-- (mmap-clean) file change was retained after munmap
-- (mmap-clean) end
-
-(Process exit codes are excluded for matching purposes.)
+pass tests/vm/mmap-clean
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-inherit:mmap-inherit -p ../../tests/vm/sample.txt:sample.txt -p tests/vm/child-inherit:child-inherit --swap-disk=4 -- -q   -f run mmap-inherit < /dev/null 2> tests/vm/mmap-inherit.errors > tests/vm/mmap-inherit.output
 perl -I../.. ../../tests/vm/mmap-inherit.ck tests/vm/mmap-inherit tests/vm/mmap-inherit.result
 pass tests/vm/mmap-inherit
@@ -347,12 +325,12 @@ pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-anon:swap-anon --swap-d
 perl -I../.. ../../tests/vm/swap-anon.ck tests/vm/swap-anon tests/vm/swap-anon.result
 FAIL tests/vm/swap-anon
 Kernel panic in run: PANIC at ../../vm/vm.c:159 in vm_get_frame(): todo
-Call stack: 0x8004218d0d 0x8004222e61 0x80042232d3 0x80042231ee 0x800421e2c2 0x8004209620 0x8004209a3e 0x400cac 0x400cf5
+Call stack: 0x8004218d0d 0x8004222df2 0x80042232a3 0x8004223182 0x800421e2c2 0x8004209620 0x8004209a3e 0x400cac 0x400cf5
 Translation of call stack:
 0x0000008004218d0d: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222e61: vm_get_frame (vm/vm.c:162)
-0x00000080042232d3: vm_do_claim_page (vm/vm.c:268)
-0x00000080042231ee: vm_try_handle_fault (vm/vm.c:241)
+0x0000008004222df2: vm_get_frame (vm/vm.c:162)
+0x00000080042232a3: vm_do_claim_page (vm/vm.c:275)
+0x0000008004223182: vm_try_handle_fault (vm/vm.c:243)
 0x000000800421e2c2: page_fault (userprog/exception.c:145)
 0x0000008004209620: intr_handler (threads/interrupt.c:352)
 0x0000008004209a3e: intr_entry (threads/intr-stubs.o:?)
@@ -362,12 +340,12 @@ pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-iter:swap-iter -p ../..
 perl -I../.. ../../tests/vm/swap-iter.ck tests/vm/swap-iter tests/vm/swap-iter.result
 FAIL tests/vm/swap-iter
 Kernel panic in run: PANIC at ../../vm/vm.c:159 in vm_get_frame(): todo
-Call stack: 0x8004218d0d 0x8004222e61 0x80042232d3 0x80042231ee 0x800421e2c2 0x8004209620 0x8004209a3e 0x400e2e 0x400e77
+Call stack: 0x8004218d0d 0x8004222df2 0x80042232a3 0x8004223182 0x800421e2c2 0x8004209620 0x8004209a3e 0x400e2e 0x400e77
 Translation of call stack:
 0x0000008004218d0d: debug_panic (lib/kernel/debug.c:32)
-0x0000008004222e61: vm_get_frame (vm/vm.c:162)
-0x00000080042232d3: vm_do_claim_page (vm/vm.c:268)
-0x00000080042231ee: vm_try_handle_fault (vm/vm.c:241)
+0x0000008004222df2: vm_get_frame (vm/vm.c:162)
+0x00000080042232a3: vm_do_claim_page (vm/vm.c:275)
+0x0000008004223182: vm_try_handle_fault (vm/vm.c:243)
 0x000000800421e2c2: page_fault (userprog/exception.c:145)
 0x0000008004209620: intr_handler (threads/interrupt.c:352)
 0x0000008004209a3e: intr_entry (threads/intr-stubs.o:?)
@@ -547,8 +525,8 @@ pass tests/vm/pt-grow-stk-sc
 pass tests/vm/page-linear
 pass tests/vm/page-parallel
 pass tests/vm/page-merge-seq
-FAIL tests/vm/page-merge-par
-pass tests/vm/page-merge-stk
+pass tests/vm/page-merge-par
+FAIL tests/vm/page-merge-stk
 FAIL tests/vm/page-merge-mm
 pass tests/vm/page-shuffle
 pass tests/vm/mmap-read
@@ -561,7 +539,7 @@ pass tests/vm/mmap-ro
 pass tests/vm/mmap-exit
 pass tests/vm/mmap-shuffle
 pass tests/vm/mmap-bad-fd
-FAIL tests/vm/mmap-clean
+pass tests/vm/mmap-clean
 pass tests/vm/mmap-inherit
 pass tests/vm/mmap-misalign
 pass tests/vm/mmap-null
@@ -614,5 +592,7 @@ pass tests/threads/priority-sema
 pass tests/threads/priority-condvar
 pass tests/threads/priority-donate-chain
 FAIL tests/vm/cow/cow-simple
-6 of 141 tests failed.
+5 of 141 tests failed.
 ../../tests/Make.tests:28: recipe for target 'check' failed
+make[1]: Leaving directory '/home/kaist/pintos/vm/build'
+../Makefile.kernel:10: recipe for target 'check' failed

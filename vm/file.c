@@ -146,8 +146,7 @@ do_munmap (void *addr) {
 			exit(-1);
 
 		fp = &page->file;
-		// printf("unmap: %d\n", VM_TYPE(page->operations->type));
-		if (VM_TYPE(page->operations->type) == VM_FILE && page->fault_by_writing) {
+		if (VM_TYPE(page->operations->type) == VM_FILE && pml4_is_dirty(thread_current()->pml4, page->va)) {
 			lock_acquire(&filesys_lock);
 			file_write_at(fp->file, page->va, fp->data_bytes, fp->offset);
 			lock_release(&filesys_lock);

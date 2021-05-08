@@ -212,6 +212,7 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 	/* TODO: Your code goes here */
 	int MAX_STACK_COUNT = 256;
 	int MAX_STACK_ADDR = USER_STACK - 1 << 20;	// limit stack size to 1mb
+	bool succ;
 
 	// printf("fault handler at %p by %d\n", addr, user);
 	// printf("is writing? %d\n", write);
@@ -238,11 +239,12 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 	if (page_get_type(page) == VM_FILE && page->file.file == NULL) {
 		// printf("error of file unmmaped check\n");
 		return false;
-	} else if (page_get_type(page) == VM_FILE) {
-		page->fault_by_writing = write;
 	}
-	
-	return vm_do_claim_page (page);
+	succ = vm_do_claim_page (page);
+	if (!write)
+		pml4_set_dirty(curr->pml4, page->va, false);
+
+	return succ;
 }
 
 /* Free the page.
