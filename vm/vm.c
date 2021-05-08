@@ -78,7 +78,9 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		page->uninit.copy = (VM_TYPE(type) == VM_ANON) ? copy_lazy_parameter : copy_mmap_parameter;
 
 		/* TODO: Insert the page into the spt. */
+		lock_acquire(&hash_lock);
 		succ = spt_insert_page(spt, page);
+		lock_release(&hash_lock);
 		if (!succ) {
 			printf("spt insert error\n");
 			goto err;
@@ -263,7 +265,9 @@ vm_claim_page (void *va UNUSED) {
 	page = malloc(sizeof(struct page));
 	page->va = va;
 	page->writable = true;
+	lock_acquire(&hash_lock);
 	spt_insert_page(&thread_current()->spt, page);
+	lock_release(&hash_lock);
 	// printf("inserted-claim: %p\n", va);
 
 	return vm_do_claim_page (page);
@@ -306,7 +310,9 @@ spt_less (const struct hash_elem *a_, const struct hash_elem *b_, void *aux UNUS
 /* Initialize new supplemental page table */
 void
 supplemental_page_table_init (struct supplemental_page_table *spt UNUSED) {
+	lock_acquire(&hash_lock);
 	hash_init(&spt->hash, spt_hash, spt_less, NULL);
+	lock_release(&hash_lock);
 }
 
 void
@@ -341,7 +347,9 @@ bool
 supplemental_page_table_copy (struct supplemental_page_table *dst UNUSED,
 		struct supplemental_page_table *src UNUSED) {
 	src->hash.aux = dst;
+	// lock_acquire(&hash_lock);
 	hash_apply(&src->hash, copy_spt_hash);
+	// lock_release(&hash_lock);
 	src->hash.aux = NULL;
 	return true;
 }
@@ -358,7 +366,9 @@ void
 supplemental_page_table_kill (struct supplemental_page_table *spt UNUSED) {
 	/* TODO: Destroy all the supplemental_page_table hold by thread and
 	 * TODO: writeback all the modified contents to the storage. */
+	lock_acquire(&hash_lock);
 	hash_clear(spt, kill_spt_hash);
+	lock_release(&hash_lock);
 }
 
 void

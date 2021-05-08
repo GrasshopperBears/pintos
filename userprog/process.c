@@ -414,7 +414,11 @@ process_exit (void) {
 			palloc_free_page(c_el);
 		}
 	}
+	if (!lock_held_by_current_thread(&filesys_lock))
+		lock_acquire(&filesys_lock);
 	file_close(curr->running_file);
+	if (lock_held_by_current_thread(&filesys_lock))
+		lock_release(&filesys_lock);
 	process_cleanup ();
 }
 
@@ -682,8 +686,11 @@ load (const char *file_name, struct intr_frame *if_) {
 done:
 	/* We arrive here whether the load is successful or not. */
 	palloc_free_page(copied_file_name);
-	if (!success)
+	if (!success) {
+		lock_acquire(&filesys_lock);
 		file_close (file);
+		lock_release(&filesys_lock);
+	}
 
 	return success;
 }

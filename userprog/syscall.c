@@ -118,9 +118,9 @@ close_all_files(void) {
 		if (f_el->fd > 1 && f_el->file != NULL) {
 			if (!is_closed(closed_files, f_el->file, idx)) {
 				closed_files[idx] = f_el->file;
-				// lock_acquire(&filesys_lock);
+				lock_acquire(&filesys_lock);
 				file_close(f_el->file);
-				// lock_release(&filesys_lock);
+				lock_release(&filesys_lock);
 				idx++;
 			}
 		}
@@ -135,6 +135,8 @@ exit(int status) {
 	struct thread* curr = thread_current();
 
 	curr->exit_status = status;
+	if (lock_held_by_current_thread(&filesys_lock))
+		lock_release(&filesys_lock);
 	close_all_files();
 	thread_exit();
 }
@@ -369,9 +371,9 @@ close (int fd) {
 		close_all_std((fd == 0 || fd == 1) ? fd : f_el->reference);
 	} else {
 		if (!other_fd_open(f_el)) {
-			// lock_acquire(&filesys_lock);
+			lock_acquire(&filesys_lock);
 			file_close(f_el->file);
-			// lock_release(&filesys_lock);
+			lock_release(&filesys_lock);
 		}
 		list_remove(&f_el->elem);
 		free(f_el);
@@ -394,9 +396,9 @@ dup2(int oldfd, int newfd) {
 		return NULL;
 	if (new_f_el != NULL) {
 		if (!other_fd_open(new_f_el)) {
-			// lock_acquire(&filesys_lock);
+			lock_acquire(&filesys_lock);
 			file_close(new_f_el->file);
-			// lock_release(&filesys_lock);
+			lock_release(&filesys_lock);
 		}
 		new_f_el->file = old_f_el->file;
 	}	else {
