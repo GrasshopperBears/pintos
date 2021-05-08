@@ -10,6 +10,7 @@
 #include "userprog/process.h"
 
 struct lock hash_lock;
+struct list frames_list;
 
 /* Initializes the virtual memory subsystem by invoking each subsystem's
  * intialize codes. */
@@ -24,6 +25,7 @@ vm_init (void) {
 	/* DO NOT MODIFY UPPER LINES. */
 	/* TODO: Your code goes here. */
 	lock_init(&hash_lock);
+	list_init(&frames_list);
 }
 
 /* Get the type of the page. This function is useful if you want to know the
@@ -133,8 +135,18 @@ static struct frame *
 vm_get_victim (void) {
 	struct frame *victim = NULL;
 	 /* TODO: The policy for eviction is up to you. */
+	struct frame* current_frame;
+	struct list_elem* el = list_begin(&frames_list);
 
-	return victim;
+	while (el != list_end(el)) {
+		current_frame = list_entry(el, struct frame, elem);
+		if (page_get_type(current_frame->page) == VM_ANON) {
+			list_remove(&el);
+			return current_frame;
+		}
+		el = el->next;
+	}
+	return list_entry(list_pop_back(&frames_list), struct frame, elem);
 }
 
 /* Evict one page and return the corresponding frame.
@@ -143,8 +155,17 @@ static struct frame *
 vm_evict_frame (void) {
 	struct frame *victim UNUSED = vm_get_victim ();
 	/* TODO: swap out the victim and return the evicted frame. */
+	struct page* page_to_evict = victim->page;
 
-	return NULL;
+	swap_out(page_to_evict);
+
+	page_to_evict->frame = NULL;
+	victim->page = NULL;
+	victim->kva = victim->original_kva;
+	list_push_front(&frames_list, &victim->elem);
+	pml4_clear_page(thread_current()->pml4, page_to_evict->va);
+
+	return victim;
 }
 
 /* palloc() and get frame. If there is no available page, evict the page
@@ -157,13 +178,17 @@ vm_get_frame (void) {
 	/* TODO: Fill this function. */
 	void* newpage = palloc_get_page(PAL_USER | PAL_ZERO);
 
-	if (newpage == NULL)
-		PANIC("todo");	// TODO: user pool 다 찼을 경우 evict 구현
-		// return vm_evict_frame();
+	if (newpage == NULL) {
+		if (list_empty(&frames_list))
+			PANIC("disk problem: nothing allocated but no frame's possible");
+		return vm_evict_frame();
+	}
 
 	frame = malloc(sizeof(struct frame));
 	frame->kva = newpage;
+	frame->original_kva = newpage;
 	frame->page = NULL;
+	list_push_front(&frames_list, &frame->elem);
 
 	ASSERT (frame != NULL);
 	ASSERT (frame->page == NULL);
@@ -281,11 +306,10 @@ vm_do_claim_page (struct page *page) {
 	/* Set links */
 	frame->page = page;
 	page->frame = frame;
-
 	/* TODO: Insert page table entry to map page's VA to frame's PA. */
 	// setup MMU = add the mapping from the virtual address to the physical address in the page table
 	succ = pml4_set_page(thread_current()->pml4, page->va, frame->kva, page->writable);
-	if (page->uninit.init != NULL)
+	if (page->operations->type == VM_UNINIT && page->uninit.init != NULL)
 		page->uninit.init(page, page->uninit.aux);
 
 	page->uninit.page_initializer(page, page_get_type(page), frame->kva);
@@ -294,13 +318,13 @@ vm_do_claim_page (struct page *page) {
 }
 
 unsigned
-spt_hash (const struct hash_elem *h_el, void *aux UNUSED) {
+page_hash (const struct hash_elem *h_el, void *aux UNUSED) {
   const struct page *p = hash_entry (h_el, struct page, spt_hash_elem);
   return hash_bytes (&p->va, sizeof p->va);
 }
 
 bool
-spt_less (const struct hash_elem *a_, const struct hash_elem *b_, void *aux UNUSED) {
+page_less (const struct hash_elem *a_, const struct hash_elem *b_, void *aux UNUSED) {
   const struct page *a = hash_entry (a_, struct page, spt_hash_elem);
   const struct page *b = hash_entry (b_, struct page, spt_hash_elem);
 
@@ -311,7 +335,7 @@ spt_less (const struct hash_elem *a_, const struct hash_elem *b_, void *aux UNUS
 void
 supplemental_page_table_init (struct supplemental_page_table *spt UNUSED) {
 	lock_acquire(&hash_lock);
-	hash_init(&spt->hash, spt_hash, spt_less, NULL);
+	hash_init(&spt->hash, page_hash, page_less, NULL);
 	lock_release(&hash_lock);
 }
 
@@ -339,6 +363,9 @@ copy_spt_hash(struct hash_elem *e, void *aux) {
 		spt_insert_page(&thread_current()->spt.hash, page_copy);
 		memcpy(frame->kva, page_original->frame->kva, PGSIZE);
 		frame->page = page_copy;
+		// if (VM_TYPE(page_original->operations->type) == VM_ANON) {
+		// 	copy_anon_page(page_original, page_copy);
+	
 	}
 }
 
@@ -374,6 +401,7 @@ supplemental_page_table_kill (struct supplemental_page_table *spt UNUSED) {
 void
 common_clear_page(struct page *page) {
 	pml4_clear_page(thread_current()->pml4, page->va);
+	list_remove(&page->frame->elem);
 	palloc_free_page(page->frame->kva);
 	free(page->frame);
 }

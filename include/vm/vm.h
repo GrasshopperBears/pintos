@@ -50,6 +50,7 @@ struct page {
 	struct hash_elem spt_hash_elem;
 	bool writable;
 	bool is_stack;
+	struct hash_elem swapped_disk_hash_elem;
 
 	/* Per-type data are binded into the union.
 	 * Each function automatically detects the current union */
@@ -66,7 +67,9 @@ struct page {
 /* The representation of "frame" */
 struct frame {
 	void *kva;
+	void *original_kva;
 	struct page *page;
+	struct list_elem elem;
 };
 
 /* The function table for page operations.
@@ -120,6 +123,9 @@ void common_clear_page(struct page *page);
 void* copy_lazy_parameter(struct page* src, void* dst);
 void* copy_mmap_parameter(struct page* src, void* dst);
 
+unsigned page_hash (const struct hash_elem *h_el, void *aux UNUSED);
+bool page_less (const struct hash_elem *a_, const struct hash_elem *b_, void *aux UNUSED);
+void copy_anon_page(struct page* src, struct page* dst);
 struct mmap_parameter {
 	struct file* file;
 	off_t offset;
