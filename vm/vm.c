@@ -10,7 +10,6 @@
 #include "userprog/process.h"
 
 struct lock hash_lock;
-struct lock frames_list_lock;
 struct list frames_list;
 extern struct lock filesys_lock;
 struct lock wp_lock;
@@ -28,7 +27,6 @@ vm_init (void) {
 	/* DO NOT MODIFY UPPER LINES. */
 	/* TODO: Your code goes here. */
 	lock_init(&hash_lock);
-	lock_init(&frames_list_lock);
 	lock_init(&wp_lock);
 	list_init(&frames_list);
 }
@@ -152,9 +150,8 @@ vm_evict_frame (void) {
 	struct frame *victim UNUSED;
 	struct page* page_to_evict;
 	/* TODO: swap out the victim and return the evicted frame. */
-	lock_acquire(&frames_list_lock);
+
 	victim = vm_get_victim ();
-	lock_release(&frames_list_lock);
 	page_to_evict = victim->page;
 
 	swap_out(page_to_evict);
@@ -162,10 +159,8 @@ vm_evict_frame (void) {
 	page_to_evict->frame = NULL;
 	victim->page = NULL;
 	victim->kva = victim->original_kva;
-	// list_init(&victim->page_list);
-	lock_acquire(&frames_list_lock);
+
 	list_push_front(&frames_list, &victim->elem);
-	lock_release(&frames_list_lock);
 	pml4_clear_page(thread_current()->pml4, page_to_evict->va);
 
 	return victim;
@@ -191,10 +186,7 @@ vm_get_frame (void) {
 	frame->kva = newpage;
 	frame->original_kva = newpage;
 	frame->page = NULL;
-	// list_init(&frame->page_list);
-	lock_acquire(&frames_list_lock);
 	list_push_front(&frames_list, &frame->elem);
-	lock_release(&frames_list_lock);
 
 	ASSERT (frame != NULL);
 	ASSERT (frame->page == NULL);

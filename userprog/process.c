@@ -422,7 +422,7 @@ process_exit (void) {
 	if (!lock_held_by_current_thread(&filesys_lock))
 		lock_acquire(&filesys_lock);
 	if (curr->running_file != NULL)
-		file_allow_write(curr->running_file);
+		file_close(curr->running_file);
 	if (lock_held_by_current_thread(&filesys_lock))
 		lock_release(&filesys_lock);
 	process_cleanup ();
@@ -689,7 +689,7 @@ done:
 	palloc_free_page(copied_file_name);
 	if (!success) {
 		t->running_file = NULL;
-		file_allow_write (file);
+		file_close (file);
 	}
 
 	return success;
