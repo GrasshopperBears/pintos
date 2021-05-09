@@ -82,6 +82,7 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		page->is_stack = false;
 		page->uninit.copy = (VM_TYPE(type) == VM_ANON) ? copy_lazy_parameter : copy_mmap_parameter;
 		page->swapped_out = false;
+		page->owner = thread_current();
 
 		/* TODO: Insert the page into the spt. */
 		lock_acquire(&hash_lock);
@@ -159,6 +160,7 @@ vm_evict_frame (void) {
 	page_to_evict->frame = NULL;
 	victim->page = NULL;
 	victim->kva = victim->original_kva;
+	// list_init(&victim->page_list);
 	lock_acquire(&frames_list_lock);
 	list_push_front(&frames_list, &victim->elem);
 	lock_release(&frames_list_lock);
@@ -187,6 +189,7 @@ vm_get_frame (void) {
 	frame->kva = newpage;
 	frame->original_kva = newpage;
 	frame->page = NULL;
+	// list_init(&frame->page_list);
 	lock_acquire(&frames_list_lock);
 	list_push_front(&frames_list, &frame->elem);
 	lock_release(&frames_list_lock);
@@ -227,6 +230,21 @@ vm_stack_growth (void *addr UNUSED) {
 /* Handle the fault on write_protected page */
 static bool
 vm_handle_wp (struct page *page UNUSED) {
+	struct frame* original_frame = page->frame;
+	struct frame* new_frame = vm_get_frame();
+	bool succ;
+
+	new_frame->page = page;
+	page->frame = new_frame;
+	page->writable = true;
+	// list_push_front(&new_frame->page_list, &page->elem_for_frame);
+
+	pml4_clear_page(thread_current()->pml4, page->va);
+	succ = pml4_set_page(thread_current()->pml4, page->va, new_frame->kva, page->writable);
+	memcpy(new_frame->kva, original_frame->kva, PGSIZE);
+
+	page->swapped_out = false;
+	return succ;
 }
 
 /* Return true on success */
@@ -262,7 +280,8 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 	}
 	if ((!not_present && write) || (!not_present && !page->writable)) {
 		// printf("%d %d %d\n", write, page->writable, not_present);
-		return false;
+		// return false;
+		return vm_handle_wp(page);
 	}
 	if (page_get_type(page) == VM_FILE && page->file.file == NULL) {
 		// printf("error of file unmmaped check\n");
@@ -291,6 +310,7 @@ vm_claim_page (void *va UNUSED) {
 	page = malloc(sizeof(struct page));
 	page->va = va;
 	page->writable = true;
+	page->owner = thread_current();
 	lock_acquire(&hash_lock);
 	spt_insert_page(&thread_current()->spt, page);
 	lock_release(&hash_lock);
@@ -307,6 +327,7 @@ vm_do_claim_page (struct page *page) {
 	/* Set links */
 	frame->page = page;
 	page->frame = frame;
+	// list_push_front(&frame->page_list, &page->elem_for_frame);
 	/* TODO: Insert page table entry to map page's VA to frame's PA. */
 	// setup MMU = add the mapping from the virtual address to the physical address in the page table
 	succ = pml4_set_page(thread_current()->pml4, page->va, frame->kva, page->writable);
@@ -356,18 +377,24 @@ copy_spt_hash(struct hash_elem *e, void *aux) {
 										page_original->writable, page_original->uninit.init, copied_aux);
 	}	else {
 		page_copy = malloc(sizeof(struct page));
-		frame = vm_get_frame();
+		// frame = vm_get_frame();
+		frame = page_original->frame;
 		page_copy->frame = frame;
 		page_copy->va = page_original->va;
-		page_copy->writable = page_original->writable;
+		page_copy->writable = page_original->writable = false;
 		page_copy->swapped_out = page_original->swapped_out;
 		page_copy->operations = page_original->operations;
-		pml4_set_page(thread_current()->pml4, page_copy->va, frame->kva, page_copy->writable);
+		page_copy->owner = thread_current();
 		lock_acquire(&hash_lock);
 		spt_insert_page(&thread_current()->spt.hash, page_copy);
 		lock_release(&hash_lock);
 		memcpy(frame->kva, page_original->frame->kva, PGSIZE);
-		frame->page = page_copy;
+		// frame->page = page_copy;
+		pml4_clear_page(thread_current()->pml4, page_copy->va);
+		pml4_set_page(page_original->owner->pml4, page_original->va, frame->kva, false);
+		pml4_set_page(thread_current()->pml4, page_copy->va, frame->kva, false);
+		
+		// list_push_front(&frame->page_list, &page_copy->elem_for_frame);
 		if (VM_TYPE(page_original->operations->type) == VM_FILE) {
 			lock_acquire(&filesys_lock);
 			page_copy->file.file = file_reopen(page_original->file.file);
@@ -407,7 +434,9 @@ supplemental_page_table_kill (struct supplemental_page_table *spt UNUSED) {
 void
 common_clear_page(struct page *page) {
 	pml4_clear_page(thread_current()->pml4, page->va);
-	list_remove(&page->frame->elem);
-	palloc_free_page(page->frame->kva);
-	free(page->frame);
+	if (page->frame->page == page) {
+		list_remove(&page->frame->elem);
+		palloc_free_page(page->frame->kva);
+		free(page->frame);
+	}
 }

@@ -50,8 +50,10 @@ struct page {
 	struct hash_elem spt_hash_elem;
 	bool writable;
 	bool is_stack;
+	// struct list_elem elem_for_frame;
 	bool swapped_out;
 	struct hash_elem swapped_disk_hash_elem;
+	struct thread* owner;
 
 	/* Per-type data are binded into the union.
 	 * Each function automatically detects the current union */
@@ -70,6 +72,7 @@ struct frame {
 	void *kva;
 	void *original_kva;
 	struct page *page;
+	// struct list page_list;
 	struct list_elem elem;
 };
 
