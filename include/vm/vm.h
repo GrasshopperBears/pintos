@@ -120,7 +120,7 @@ bool vm_alloc_page_with_initializer (enum vm_type type, void *upage,
 		bool writable, vm_initializer *init, void *aux);
 void vm_dealloc_page (struct page *page);
 bool vm_claim_page (void *va);
-bool vm_do_claim_page (struct page *page);
+static bool vm_do_claim_page (struct page *page);
 enum vm_type page_get_type (struct page *page);
 void after_stack_set(struct page *page, void *aux);
 void common_clear_page(struct page *page);
