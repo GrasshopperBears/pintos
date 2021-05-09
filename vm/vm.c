@@ -236,12 +236,18 @@ vm_handle_wp (struct page *page UNUSED) {
 
 	new_frame->page = page;
 	page->frame = new_frame;
-	page->writable = true;
+	page->cow_writable = true;
 	// list_push_front(&new_frame->page_list, &page->elem_for_frame);
 
 	pml4_clear_page(thread_current()->pml4, page->va);
 	succ = pml4_set_page(thread_current()->pml4, page->va, new_frame->kva, page->writable);
 	memcpy(new_frame->kva, original_frame->kva, PGSIZE);
+	// printf("check %d %d\n", VM_TYPE(page->operations->type), page_get_type(page));
+	// if (page_get_type(page) == VM_FILE) {
+	// 	lock_acquire(&filesys_lock);
+	// 	page_copy->file.file = file_reopen(page_original->file.file);
+	// 	lock_release(&filesys_lock);
+	// }
 
 	page->swapped_out = false;
 	return succ;
@@ -278,10 +284,15 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 		// printf("err1-addr: %p %p\n", addr, pg_round_down(addr));
 		return false;
 	}
-	if ((!not_present && write) || (!not_present && !page->writable)) {
+	if ((!not_present && write)) {
+		if (!not_present && !page->writable) {
+			// printf("check 1\n");
+			return false;
+		}
 		// printf("%d %d %d\n", write, page->writable, not_present);
 		// return false;
-		return vm_handle_wp(page);
+		if (!not_present && !page->cow_writable)
+			return vm_handle_wp(page);
 	}
 	if (page_get_type(page) == VM_FILE && page->file.file == NULL) {
 		// printf("error of file unmmaped check\n");
@@ -381,9 +392,11 @@ copy_spt_hash(struct hash_elem *e, void *aux) {
 		frame = page_original->frame;
 		page_copy->frame = frame;
 		page_copy->va = page_original->va;
-		page_copy->writable = page_original->writable = false;
+		page_copy->writable = page_original->writable;
+		page_copy->cow_writable = page_original->cow_writable = false;
 		page_copy->swapped_out = page_original->swapped_out;
 		page_copy->operations = page_original->operations;
+		// printf("copy type=%d\n", page_original->operations->type);
 		page_copy->owner = thread_current();
 		lock_acquire(&hash_lock);
 		spt_insert_page(&thread_current()->spt.hash, page_copy);

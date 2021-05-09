@@ -49,6 +49,7 @@ struct page {
 	/* Your implementation */
 	struct hash_elem spt_hash_elem;
 	bool writable;
+	bool cow_writable;
 	bool is_stack;
 	// struct list_elem elem_for_frame;
 	bool swapped_out;
