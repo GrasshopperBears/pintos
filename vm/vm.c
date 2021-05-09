@@ -13,6 +13,7 @@ struct lock hash_lock;
 struct lock frames_list_lock;
 struct list frames_list;
 extern struct lock filesys_lock;
+struct lock wp_lock;
 
 /* Initializes the virtual memory subsystem by invoking each subsystem's
  * intialize codes. */
@@ -28,6 +29,7 @@ vm_init (void) {
 	/* TODO: Your code goes here. */
 	lock_init(&hash_lock);
 	lock_init(&frames_list_lock);
+	lock_init(&wp_lock);
 	list_init(&frames_list);
 }
 
@@ -212,15 +214,20 @@ vm_stack_growth (void *addr UNUSED) {
 	void* currPtr = (void *) (((uint8_t *) USER_STACK) - PGSIZE);
 	bool success = true;
 
+	lock_acquire(&hash_lock);
 	while (currPtr >= stack_end) {
 		if (spt_find_page(&thread_current()->spt, currPtr) == NULL) {
+			lock_release(&hash_lock);
 			if (!vm_alloc_page_with_initializer(VM_ANON, currPtr, true, after_stack_set, NULL)) {
 				success = false;
 				break;
 			}
+			lock_acquire(&hash_lock);
 		}
 		currPtr = (void *) (((uint8_t *) currPtr) - PGSIZE);
 	}
+	if (lock_held_by_current_thread(&hash_lock))
+		lock_release(&hash_lock);
 	if (success)
 		thread_current()->tf.rsp = addr;
 	// else
@@ -237,17 +244,16 @@ vm_handle_wp (struct page *page UNUSED) {
 	new_frame->page = page;
 	page->frame = new_frame;
 	page->cow_writable = true;
-	// list_push_front(&new_frame->page_list, &page->elem_for_frame);
-
+	lock_acquire(&wp_lock);
 	pml4_clear_page(thread_current()->pml4, page->va);
 	succ = pml4_set_page(thread_current()->pml4, page->va, new_frame->kva, page->writable);
 	memcpy(new_frame->kva, original_frame->kva, PGSIZE);
-	// printf("check %d %d\n", VM_TYPE(page->operations->type), page_get_type(page));
-	// if (page_get_type(page) == VM_FILE) {
-	// 	lock_acquire(&filesys_lock);
-	// 	page_copy->file.file = file_reopen(page_original->file.file);
-	// 	lock_release(&filesys_lock);
-	// }
+	lock_release(&wp_lock);
+	if (VM_TYPE(page->operations->type) == VM_FILE) {
+		lock_acquire(&filesys_lock);
+		page->file.file = file_reopen(page->file.file);
+		lock_release(&filesys_lock);
+	}
 
 	page->swapped_out = false;
 	return succ;
@@ -267,7 +273,6 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 	bool succ;
 
 	// printf("fault handler at %p by %d\n", addr, user);
-	// printf("is writing? %d\n", write);
 	if (user && is_kernel_vaddr(addr))
 		return false;
 
@@ -285,12 +290,8 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 		return false;
 	}
 	if ((!not_present && write)) {
-		if (!not_present && !page->writable) {
-			// printf("check 1\n");
+		if (!not_present && !page->writable)
 			return false;
-		}
-		// printf("%d %d %d\n", write, page->writable, not_present);
-		// return false;
 		if (!not_present && !page->cow_writable)
 			return vm_handle_wp(page);
 	}
@@ -394,9 +395,8 @@ copy_spt_hash(struct hash_elem *e, void *aux) {
 		page_copy->va = page_original->va;
 		page_copy->writable = page_original->writable;
 		page_copy->cow_writable = page_original->cow_writable = false;
-		page_copy->swapped_out = page_original->swapped_out;
+		page_copy->swapped_out = true;
 		page_copy->operations = page_original->operations;
-		// printf("copy type=%d\n", page_original->operations->type);
 		page_copy->owner = thread_current();
 		lock_acquire(&hash_lock);
 		spt_insert_page(&thread_current()->spt.hash, page_copy);
@@ -407,11 +407,14 @@ copy_spt_hash(struct hash_elem *e, void *aux) {
 		pml4_set_page(page_original->owner->pml4, page_original->va, frame->kva, false);
 		pml4_set_page(thread_current()->pml4, page_copy->va, frame->kva, false);
 		
-		// list_push_front(&frame->page_list, &page_copy->elem_for_frame);
 		if (VM_TYPE(page_original->operations->type) == VM_FILE) {
-			lock_acquire(&filesys_lock);
-			page_copy->file.file = file_reopen(page_original->file.file);
-			lock_release(&filesys_lock);
+			// lock_acquire(&filesys_lock);
+			page_copy->file.file = page_original->file.file;
+			// lock_release(&filesys_lock);
+			page_copy->file.is_last = page_original->file.is_last;
+			page_copy->file.data_bytes = page_original->file.data_bytes;
+			page_copy->file.zero_bytes = page_original->file.zero_bytes;
+			page_copy->file.offset = page_original->file.offset;
 		}
 	
 	}

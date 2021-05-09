@@ -327,7 +327,9 @@ process_exec (void *f_name) {
 	process_cleanup ();
 
 	/* And then load the binary */
+	lock_acquire(&filesys_lock);
 	success = load (file_name, &_if);
+	lock_release(&filesys_lock);
 
 	/* If load failed, quit. */
 	palloc_free_page (file_name);
@@ -419,7 +421,8 @@ process_exit (void) {
 	}
 	if (!lock_held_by_current_thread(&filesys_lock))
 		lock_acquire(&filesys_lock);
-	file_close(curr->running_file);
+	if (curr->running_file != NULL)
+		file_allow_write(curr->running_file);
 	if (lock_held_by_current_thread(&filesys_lock))
 		lock_release(&filesys_lock);
 	process_cleanup ();
@@ -531,6 +534,7 @@ load (const char *file_name, struct intr_frame *if_) {
 	struct thread *t = thread_current ();
 	struct ELF ehdr;
 	struct file *file = NULL;
+	unsigned int try_reload_cnt = 0;
 	off_t file_ofs;
 	bool success = false;
 	int i, argc, arg_len, idx, word_align, PTR_SIZE = 8;
@@ -550,18 +554,18 @@ load (const char *file_name, struct intr_frame *if_) {
 	token = strtok_r (file_name, " ", &save_ptr);
 
 	/* Open executable file. */
-	lock_acquire(&filesys_lock);
-	file = filesys_open (token);
-	lock_release(&filesys_lock);
+	// lock_acquire(&filesys_lock);
+	while (file == NULL && try_reload_cnt < 10) {
+		file = filesys_open (token);
+		try_reload_cnt++;
+	}
 	if (file == NULL) {
 		printf ("load: %s: open failed\n", file_name);
 		exit(-1);
 	}
 	t->running_file = file;
-	lock_acquire(&filesys_lock);
 	file_deny_write(file);
 
-	/* Read and verify executable header. */
 	if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
 			|| memcmp (ehdr.e_ident, "\177ELF\2\1\1", 7)
 			|| ehdr.e_type != 2
@@ -570,27 +574,21 @@ load (const char *file_name, struct intr_frame *if_) {
 			|| ehdr.e_phentsize != sizeof (struct Phdr)
 			|| ehdr.e_phnum > 1024) {
 		printf ("load: %s: error loading executable\n", file_name);
-		lock_release(&filesys_lock);
 		goto done;
 	}
-	lock_release(&filesys_lock);
 
 	/* Read program headers. */
 	file_ofs = ehdr.e_phoff;
 	for (i = 0; i < ehdr.e_phnum; i++) {
 		struct Phdr phdr;
 
-		lock_acquire(&filesys_lock);
 		if (file_ofs < 0 || file_ofs > file_length (file)) {
-			lock_release(&filesys_lock);
 			goto done;
 		}
 		file_seek (file, file_ofs);
 		if (file_read (file, &phdr, sizeof phdr) != sizeof phdr) {
-			lock_release(&filesys_lock);
 			goto done;
 		}
-		lock_release(&filesys_lock);
 		file_ofs += sizeof phdr;
 		switch (phdr.p_type) {
 			case PT_NULL:
@@ -691,9 +689,7 @@ done:
 	palloc_free_page(copied_file_name);
 	if (!success) {
 		t->running_file = NULL;
-		lock_acquire(&filesys_lock);
-		file_close (file);
-		lock_release(&filesys_lock);
+		file_allow_write (file);
 	}
 
 	return success;
