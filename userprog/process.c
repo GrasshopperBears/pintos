@@ -280,6 +280,9 @@ __do_fork (void *aux) {
 	if (c_el == NULL)
 		exit(-1);
 
+	lock_acquire(&filesys_lock);
+	current->running_file = file_reopen(parent->running_file);
+	lock_release(&filesys_lock);
 	current->parent = parent;
 	current->is_process = true;
 	c_el->tid = current->tid;
@@ -554,8 +557,8 @@ load (const char *file_name, struct intr_frame *if_) {
 		printf ("load: %s: open failed\n", file_name);
 		exit(-1);
 	}
-	lock_acquire(&filesys_lock);
 	t->running_file = file;
+	lock_acquire(&filesys_lock);
 	file_deny_write(file);
 
 	/* Read and verify executable header. */
@@ -687,6 +690,7 @@ done:
 	/* We arrive here whether the load is successful or not. */
 	palloc_free_page(copied_file_name);
 	if (!success) {
+		t->running_file = NULL;
 		lock_acquire(&filesys_lock);
 		file_close (file);
 		lock_release(&filesys_lock);

@@ -1,5 +1,3 @@
-cd build && make grade
-make[1]: Entering directory '/home/kaist/pintos/vm/build'
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-none:args-none --swap-disk=4 -- -q   -f run args-none < /dev/null 2> tests/userprog/args-none.errors > tests/userprog/args-none.output
 perl -I../.. ../../tests/userprog/args-none.ck tests/userprog/args-none tests/userprog/args-none.result
 pass tests/userprog/args-none
@@ -230,19 +228,7 @@ perl -I../.. ../../tests/vm/page-merge-stk.ck tests/vm/page-merge-stk tests/vm/p
 pass tests/vm/page-merge-stk
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-merge-mm:page-merge-mm -p tests/vm/child-qsort-mm:child-qsort-mm --swap-disk=4 -- -q   -f run page-merge-mm < /dev/null 2> tests/vm/page-merge-mm.errors > tests/vm/page-merge-mm.output
 perl -I../.. ../../tests/vm/page-merge-mm.ck tests/vm/page-merge-mm tests/vm/page-merge-mm.result
-FAIL tests/vm/page-merge-mm
-Kernel panic in run: PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
-Call stack: 0x8004218d0d 0x800421e25a 0x8004209620 0x8004209a3e 0x800420757b 0x800421e8e7 0x800421f621 0x800421e4a5 0x4010c1
-Translation of call stack:
-0x0000008004218d0d: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e25a: kill (userprog/exception.c:103)
-0x0000008004209620: intr_handler (threads/interrupt.c:352)
-0x0000008004209a3e: intr_entry (threads/intr-stubs.o:?)
-0x000000800420757b: thread_exit (threads/thread.c:355)
-0x000000800421e8e7: fork (userprog/syscall.c:145)
-0x000000800421f621: syscall_handler (userprog/syscall.c:461)
-0x000000800421e4a5: no_sti (userprog/syscall-entry.o:?)
-0x00000000004010c1: (unknown)
+pass tests/vm/page-merge-mm
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-shuffle:page-shuffle --swap-disk=4 -- -q   -f run page-shuffle < /dev/null 2> tests/vm/page-shuffle.errors > tests/vm/page-shuffle.output
 perl -I../.. ../../tests/vm/page-shuffle.ck tests/vm/page-shuffle tests/vm/page-shuffle.result
 pass tests/vm/page-shuffle
@@ -438,7 +424,7 @@ perl -I../.. ../../tests/vm/cow/cow-simple.ck tests/vm/cow/cow-simple tests/vm/c
 FAIL tests/vm/cow/cow-simple
 run: two phys addrs should be the same.: FAILED
 ../../tests/make-grade ../.. results ../../tests/vm/Grading | tee grade
-TOTAL TESTING SCORE: 96.3%
+TOTAL TESTING SCORE: 100.0%
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -450,12 +436,12 @@ tests/threads/Rubric.alarm                      7/  7   1.0%/  1.0%
 tests/threads/Rubric.priority                  25/ 25   1.0%/  1.0%
 tests/userprog/Rubric.functionality            40/ 40   8.0%/  8.0%
 tests/userprog/Rubric.robustness               40/ 40   5.0%/  5.0%
-tests/vm/Rubric.functionality                  77/ 82  56.3%/ 60.0%
+tests/vm/Rubric.functionality                  82/ 82  60.0%/ 60.0%
 tests/vm/Rubric.robustness                     29/ 29  20.0%/ 20.0%
 tests/filesys/base/Rubric                      17/ 17   5.0%/  5.0%
 tests/vm/cow/Rubric                             0/  1   0.0%/ 25.0%
 --------------------------------------------- --- --- ------ ------
-Total                                                  96.3%/125.0%
+Total                                                 100.0%/125.0%
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -617,7 +603,7 @@ Functionality of virtual memory subsystem (tests/vm/Rubric.functionality):
 	     2/ 2 tests/vm/page-shuffle
 	     2/ 2 tests/vm/page-merge-seq
 	     5/ 5 tests/vm/page-merge-par
-	  ** 0/ 5 tests/vm/page-merge-mm
+	     5/ 5 tests/vm/page-merge-mm
 	     5/ 5 tests/vm/page-merge-stk
 
 	- Test "mmap" system call.
@@ -644,8 +630,8 @@ Functionality of virtual memory subsystem (tests/vm/Rubric.functionality):
 	     4/ 4 tests/vm/lazy-file
 
 	- Section summary.
-	     26/ 27 tests passed
-	     77/ 82 points subtotal
+	     27/ 27 tests passed
+	     82/ 82 points subtotal
 
 Robustness of virtual memory subsystem (tests/vm/Rubric.robustness):
 	- Test robustness of page table support.
@@ -713,93 +699,6 @@ Functionality of copy-on-write (tests/vm/cow/Rubric):
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-DETAILS OF tests/vm/page-merge-mm FAILURE:
-
-Kernel panic in run: PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
-Call stack: 0x8004218d0d 0x800421e25a 0x8004209620 0x8004209a3e 0x800420757b 0x800421e8e7 0x800421f621 0x800421e4a5 0x4010c1
-Translation of call stack:
-0x0000008004218d0d: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e25a: kill (userprog/exception.c:103)
-0x0000008004209620: intr_handler (threads/interrupt.c:352)
-0x0000008004209a3e: intr_entry (threads/intr-stubs.o:?)
-0x000000800420757b: thread_exit (threads/thread.c:355)
-0x000000800421e8e7: fork (userprog/syscall.c:145)
-0x000000800421f621: syscall_handler (userprog/syscall.c:461)
-0x000000800421e4a5: no_sti (userprog/syscall-entry.o:?)
-0x00000000004010c1: (unknown)
-
-OUTPUT FROM tests/vm/page-merge-mm:
-
-Kernel command line: -q -f put page-merge-mm put child-qsort-mm run page-merge-mm
-0 ~ 9fc00 1
-100000 ~ 13e0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
-Calibrating timer...  209,100,800 loops/s.
-hd0:0: detected 353 sector (176 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 224 sector (112 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Formatting file system...done.
-Boot complete.
-Putting 'page-merge-mm' into the file system...
-Putting 'child-qsort-mm' into the file system...
-Executing 'page-merge-mm':
-(page-merge-mm) begin
-(page-merge-mm) init
-(page-merge-mm) sort chunk 0
-(page-merge-mm) sort chunk 1
-child-qsort-mm: exit(80)
-(page-merge-mm) sort chunk 2
-child-qsort-mm: exit(80)
-(page-merge-mm) sort chunk 3
-load: child-qsort-mm: open failed
-child-qsort-mm: exit(-1)
-(page-merge-mm) sort chunk 4
-child-qsort-mm: exit(80)
-(page-merge-mm) sort chunk 5
-child-qsort-mm: exit(80)
-(page-merge-mm) sort chunk 6
-child-qsort-mm: exit(80)
-(page-merge-mm) sort chunk 7
-load: child-qsort-mm: open failed
-child-qsort-mm: exit(-1)
-(page-merge-mm) wait for child 0
-(page-merge-mm) wait for child 1
-(page-merge-mm) wait for child 2
-(page-merge-mm) wait for child 2: FAILED
-page-merge-mm: exit(1)
-child-qsort-mm: exit(80)
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421ce61
- cr2=0000000010018fff error=               0
-rax ccccccccccccccb4 rbx 0000004747feb0ff rcx 0000000000000000 rdx 00000000cccccccc
-rsp 0000008004271eb0 rbp 0000008004271ed0 rsi 000000800422bb10 rdi 00000080042460b8
-rip 000000800421ce61 r8 0000008004271dc8  r9 000000800421c186 r10 0000000000000000
-r11 0000000000000206 r12 000000800421f5c7 r13 0000800420879300 r14 00008004271e4000
-r15 0000000422bb0000 rflags 00000286
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
-Call stack: 0x8004218d0d 0x800421e25a 0x8004209620 0x8004209a3e 0x800420757b 0x800421e8e7 0x800421f621 0x800421e4a5 0x4010c1 0child-qsort-mm: exit(-1)
-Interrupt 0x0d (#GP General Protection Exception) at rip=800421ce61
- cr2=0000010422f00000 error=               0
-rax ccccccccccccccb4 rbx 0000004747feb0ff rcx 00000080040b8000 rdx 00000000cccccccc
-rsp 0000008004271b50 rbp 0000008004271b70 rsi 000000000000800f rdi 00000080042460b8
-rip 000000800421ce61 r8 0000008004271a68  r9 000000800421c186 r10 0000000000000000
-r11 0000000000000206 r12 000000800421f5c7 r13 0000800420879300 r14 00008004271e4000
-r15 0000000422bb0000 rflags 00000286
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-Timer: 314 ticks
-Thread: 91 idle ticks, 32 kernel ticks, 191 user ticks
-hd0:0: 0 reads, 0 writes
-hd0:1: 2696 reads, 5958 writes
-hd1:0: 224 reads, 0 writes
-hd1:1: 0 reads, 0 writes
-Console: 3017 characters output
-Key
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
 DETAILS OF tests/vm/cow/cow-simple FAILURE:
 
 run: two phys addrs should be the same.: FAILED
@@ -812,7 +711,7 @@ Kernel command line: -q -f put cow-simple run cow-simple
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
-Calibrating timer...  78,540,800 loops/s.
+Calibrating timer...  104,857,600 loops/s.
 hd0:0: detected 353 sector (176 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 4,019 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -832,14 +731,13 @@ child: exit(1)
 (cow-simple) end
 cow-simple: exit(0)
 Execution of 'cow-simple' complete.
-Timer: 275 ticks
-Thread: 160 idle ticks, 101 kernel ticks, 15 user ticks
+Timer: 177 ticks
+Thread: 30 idle ticks, 139 kernel ticks, 9 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 90 reads, 8066 writes
 hd1:0: 4019 reads, 0 writes
 hd1:1: 0 reads, 0 writes
-Console: 1236 characters output
+Console: 1235 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...
-make[1]: Leaving directory '/home/kaist/pintos/vm/build'
