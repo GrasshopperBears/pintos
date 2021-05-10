@@ -50,8 +50,6 @@ struct page {
 	struct hash_elem spt_hash_elem;
 	bool writable;
 	bool cow_writable;
-	bool is_stack;
-	// struct list_elem elem_for_frame;
 	bool swapped_out;
 	struct hash_elem swapped_disk_hash_elem;
 	struct thread* owner;
@@ -75,6 +73,7 @@ struct frame {
 	struct page *page;
 	// struct list page_list;
 	struct list_elem elem;
+	unsigned int reference_counter;
 };
 
 /* The function table for page operations.
@@ -127,6 +126,7 @@ void common_clear_page(struct page *page);
 
 void* copy_lazy_parameter(struct page* src, void* dst);
 void* copy_mmap_parameter(struct page* src, void* dst);
+void copy_file_page(struct file_page* src, struct file_page* dst);
 
 unsigned page_hash (const struct hash_elem *h_el, void *aux UNUSED);
 bool page_less (const struct hash_elem *a_, const struct hash_elem *b_, void *aux UNUSED);

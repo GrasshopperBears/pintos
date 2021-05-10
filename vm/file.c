@@ -34,6 +34,17 @@ file_backed_initializer (struct page *page, enum vm_type type, void *kva) {
 	return true;
 }
 
+void
+copy_file_page(struct file_page* src, struct file_page* dst) {
+	// lock_acquire(&filesys_lock);
+	dst->file = src->file;
+	// lock_release(&filesys_lock);
+	dst->is_last = src->is_last;
+	dst->data_bytes = src->data_bytes;
+	dst->zero_bytes = src->zero_bytes;
+	dst->offset = src->offset;
+}
+
 /* Swap in the page by read contents from the file. */
 static bool
 file_backed_swap_in (struct page *page, void *kva) {
@@ -54,11 +65,12 @@ static bool
 file_backed_swap_out (struct page *page) {
 	struct file_page *file_page UNUSED = &page->file;
 
-	if (file_page->file != NULL) {
-		lock_acquire(&filesys_lock);
-		file_write_at(file_page->file, page->va, file_page->data_bytes, file_page->offset);
-		lock_release(&filesys_lock);
-	}
+	if (file_page->file == NULL)
+		return false;
+
+	lock_acquire(&filesys_lock);
+	file_write_at(file_page->file, page->va, file_page->data_bytes, file_page->offset);
+	lock_release(&filesys_lock);
 	return true;
 }
 
