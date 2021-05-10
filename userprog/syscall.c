@@ -182,7 +182,9 @@ create (const char *file, unsigned initial_size) {
 	if (file == NULL) {
 		exit(-1);
 	}
+	lock_acquire(&filesys_lock);
 	ret = filesys_create(file, initial_size);
+	lock_release(&filesys_lock);
 	return ret;
 }
 
@@ -197,8 +199,10 @@ bool
 remove (const char *file) {
 	// TODO: 열려 있는 파일의 remove 처리
 	bool ret;
-
+	
+	lock_acquire(&filesys_lock);
 	ret = filesys_remove(file);
+	lock_release(&filesys_lock);
 	return ret;
 }
 
@@ -260,24 +264,25 @@ read (int fd, void *buffer, unsigned size) {
 	if (f_el == NULL)
 		exit(-1);
 
-	lock_acquire(&filesys_lock);
 	if(fd == 0 || f_el->reference == 1) {
-		if (f_el->open)
+		if (f_el->open) {
+			lock_acquire(&filesys_lock);
 			read_size = input_getc();
-		else
+			lock_acquire(&filesys_lock);
+		}	else
 			read_size = 0;
 	} else if(fd == 1) {
 		exit(-1);
 	}	else {
 #ifdef VM
 		if (!spt_find_page (&thread_current()->spt, pg_round_down(buffer))->writable) {
-			lock_release(&filesys_lock);
 			exit(-1);
 		}
 #endif
+		lock_acquire(&filesys_lock);
 		read_size = file_read(f_el->file, buffer, size);
+		lock_release(&filesys_lock);
 	}
-	lock_release(&filesys_lock);
 	return read_size;
 }
 
@@ -290,18 +295,21 @@ write (int fd, const void *buffer, unsigned size) {
 	if (f_el == NULL)
 		exit(-1);
 
-	lock_acquire(&filesys_lock);
 	if (fd == 1 || f_el->reference == 1) {
-		if (f_el->open)
+		if (f_el->open) {
+			lock_acquire(&filesys_lock);
 			putbuf(buffer, size);
+			lock_release(&filesys_lock);
+		}
 		else
 			written_size = 0;
 	} else if (fd == 0) {
 		exit(-1);
 	} else {
+		lock_acquire(&filesys_lock);
 		written_size = file_write(f_el->file, buffer, size);
+		lock_release(&filesys_lock);
 	}
-	lock_release(&filesys_lock);
 	return written_size;
 }
 

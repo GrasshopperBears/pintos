@@ -191,7 +191,9 @@ void
 delete_waiting_list(struct lock* lock) {
 	struct list_elem* el;
 	struct lock_list_elem* lock_list_el;
+	enum intr_level old_level;
 
+	old_level = intr_disable ();
 	if (list_empty(&thread_current()->waiting_list))
 		return;
 
@@ -204,13 +206,16 @@ delete_waiting_list(struct lock* lock) {
 		}
 		el = el->next;
 	}
+	intr_set_level(old_level);
 }
 
 void
 update_donation_list(struct lock* lock) {
 	struct list_elem *list_el;
 	struct donate_elem* donate_el;
+	enum intr_level old_level;
 
+	old_level = intr_disable ();
 	list_el = list_begin(&lock->holder->donation_list);
 	while (list_el != list_end(&lock->holder->donation_list)) {
 		donate_el = list_entry(list_el, struct donate_elem, elem);
@@ -219,6 +224,7 @@ update_donation_list(struct lock* lock) {
 		list_el = list_el->next;
 	}
 	donate_el->priority_after_donation = lock->holder->priority;
+	intr_set_level(old_level);
 }
 
 void
@@ -237,7 +243,9 @@ add_donation_list(struct lock* lock, int prev) {
 
 void donate(struct lock* lock) {
 	int prev;
+	enum intr_level old_level;
 
+	old_level = intr_disable ();
 	prev = lock->holder->priority;
 	lock->holder->priority = thread_current()->priority;
 	if (lock->holder->original_priority == -1)
@@ -247,6 +255,7 @@ void donate(struct lock* lock) {
 		add_donation_list(lock, prev);
 	else
 		update_donation_list(lock);
+	intr_set_level(old_level);
 }
 
 /* Acquires LOCK, sleeping until it becomes available if
@@ -295,7 +304,9 @@ donation_propagation(struct lock* lock, int depth) {
 	int prev;
 	struct donate_elem* donate_el;
 	struct list_elem* list_el;
+	enum intr_level old_level;
 
+	old_level = intr_disable ();
 	if (depth > 6 || lock->holder == NULL || list_empty(&lock->holder->waiting_list))
 		return;
 	el = list_begin(&lock->holder->waiting_list);
@@ -307,6 +318,7 @@ donation_propagation(struct lock* lock, int depth) {
 		}
 		el = el->next;
 	}
+	intr_set_level(old_level);
 }
 
 /* Tries to acquires LOCK and returns true if successful or false
@@ -333,7 +345,9 @@ recover_priority(struct lock* lock) {
 	struct donate_elem* donate_el;
 	struct list_elem *el;
 	struct thread* t = thread_current();
+	enum intr_level old_level;
 
+	old_level = intr_disable ();
 	el = list_begin(&t->donation_list);
 	while (el != list_end(&t->donation_list)) {
 		donate_el = list_entry(el, struct donate_elem, elem);
@@ -350,6 +364,7 @@ recover_priority(struct lock* lock) {
 	} else if (t->priority <= donate_el->priority_after_donation)
 		t->priority = lock->original_priority;
 	// free(donate_el);
+	intr_set_level(old_level);
 }
 
 /* Releases LOCK, which must be owned by the current thread.

@@ -12,7 +12,7 @@
 struct lock hash_lock;
 struct list frames_list;
 extern struct lock filesys_lock;
-struct lock wp_lock;
+struct lock cow_lock;
 
 /* Initializes the virtual memory subsystem by invoking each subsystem's
  * intialize codes. */
@@ -27,7 +27,7 @@ vm_init (void) {
 	/* DO NOT MODIFY UPPER LINES. */
 	/* TODO: Your code goes here. */
 	lock_init(&hash_lock);
-	lock_init(&wp_lock);
+	lock_init(&cow_lock);
 	list_init(&frames_list);
 }
 
@@ -203,20 +203,15 @@ vm_stack_growth (void *addr UNUSED) {
 	void* currPtr = (void *) (((uint8_t *) USER_STACK) - PGSIZE);
 	bool success = true;
 
-	lock_acquire(&hash_lock);
 	while (currPtr >= stack_end) {
 		if (spt_find_page(&thread_current()->spt, currPtr) == NULL) {
-			lock_release(&hash_lock);
 			if (!vm_alloc_page_with_initializer(VM_ANON, currPtr, true, after_stack_set, NULL)) {
 				success = false;
 				break;
 			}
-			lock_acquire(&hash_lock);
 		}
 		currPtr = (void *) (((uint8_t *) currPtr) - PGSIZE);
 	}
-	if (lock_held_by_current_thread(&hash_lock))
-		lock_release(&hash_lock);
 	if (success)
 		thread_current()->tf.rsp = addr;
 }
@@ -239,11 +234,11 @@ vm_handle_wp (struct page *page UNUSED) {
 	new_frame->page = page;
 	page->frame = new_frame;
 	page->cow_writable = true;
-	lock_acquire(&wp_lock);
+	lock_acquire(&cow_lock);
 	pml4_clear_page(thread_current()->pml4, page->va);
 	succ = pml4_set_page(thread_current()->pml4, page->va, new_frame->kva, page->writable);
 	memcpy(new_frame->kva, original_frame->kva, PGSIZE);
-	lock_release(&wp_lock);
+	lock_release(&cow_lock);
 	if (VM_TYPE(page->operations->type) == VM_FILE) {
 		lock_acquire(&filesys_lock);
 		page->file.file = file_reopen(page->file.file);
@@ -395,12 +390,12 @@ copy_spt_hash(struct hash_elem *e, void *aux) {
 	}	else {
 		page_copy = malloc(sizeof(struct page));
 		// frame = vm_get_frame();
+		lock_acquire(&cow_lock);
 		frame = page_original->frame;
 		frame->reference_counter++;
 		frame->page = NULL;
 		page_copy->frame = frame;
 		copy_page_struct(page_original, page_copy);
-		spt_insert_page(&thread_current()->spt.hash, page_copy);
 
 		memcpy(frame->kva, page_original->frame->kva, PGSIZE);
 		pml4_clear_page(thread_current()->pml4, page_copy->va);
@@ -409,6 +404,8 @@ copy_spt_hash(struct hash_elem *e, void *aux) {
 		
 		if (VM_TYPE(page_original->operations->type) == VM_FILE)
 			copy_file_page(&page_original->file, &page_copy->file);
+		lock_release(&cow_lock);
+		spt_insert_page(&thread_current()->spt.hash, page_copy);
 	}
 }
 
