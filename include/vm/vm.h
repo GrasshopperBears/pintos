@@ -53,6 +53,7 @@ struct page {
 	bool swapped_out;
 	struct hash_elem swapped_disk_hash_elem;
 	struct thread* owner;
+	struct list_elem referer_elem;
 
 	/* Per-type data are binded into the union.
 	 * Each function automatically detects the current union */
@@ -71,9 +72,8 @@ struct frame {
 	void *kva;
 	void *original_kva;
 	struct page *page;
-	// struct list page_list;
 	struct list_elem elem;
-	unsigned int reference_counter;
+	struct list referers;
 };
 
 /* The function table for page operations.

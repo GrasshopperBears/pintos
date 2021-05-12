@@ -13,6 +13,7 @@ struct lock hash_lock;
 struct list frames_list;
 extern struct lock filesys_lock;
 struct lock cow_lock;
+struct lock handle_fault_lock;
 
 /* Initializes the virtual memory subsystem by invoking each subsystem's
  * intialize codes. */
@@ -29,6 +30,7 @@ vm_init (void) {
 	lock_init(&hash_lock);
 	lock_init(&cow_lock);
 	list_init(&frames_list);
+	lock_init(&handle_fault_lock);
 }
 
 /* Get the type of the page. This function is useful if you want to know the
@@ -147,7 +149,7 @@ init_frame_struct(struct frame* frame, void *kva) {
 	frame->kva = kva;
 	frame->original_kva = kva;
 	frame->page = NULL;
-	frame->reference_counter = 1;
+	list_init(&frame->referers);
 	list_push_front(&frames_list, &frame->elem);
 }
 
@@ -156,14 +158,21 @@ init_frame_struct(struct frame* frame, void *kva) {
 static struct frame *
 vm_evict_frame (void) {
 	struct frame *victim UNUSED = vm_get_victim ();
-	struct page* page_to_evict = victim->page;
+	struct page* page_to_evict;
+	struct list_elem* el;
 	
 	/* TODO: swap out the victim and return the evicted frame. */
-	swap_out(page_to_evict);
-	page_to_evict->swapped_out = true;
-	page_to_evict->frame = NULL;
+	el = list_front(&victim->referers);
+	while (el != list_end(&victim->referers)) {
+		page_to_evict = list_entry(el, struct page, referer_elem);
+		swap_out(page_to_evict);
+		page_to_evict->swapped_out = true;
+		page_to_evict->frame = NULL;
+		pml4_clear_page(thread_current()->pml4, page_to_evict->va);
+		el = el->next;
+		list_remove(&page_to_evict->referer_elem);
+	}
 	init_frame_struct(victim, victim->original_kva);
-	pml4_clear_page(thread_current()->pml4, page_to_evict->va);
 
 	return victim;
 }
@@ -230,7 +239,6 @@ vm_handle_wp (struct page *page UNUSED) {
 	struct frame* new_frame = vm_get_frame();
 	bool succ;
 
-	original_frame->reference_counter--;
 	new_frame->page = page;
 	page->frame = new_frame;
 	page->cow_writable = true;
@@ -244,8 +252,10 @@ vm_handle_wp (struct page *page UNUSED) {
 		page->file.file = file_reopen(page->file.file);
 		lock_release(&filesys_lock);
 	}
-	if (original_frame->reference_counter == 0)
+	list_remove(&page->referer_elem);
+	if (list_empty(&original_frame->referers))
 		clear_frame(original_frame);
+	list_push_front(&new_frame->referers, &page->referer_elem);
 
 	page->swapped_out = false;
 	return succ;
@@ -265,37 +275,46 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 	bool succ;
 
 	// printf("fault handler at %p by %d\n", addr, user);
-	if (user && is_kernel_vaddr(addr))
-		return false;
-
+	lock_acquire(&handle_fault_lock);
+	if (user && is_kernel_vaddr(addr)) {
+		succ = false;
+		goto done;
+	}
 	if ((user && f->rsp - 8 <= (uintptr_t)addr) || (!user && ptov(addr) >= MAX_STACK_ADDR)) {
 		if (curr->stack_page_count >= MAX_STACK_COUNT) {
+			lock_release(&handle_fault_lock);
 			exit(-1);
 		}
 		vm_stack_growth(user ? addr : ptov(addr));
 	}
-
-	// spt 에서 주소에 해당하는 page가 존재하는지 찾기
 	page = spt_find_page (&thread_current()->spt, pg_round_down(addr));
 	if (page == NULL) {
-		// printf("err1-addr: %p %p\n", addr, pg_round_down(addr));
-		return false;
+		succ = false;
+		goto done;
 	}
 	if ((!not_present && write)) {
-		if (!not_present && !page->writable)
-			return false;
-		if (!not_present && !page->cow_writable)
-			return vm_handle_wp(page);
+		if (!not_present && !page->writable) {
+			succ=false;
+			goto done;
+		}
+		if (!not_present && !page->cow_writable) {
+			succ = vm_handle_wp(page);
+			goto done;
+		}
 	}
 	if (page_get_type(page) == VM_FILE && page->file.file == NULL) {
-		// printf("error of file unmmaped check\n");
-		return false;
+		succ = false;
+		goto done;
 	}
 	succ = vm_do_claim_page (page);
-	if (!write)
-		pml4_set_dirty(curr->pml4, page->va, false);
+	done:
+		lock_release(&handle_fault_lock);
+		if (!succ)
+			return succ;
+		if (!write)
+			pml4_set_dirty(curr->pml4, page->va, false);
 
-	return succ;
+		return succ;
 }
 
 /* Free the page.
@@ -338,6 +357,7 @@ vm_do_claim_page (struct page *page) {
 
 	page->uninit.page_initializer(page, page_get_type(page), frame->kva);
 	page->swapped_out = false;
+	list_push_front(&frame->referers, &page->referer_elem);
 	// printf("claimed page type: %d\n", VM_TYPE(page->operations->type));
 	return swap_in (page, frame->kva);
 }
@@ -392,7 +412,7 @@ copy_spt_hash(struct hash_elem *e, void *aux) {
 		// frame = vm_get_frame();
 		lock_acquire(&cow_lock);
 		frame = page_original->frame;
-		frame->reference_counter++;
+		list_push_front(&frame->referers, &page_copy->referer_elem);
 		frame->page = NULL;
 		page_copy->frame = frame;
 		copy_page_struct(page_original, page_copy);
@@ -438,7 +458,7 @@ supplemental_page_table_kill (struct supplemental_page_table *spt UNUSED) {
 void
 common_clear_page(struct page *page) {
 	pml4_clear_page(thread_current()->pml4, page->va);
-	page->frame->reference_counter--;
-	if (page->frame->reference_counter == 0) 
+	list_remove(&page->referer_elem);
+	if (list_empty(&page->frame->referers)) 
 		clear_frame(page->frame);
 }
