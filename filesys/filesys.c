@@ -110,6 +110,8 @@ do_format (void) {
 #ifdef EFILESYS
 	/* Create FAT and save it to the disk. */
 	fat_create ();
+	// if (!dir_create (ROOT_DIR_SECTOR, 16))
+	// 	PANIC ("root directory creation failed");
 	fat_close ();
 #else
 	free_map_create ();
