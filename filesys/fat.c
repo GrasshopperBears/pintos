@@ -130,7 +130,7 @@ fat_create (void) {
 	// Set up ROOT_DIR_CLST
 	fat_put (ROOT_DIR_CLUSTER, EOChain);
 
-	// Set up fat as chain, and EOChain empty block
+	// Set up fat as a chain, and EOChain empty block
 	for (cluster_t i = 2; i < fat_fs->fat_length; i++) {
 		fat_put(i, i+1);
 	}
@@ -157,6 +157,15 @@ fat_create (void) {
 	
 	//bitamp set up
 	bitmap_set_all(fat_fs->map, false);
+	bitmap_set_multiple(fat_fs->map, 0, fat_fs->fat_length + 1, true);
+
+	// printf("test count %d\n", bitmap_count(fat_fs->map, 0, 20160, false));
+
+	// printf("total sector %d\n", fat_fs->bs.total_sectors);
+
+	// for (int i = fat_fs->last_clst - 1; i < fat_fs->last_clst + 3; i++) {
+	// 	printf("%d %d\n", i, bitmap_test (fat_fs->map, i));
+	// }
 
 	// fat_create_chain(0);
 	// fat_create_chain(158);
@@ -333,6 +342,17 @@ cluster_to_sector (cluster_t clst) {
 	/* TODO: Your code goes here. */
 
 	return (disk_sector_t) clst;
+}
+
+cluster_t
+sector_to_cluster (disk_sector_t sector) {
+
+	return (cluster_t) sector;
+}
+
+int
+free_block (void) {
+	return bitmap_count(fat_fs->map, 0, 20160, false);
 }
 
 void print_fat (void) {

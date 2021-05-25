@@ -6,6 +6,7 @@
 #include "filesys/filesys.h"
 #include "filesys/free-map.h"
 #include "threads/malloc.h"
+#include "filesys/fat.h"
 
 /* Identifies an inode. */
 #define INODE_MAGIC 0x494e4f44
@@ -42,11 +43,26 @@ struct inode {
  * POS. */
 static disk_sector_t
 byte_to_sector (const struct inode *inode, off_t pos) {
+#ifdef EFILESYS
+	ASSERT (inode != NULL);
+	if (pos < inode->data.length) {
+
+		cluster_t cur = sector_to_cluster (inode->data.start);
+
+		for (int i = 0; i < (int) pos / DISK_SECTOR_SIZE; i++)
+			cur = fat_get(cur);
+
+		return cur;
+	}
+	else
+		return -1;
+#else
 	ASSERT (inode != NULL);
 	if (pos < inode->data.length)
 		return inode->data.start + pos / DISK_SECTOR_SIZE;
 	else
 		return -1;
+#endif
 }
 
 /* List of open inodes, so that opening a single inode twice
@@ -66,6 +82,46 @@ inode_init (void) {
  * Returns false if memory or disk allocation fails. */
 bool
 inode_create (disk_sector_t sector, off_t length) {
+
+#ifdef EFILESYS
+	struct inode_disk *disk_inode = NULL;
+	bool success = false;
+
+	ASSERT (length >= 0);
+
+	/* If this assertion fails, the inode structure is not exactly
+	 * one sector in size, and you should fix that. */
+	ASSERT (sizeof *disk_inode == DISK_SECTOR_SIZE);
+
+	disk_inode = calloc (1, sizeof *disk_inode);
+	if (disk_inode != NULL) {
+		size_t sectors = bytes_to_sectors (length);
+		disk_inode->length = length;
+		disk_inode->magic = INODE_MAGIC;
+		if (free_block() >= sectors) {
+			disk_write (filesys_disk, sector, disk_inode);
+			if (sectors > 0) {
+				static char zeros[DISK_SECTOR_SIZE];
+				size_t i;
+				cluster_t cur;
+
+				disk_inode->start = cluster_to_sector(fat_create_chain(0));
+				// disk_write (filesys_disk, sector, disk_inode); 다시 해줘야하나?
+				disk_write (filesys_disk, disk_inode->start, zeros);
+				cur = disk_inode->start;
+				
+				for (i = 1; i < sectors; i++){
+					cur = fat_create_chain(cur);
+					disk_write (filesys_disk, cluster_to_sector(cur), zeros); 
+				}
+			}
+			success = true; 
+		} 
+		free (disk_inode);
+	}
+	return success;
+
+#else
 	struct inode_disk *disk_inode = NULL;
 	bool success = false;
 
@@ -94,6 +150,7 @@ inode_create (disk_sector_t sector, off_t length) {
 		free (disk_inode);
 	}
 	return success;
+#endif
 }
 
 /* Reads an inode from SECTOR
@@ -148,6 +205,27 @@ inode_get_inumber (const struct inode *inode) {
  * If INODE was also a removed inode, frees its blocks. */
 void
 inode_close (struct inode *inode) {
+
+#ifdef EFILESYS
+	/* Ignore null pointer. */
+	if (inode == NULL)
+		return;
+
+	/* Release resources if this was the last opener. */
+	if (--inode->open_cnt == 0) {
+		/* Remove from inode list and release lock. */
+		list_remove (&inode->elem);
+
+		/* Deallocate blocks if removed. */
+		if (inode->removed) {
+			fat_remove_chain (inode->sector, 0);
+			fat_remove_chain (inode->data.start, 0); 
+		}
+
+		free (inode); 
+	}
+
+#else
 	/* Ignore null pointer. */
 	if (inode == NULL)
 		return;
@@ -166,6 +244,7 @@ inode_close (struct inode *inode) {
 
 		free (inode); 
 	}
+#endif
 }
 
 /* Marks INODE to be deleted when it is closed by the last caller who
