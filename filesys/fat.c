@@ -51,14 +51,12 @@ fat_init (void) {
 
 	// Extract FAT info
 	if (fat_fs->bs.magic != FAT_MAGIC)
-		// printf("FAT boot create\n");
 		fat_boot_create ();
 	fat_fs_init ();
 }
 
 void
 fat_open (void) {
-	// printf("calloc 시작\n");
 	fat_fs->fat = calloc (fat_fs->fat_length, sizeof (cluster_t));
 	if (fat_fs->fat == NULL)
 		PANIC ("FAT load failed");
@@ -122,7 +120,6 @@ fat_close (void) {
 
 void
 fat_create (void) {
-	// printf("FAT create 시작\n");
 	// Create FAT boot
 	fat_boot_create ();
 	fat_fs_init ();
@@ -134,66 +131,6 @@ fat_create (void) {
 
 	// Set up ROOT_DIR_CLST
 	fat_put (ROOT_DIR_CLUSTER, EOChain);
-
-	// Set up fat as a chain, and EOChain empty block
-	for (cluster_t i = 2; i < fat_fs->fat_length; i++) {
-		fat_put(i, i+1);
-	}
-
-	fat_put(fat_fs->fat_length, EOChain);
-
-	for (cluster_t i = fat_fs->data_start; i <= fat_fs->last_clst; i++) {
-		fat_put(i, EOChain);
-	}
-
-	// Set up fat_map
-	// fat_fs->fat_map = calloc (fat_fs->bs.total_sectors - fat_fs->bs.fat_sectors - 1, sizeof (bool));
-
-	// for (int i = fat_fs->data_start; i <= fat_fs->last_clst; i++) {
-	// 	fat_fs->fat_map[i] = false;
-	// }
-
-	// print_fat();
-
-	// for (int i = fat_fs->data_start; i <= fat_fs->data_start + 20; i++) {
-	// 	printf("%d ", i);
-	// 	printf(fat_fs->fat_map[i] ? "true\n" : "false\n");
-	// }
-	
-	//bitamp set up
-	bitmap_set_all(fat_fs->map, false);
-	bitmap_set_multiple(fat_fs->map, 0, fat_fs->fat_length + 1, true);
-
-	// printf("test count %d\n", bitmap_count(fat_fs->map, 0, 20160, false));
-
-	// printf("total sector %d\n", fat_fs->bs.total_sectors);
-
-	// for (int i = fat_fs->last_clst - 1; i < fat_fs->last_clst + 3; i++) {
-	// 	printf("%d %d\n", i, bitmap_test (fat_fs->map, i));
-	// }
-
-	// fat_create_chain(0);
-	// fat_create_chain(158);
-	// fat_create_chain(159);
-	// fat_create_chain(160);
-	// fat_create_chain(0);
-	// fat_create_chain(162);
-
-	// for (int i = 5; i < 300; i++) {
-	// 	bitmap_mark (fat_fs->map, i);
-	// }
-	
-	// for (int i = 0; i < 1000; i++) {
-	// 	printf("%d", bitmap_test (fat_fs->map, i));
-	// }
-	// print_fat();
-	// print_map();
-
-	// printf("remove chain \n");
-
-	// fat_remove_chain(158, 0);
-	// print_fat();
-	// print_map();
 
 	// Fill up ROOT_DIR_CLUSTER region with 0
 	uint8_t *buf = calloc (1, DISK_SECTOR_SIZE);
@@ -263,8 +200,8 @@ fat_create_chain (cluster_t clst) {
 
 	cluster_t new = fat_get_free ();
 
-		if (fat_get_free == NULL)
-			return 0;
+	if (fat_get_free == NULL)
+		return 0;
 
 	if (clst == 0) {
 		
