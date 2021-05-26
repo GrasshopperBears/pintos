@@ -36,6 +36,7 @@ void fat_fs_init (void);
 
 void
 fat_init (void) {
+	// printf("FAT init 시작\n");
 	fat_fs = calloc (1, sizeof (struct fat_fs));
 	if (fat_fs == NULL)
 		PANIC ("FAT init failed");
@@ -50,12 +51,14 @@ fat_init (void) {
 
 	// Extract FAT info
 	if (fat_fs->bs.magic != FAT_MAGIC)
+		// printf("FAT boot create\n");
 		fat_boot_create ();
 	fat_fs_init ();
 }
 
 void
 fat_open (void) {
+	// printf("calloc 시작\n");
 	fat_fs->fat = calloc (fat_fs->fat_length, sizeof (cluster_t));
 	if (fat_fs->fat == NULL)
 		PANIC ("FAT load failed");
@@ -85,6 +88,7 @@ fat_open (void) {
 
 void
 fat_close (void) {
+	// printf("FAT close\n");
 	// Write FAT boot sector
 	uint8_t *bounce = calloc (1, DISK_SECTOR_SIZE);
 	if (bounce == NULL)
@@ -118,6 +122,7 @@ fat_close (void) {
 
 void
 fat_create (void) {
+	// printf("FAT create 시작\n");
 	// Create FAT boot
 	fat_boot_create ();
 	fat_fs_init ();
