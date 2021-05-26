@@ -44,6 +44,7 @@ struct inode {
 static disk_sector_t
 byte_to_sector (const struct inode *inode, off_t pos) {
 #ifdef EFILESYS
+	// FAT를 따라서 현재 pos가 있는 FAT가 어디인지 찾은 후, 이를 반환
 	ASSERT (inode != NULL);
 	if (pos < inode->data.length) {
 
@@ -52,7 +53,7 @@ byte_to_sector (const struct inode *inode, off_t pos) {
 		for (int i = 0; i < (int) pos / DISK_SECTOR_SIZE; i++)
 			cur = fat_get(cur);
 
-		return cur;
+		return cluster_to_sector(cur);
 	}
 	else
 		return -1;
@@ -98,19 +99,19 @@ inode_create (disk_sector_t sector, off_t length) {
 		size_t sectors = bytes_to_sectors (length);
 		disk_inode->length = length;
 		disk_inode->magic = INODE_MAGIC;
-		if (free_block() >= sectors) {
+		if (free_block() >= sectors) { // free block 함수를 통해서 일단 빈자리가 있긴 한지 체크
 			disk_write (filesys_disk, sector, disk_inode);
 			if (sectors > 0) {
 				static char zeros[DISK_SECTOR_SIZE];
 				size_t i;
 				cluster_t cur;
 
-				disk_inode->start = cluster_to_sector(fat_create_chain(0));
+				disk_inode->start = cluster_to_sector(fat_create_chain(0)); // 처음으로 chain 생성
 				// disk_write (filesys_disk, sector, disk_inode); 다시 해줘야하나?
 				disk_write (filesys_disk, disk_inode->start, zeros);
 				cur = disk_inode->start;
 				
-				for (i = 1; i < sectors; i++){
+				for (i = 1; i < sectors; i++){ // for문 통해서 fat를 쭉 할당하면서, disk에 기록
 					cur = fat_create_chain(cur);
 					disk_write (filesys_disk, cluster_to_sector(cur), zeros); 
 				}
@@ -218,8 +219,8 @@ inode_close (struct inode *inode) {
 
 		/* Deallocate blocks if removed. */
 		if (inode->removed) {
-			fat_remove_chain (inode->sector, 0);
-			fat_remove_chain (inode->data.start, 0); 
+			fat_remove_chain (inode->sector, 0); // inode가 있는 sector부터 일단 remove
+			fat_remove_chain (inode->data.start, 0); // 이후 data start부터 chain을 따라가며 remove
 		}
 
 		free (inode); 
