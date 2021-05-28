@@ -207,6 +207,7 @@ fat_create_chain (cluster_t clst) {
 		
 		// fat_fs->fat_map[new] = true;
 		// printf("bitmap mark : %d", new);
+		fat_put(new, EOChain);
 		bitmap_mark(fat_fs->map, (int) new);
 
 		// cluster_t new_next = fat_get_free ();
@@ -218,9 +219,9 @@ fat_create_chain (cluster_t clst) {
 	else {
 
 		// fat_fs->fat_map[new] = true;
-		
-		bitmap_mark(fat_fs->map, (int) new);
 		fat_put(clst, new);
+		fat_put(new, EOChain);
+		bitmap_mark(fat_fs->map, (int) new);
 
 		return new;
 	}
@@ -294,7 +295,7 @@ sector_to_cluster (disk_sector_t sector) {
 
 int
 free_block (void) {
-	return bitmap_count(fat_fs->map, 0, 20160, false);
+	return bitmap_count(fat_fs->map, fat_fs->data_start, fat_fs->last_clst + 1 - fat_fs->data_start, false);
 }
 
 void print_fat (void) {

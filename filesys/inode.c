@@ -105,9 +105,9 @@ inode_create (disk_sector_t sector, off_t length) {
 				static char zeros[DISK_SECTOR_SIZE];
 				size_t i;
 				cluster_t cur;
-
+				
 				disk_inode->start = cluster_to_sector(fat_create_chain(0)); // 처음으로 chain 생성
-				// disk_write (filesys_disk, sector, disk_inode); 다시 해줘야하나?
+				disk_write (filesys_disk, sector, disk_inode);
 				disk_write (filesys_disk, disk_inode->start, zeros);
 				cur = disk_inode->start;
 				

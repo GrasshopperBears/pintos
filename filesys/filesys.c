@@ -6,6 +6,7 @@
 #include "filesys/free-map.h"
 #include "filesys/inode.h"
 #include "filesys/directory.h"
+#include "filesys/fat.h"
 #include "devices/disk.h"
 
 /* The disk that contains the file system. */
@@ -59,6 +60,19 @@ filesys_done (void) {
  * or if internal memory allocation fails. */
 bool
 filesys_create (const char *name, off_t initial_size) {
+#ifdef EFILESYS
+	printf("filesys create\n");
+	struct dir *dir = dir_open_root ();
+	cluster_t alloc_clst = fat_create_chain(0);
+	disk_sector_t inode_sector = cluster_to_sector(alloc_clst);
+	bool success = (dir != NULL
+			&& !inode_sector
+			&& inode_create (inode_sector, initial_size)
+			&& dir_add (dir, name, inode_sector));
+	if (!success && inode_sector != 0)
+		fat_remove_chain(alloc_clst, 0);
+	dir_close (dir);
+#else
 	disk_sector_t inode_sector = 0;
 	struct dir *dir = dir_open_root ();
 	bool success = (dir != NULL
@@ -68,7 +82,7 @@ filesys_create (const char *name, off_t initial_size) {
 	if (!success && inode_sector != 0)
 		free_map_release (inode_sector, 1);
 	dir_close (dir);
-
+#endif
 	return success;
 }
 
