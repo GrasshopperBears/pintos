@@ -47,12 +47,12 @@ byte_to_sector (const struct inode *inode, off_t pos) {
 	// FAT를 따라서 현재 pos가 있는 FAT가 어디인지 찾은 후, 이를 반환
 	ASSERT (inode != NULL);
 	if (pos < inode->data.length) {
-
+		
 		cluster_t cur = sector_to_cluster (inode->data.start);
 
-		for (int i = 0; i < (int) pos / DISK_SECTOR_SIZE; i++)
+		for (int i = 0; i < pos / DISK_SECTOR_SIZE; i++)
 			cur = fat_get(cur);
-
+			
 		return cluster_to_sector(cur);
 	}
 	else
@@ -100,14 +100,15 @@ inode_create (disk_sector_t sector, off_t length) {
 		disk_inode->length = length;
 		disk_inode->magic = INODE_MAGIC;
 		if (free_block() >= sectors) { // free block 함수를 통해서 일단 빈자리가 있긴 한지 체크
+			disk_inode->start = cluster_to_sector(fat_create_chain(0)); // 처음으로 chain 생성
 			disk_write (filesys_disk, sector, disk_inode);
 			if (sectors > 0) {
 				static char zeros[DISK_SECTOR_SIZE];
 				size_t i;
 				cluster_t cur;
 				
-				disk_inode->start = cluster_to_sector(fat_create_chain(0)); // 처음으로 chain 생성
-				disk_write (filesys_disk, sector, disk_inode);
+				// disk_inode->start = cluster_to_sector(fat_create_chain(0)); // 처음으로 chain 생성
+				// disk_write (filesys_disk, sector, disk_inode); // 이거 맞나?
 				disk_write (filesys_disk, disk_inode->start, zeros);
 				cur = disk_inode->start;
 				
@@ -268,6 +269,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset) {
 	while (size > 0) {
 		/* Disk sector to read, starting byte offset within sector. */
 		disk_sector_t sector_idx = byte_to_sector (inode, offset);
+		// printf("%d %d\n", offset, sector_idx);
 		int sector_ofs = offset % DISK_SECTOR_SIZE;
 
 		/* Bytes left in inode, bytes left in sector, lesser of the two. */

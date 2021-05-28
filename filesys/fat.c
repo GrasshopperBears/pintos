@@ -160,9 +160,9 @@ fat_fs_init (void) {
 	/* TODO: Your code goes here. */
 
 	//fat_fs->fat = NULL;
-	fat_fs->fat_length = fat_fs->bs.fat_sectors;
-	fat_fs->data_start = fat_fs->bs.fat_start + fat_fs->bs.fat_sectors;
-	fat_fs->last_clst = fat_fs->bs.total_sectors - 1;
+	fat_fs->fat_length = sector_to_cluster(fat_fs->bs.fat_sectors); //157
+	fat_fs->data_start = sector_to_cluster(fat_fs->bs.fat_start + fat_fs->bs.fat_sectors); //158
+	fat_fs->last_clst = sector_to_cluster(fat_fs->bs.total_sectors - SECTORS_PER_CLUSTER); //20159
 	// fat_fs->fat_map = NULL;
 	fat_fs->map = bitmap_create(disk_size (filesys_disk));
 	lock_init(&fat_fs->write_lock);
@@ -235,32 +235,17 @@ fat_remove_chain (cluster_t clst, cluster_t pclst) {
 	cluster_t cur;
 	cluster_t next;
 
-	if (bitmap_test(fat_fs->map, (int) clst) == 0)
-		return;
+	cur = clst;
 
-	if (pclst == 0) {		
-		cur = clst;
-
-		while (cur != EOChain) {
-			next = fat_get(cur);
-			fat_put(cur, EOChain);
-			// fat_fs->fat_map[cur] = false;
-			bitmap_reset(fat_fs->map, (int) cur);
-			cur = next;
-		}
+	while (cur != EOChain) {
+		next = fat_get(cur);
+		fat_put(cur, EOChain);		
+		bitmap_reset(fat_fs->map, (int) cur);
+		cur = next;	
 	}
-	else {
-		cur = pclst;
 
-		while (cur != EOChain) {
-			next = fat_get(cur);
-			fat_put(cur, EOChain);
-			// fat_fs->fat_map[cur] = false;
-			
-			bitmap_reset(fat_fs->map, (int) cur);
-			cur = next;			
-		}
-	}
+	if (pclst != 0)
+		fat_put(pclst, EOChain);
 }
 
 /* Update a value in the FAT table. */
@@ -284,13 +269,15 @@ disk_sector_t
 cluster_to_sector (cluster_t clst) {
 	/* TODO: Your code goes here. */
 
-	return (disk_sector_t) clst;
+	return (disk_sector_t) clst * SECTORS_PER_CLUSTER;
 }
 
 cluster_t
 sector_to_cluster (disk_sector_t sector) {
-
-	return (cluster_t) sector;
+	if (sector % SECTORS_PER_CLUSTER == 0)
+		return (cluster_t) sector / SECTORS_PER_CLUSTER;
+	else
+		return (cluster_t) sector / SECTORS_PER_CLUSTER + 1;
 }
 
 int
