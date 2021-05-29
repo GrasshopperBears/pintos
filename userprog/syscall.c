@@ -451,6 +451,41 @@ is_valid_user_ptr(void* ptr) {
 	}
 }
 
+bool
+chdir(const char *dir) {
+	bool success = false;
+
+	return success;
+}
+
+bool
+mkdir(const char *dir) {
+	bool success = false;
+
+	return success;
+}
+
+bool
+readdir(int fd, char *name) {
+	bool success = false;
+
+	return success;
+}
+
+bool
+isdir(int fd) {
+	bool success = false;
+
+	return success;
+}
+
+bool
+inumber(int fd) {
+	bool success = false;
+
+	return success;
+}
+
 /* The main system call interface */
 void
 syscall_handler (struct intr_frame *f UNUSED) {
@@ -517,6 +552,24 @@ syscall_handler (struct intr_frame *f UNUSED) {
 	case SYS_MUNMAP:
 		is_valid_user_ptr(f->R.rdi);
 		munmap (f->R.rdi);
+		break;
+	case SYS_CHDIR:
+		is_valid_user_ptr(f->R.rdi);
+		f->R.rax = chdir(f->R.rdi);
+		break;
+	case SYS_MKDIR:
+		is_valid_user_ptr(f->R.rdi);
+		f->R.rax = mkdir(f->R.rdi);
+		break;
+	case SYS_READDIR:
+		is_valid_user_ptr(f->R.rsi);
+		f->R.rax = readdir(f->R.rdi, f->R.rsi);
+		break;
+	case SYS_ISDIR:
+		f->R.rax = isdir(f->R.rdi);
+		break;
+	case SYS_INUMBER:
+		f->R.rax = inumber(f->R.rdi);
 		break;
 	default:
 		thread_exit ();
