@@ -247,6 +247,15 @@ fat_remove_chain (cluster_t clst, cluster_t pclst) {
 	lock_release(&fat_fs->write_lock);
 }
 
+cluster_t
+fat_end_of_chain (cluster_t clst) {
+	cluster_t curr = clst;
+	while (clst != EOChain) {
+		clst = fat_get(curr);
+	}
+	return curr;
+}
+
 /* Update a value in the FAT table. */
 void
 fat_put (cluster_t clst, cluster_t val) {

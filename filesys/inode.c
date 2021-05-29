@@ -46,10 +46,16 @@ byte_to_sector (const struct inode *inode, off_t pos) {
 	ASSERT (inode != NULL);
 	if (pos < inode->data.length) {
 #ifdef EFILESYS
-		cluster_t cur = sector_to_cluster(inode->data.start);
-		for (int i = 0; i < pos / DISK_SECTOR_SIZE; i++)
-			cur = fat_get(cur);
-		return cluster_to_sector(cur);
+		cluster_t curr = sector_to_cluster(inode->data.start);
+		cluster_t tmp;
+		for (int i = 0; i < pos / DISK_SECTOR_SIZE; i++) {
+			curr = fat_get(curr);
+			if (tmp == EOChain) {
+				curr = fat_create_chain(curr);
+			} else
+				curr = tmp;
+		}
+		return cluster_to_sector(curr);
 #else
 		return inode->data.start + pos / DISK_SECTOR_SIZE;
 #endif
@@ -252,6 +258,44 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset) {
 	return bytes_read;
 }
 
+bool
+inode_extend (struct inode *inode, off_t size) {
+	struct inode_disk *disk_inode = &inode->data;
+	cluster_t end, new;
+	bool success = false;
+
+	ASSERT (size >= 0);
+	ASSERT (disk_inode != NULL);
+	ASSERT (sizeof *disk_inode == DISK_SECTOR_SIZE);
+
+	size_t sectors = bytes_to_sectors (size);
+	end = fat_end_of_chain(disk_inode->start);
+
+	if (inode_length(inode) % DISK_SECTOR_SIZE > size) {
+		disk_inode->length += size;
+		disk_write (filesys_disk, inode->sector, disk_inode);
+		return true;
+	}
+
+	new = fat_create_chain_multiple(end, sectors);
+	if (new) {
+		disk_inode->start = new;
+		disk_inode->length += size;
+		disk_write (filesys_disk, inode->sector, disk_inode);
+		if (sectors > 0) {
+			static char zeros[DISK_SECTOR_SIZE];
+			size_t i;
+
+			for (i = 0; i < sectors; i++) {
+				disk_write (filesys_disk, cluster_to_sector(new), zeros);
+				new = fat_get(new);
+			}
+		}
+		success = true; 
+	}
+	return success;
+}
+
 /* Writes SIZE bytes from BUFFER into INODE, starting at OFFSET.
  * Returns the number of bytes actually written, which may be
  * less than SIZE if end of file is reached or an error occurs.
@@ -263,9 +307,17 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 	const uint8_t *buffer = buffer_;
 	off_t bytes_written = 0;
 	uint8_t *bounce = NULL;
+	off_t gap = offset + size - inode_length(inode);
 
 	if (inode->deny_write_cnt)
 		return 0;
+
+#ifdef EFILESYS
+	if (gap >= 0) {
+		if (inode_extend(inode, gap))
+			return 0;
+	}
+#endif
 
 	while (size > 0) {
 		/* Sector to write, starting byte offset within sector. */

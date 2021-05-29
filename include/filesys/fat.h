@@ -37,5 +37,6 @@ disk_sector_t cluster_to_sector (cluster_t clst);
 
 cluster_t fat_create_chain_multiple(cluster_t clst, size_t count);
 disk_sector_t sector_to_cluster (disk_sector_t sector);
+cluster_t fat_end_of_chain (cluster_t clst);
 
 #endif /* filesys/fat.h */
