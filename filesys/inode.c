@@ -97,9 +97,10 @@ inode_create (disk_sector_t sector, off_t length) {
 				size_t i;
 				cluster_t curr = disk_inode->start;
 
-				for (i = 0; i < sectors; i++) 
+				for (i = 0; i < sectors; i++) {
 					disk_write (filesys_disk, cluster_to_sector(curr), zeros);
 					curr = fat_get(curr);
+				}
 			}
 			success = true; 
 		}
