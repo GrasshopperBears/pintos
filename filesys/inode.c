@@ -5,6 +5,7 @@
 #include <string.h>
 #include "filesys/filesys.h"
 #include "filesys/free-map.h"
+#include "filesys/fat.h"
 #include "threads/malloc.h"
 
 /* Identifies an inode. */
@@ -43,9 +44,16 @@ struct inode {
 static disk_sector_t
 byte_to_sector (const struct inode *inode, off_t pos) {
 	ASSERT (inode != NULL);
-	if (pos < inode->data.length)
+	if (pos < inode->data.length) {
+#ifdef EFILESYS
+		cluster_t cur = sector_to_cluster(inode->data.start);
+		for (int i = 0; i < pos / DISK_SECTOR_SIZE; i++)
+			cur = fat_get(cur);
+		return cluster_to_sector(cur);
+#else
 		return inode->data.start + pos / DISK_SECTOR_SIZE;
-	else
+#endif
+	}	else
 		return -1;
 }
 
@@ -80,6 +88,22 @@ inode_create (disk_sector_t sector, off_t length) {
 		size_t sectors = bytes_to_sectors (length);
 		disk_inode->length = length;
 		disk_inode->magic = INODE_MAGIC;
+#ifdef EFILESYS
+		disk_inode->start = fat_create_chain_multiple(0, sectors);
+		if (disk_inode->start) {
+			disk_write (filesys_disk, sector, disk_inode);
+			if (sectors > 0) {
+				static char zeros[DISK_SECTOR_SIZE];
+				size_t i;
+				cluster_t curr = disk_inode->start;
+
+				for (i = 0; i < sectors; i++) 
+					disk_write (filesys_disk, cluster_to_sector(curr), zeros);
+					curr = fat_get(curr);
+			}
+			success = true; 
+		}
+#else
 		if (free_map_allocate (sectors, &disk_inode->start)) {
 			disk_write (filesys_disk, sector, disk_inode);
 			if (sectors > 0) {
@@ -91,6 +115,8 @@ inode_create (disk_sector_t sector, off_t length) {
 			}
 			success = true; 
 		} 
+#endif
+done:
 		free (disk_inode);
 	}
 	return success;

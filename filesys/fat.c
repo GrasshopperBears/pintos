@@ -202,6 +202,30 @@ fat_create_chain (cluster_t clst) {
 	return new;
 }
 
+cluster_t
+fat_create_chain_multiple(cluster_t clst, size_t count) {
+	cluster_t curr = 0;
+	cluster_t init;
+
+	ASSERT(count > 0);
+
+	init = fat_create_chain(clst);
+	if (!init)
+		return 0;
+	
+	if (count > 1) {
+		curr = init;
+		for (int i = 1; i < count; i++) {
+			curr = fat_create_chain(curr);
+			if (!curr) {
+				fat_remove_chain(init, 0);
+				return 0;
+			}
+		}
+	}
+	return init;
+}
+
 /* Remove the chain of clusters starting from CLST.
  * If PCLST is 0, assume CLST as the start of the chain. */
 void
@@ -242,4 +266,9 @@ disk_sector_t
 cluster_to_sector (cluster_t clst) {
 	/* TODO: Your code goes here. */
 	return (disk_sector_t) clst * SECTORS_PER_CLUSTER;
+}
+
+disk_sector_t
+sector_to_cluster (disk_sector_t sector) {
+	return (cluster_t) sector / SECTORS_PER_CLUSTER + (sector % SECTORS_PER_CLUSTER);
 }
