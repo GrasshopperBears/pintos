@@ -12,8 +12,8 @@ bool
 dir_create (disk_sector_t sector, size_t entry_cnt, disk_sector_t parent_sector) {
 	bool success = inode_create (sector, entry_cnt * sizeof (struct dir_entry), false);
 	struct dir* curr = dir_open (inode_open (sector));
-	dir_add(curr, '.', sector);
-	dir_add(curr, '..', parent_sector);
+	dir_add(curr, ".", sector);
+	dir_add(curr, "..", parent_sector);
 	dir_close(curr);
 	return success;
 }
@@ -75,38 +75,50 @@ lookup (const struct dir *dir, const char *name,
 	size_t ofs, find_name_len;
 	struct dir* curr_dir = dir_reopen(dir);
 	char *slash_pos, *curr_pos, *find_name;
-	bool curr_success;
+	bool curr_success, found = false;
 
 	ASSERT (dir != NULL);
 	ASSERT (name != NULL);
-
+	// printf("lookup enter %s\n", name);
 	curr_pos = name;
-	while (curr_pos < strlen(name)) {
-		slash_pos = strstr(curr_pos, '/');
+	while (curr_pos <= name) {
+		// printf("iter\n");
+		slash_pos = strstr(curr_pos, "/");
 		curr_success = false;
-		if (slash_pos == NULL)
-			break;
+		if (slash_pos == NULL) {
+			if (found)
+				break;
+		}
 		if (slash_pos == curr_pos) {
 			curr_dir = dir_open(inode_open(ROOT_DIR_SECTOR));
 		} else {
-			find_name = malloc(slash_pos - curr_pos + 1);
-			find_name_len = strlen(slash_pos) - strlen(curr_pos);
-			strlcpy(find_name, curr_pos, find_name_len);
-			find_name[find_name_len] = '\0';
-
-			dir_close(curr_dir);
-			curr_dir = dir_open(inode_open(e.inode_sector));
-
+			if (slash_pos == NULL) {
+				find_name = name;
+			} else {
+				find_name = malloc(slash_pos - curr_pos + 1);
+				find_name_len = strlen(curr_pos) - strlen(slash_pos);
+				strlcpy(find_name, curr_pos, find_name_len);
+				find_name[find_name_len] = '\0';
+			}
+			if (found) {
+				dir_close(curr_dir);
+				curr_dir = dir_open(inode_open(e.inode_sector));
+			}
+			// printf("start for\n");
 			for (ofs = 0; inode_read_at (curr_dir->inode, &e, sizeof e, ofs) == sizeof e; ofs += sizeof e) {
+				// printf("%s %s\n", find_name, e.name);
 				if (e.in_use && !strcmp (find_name, e.name)) {
 					if (ep != NULL)
 						*ep = e;
 					if (ofsp != NULL)
 						*ofsp = ofs;
 					curr_success = true;
+					found = true;
 				}
 			}
-			free(find_name);
+			// printf("end for\n");
+			if (slash_pos != NULL)
+				free(find_name);
 			if (!curr_success) {		
 				dir_close(curr_dir);
 				return false;
@@ -115,7 +127,7 @@ lookup (const struct dir *dir, const char *name,
 		curr_pos = slash_pos + 1;
 	}
 	dir_close(curr_dir);
-	return true;
+	return found;
 }
 
 /* Searches DIR for a file with the given NAME
@@ -168,6 +180,7 @@ dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector) {
 	 * inode_read_at() will only return a short read at end of file.
 	 * Otherwise, we'd need to verify that we didn't get a short
 	 * read due to something intermittent such as low memory. */
+	printf("lookup passed\n");
 	for (ofs = 0; inode_read_at (dir->inode, &e, sizeof e, ofs) == sizeof e;
 			ofs += sizeof e)
 		if (!e.in_use)

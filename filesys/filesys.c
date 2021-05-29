@@ -51,6 +51,7 @@ filesys_done (void) {
 	/* Original FS */
 #ifdef EFILESYS
 	fat_close ();
+	dir_close(thread_current()->current_dir);
 #else
 	free_map_close ();
 #endif
@@ -64,13 +65,26 @@ bool
 filesys_create (const char *name, off_t initial_size) {
 	disk_sector_t inode_sector = 0;
 	struct dir *dir = dir_open_root ();
+	// printf("start: len %d\n", dir->inode->data.length);
 	bool success;
 #ifdef EFILESYS
 	inode_sector = fat_create_chain(0);
-	success = (dir != NULL
-			&& inode_sector != 0
-			&& inode_create (inode_sector, initial_size, true)
-			&& dir_add (dir, name, inode_sector));
+	// printf("check 1: %d\n", inode_sector);
+	success = dir != NULL;
+	// printf("check 2: %d\n", success);
+	success = inode_sector != 0;
+	printf("check 3: %d\n", success);
+
+	success = inode_create (inode_sector, initial_size, true);
+	printf("check 4: %d\n", success);
+
+	success = dir_add (dir, name, inode_sector);
+	printf("check 5: %d\n", success);
+
+	// success = (dir != NULL
+	// 		&& inode_sector != 0
+	// 		&& inode_create (inode_sector, initial_size, true)
+	// 		&& dir_add (dir, name, inode_sector));
 	if (!success && inode_sector != 0)
 		fat_remove_chain (inode_sector, 0);
 #else
@@ -123,6 +137,8 @@ do_format (void) {
 #ifdef EFILESYS
 	/* Create FAT and save it to the disk. */
 	fat_create ();
+	if (!dir_create (ROOT_DIR_SECTOR, 16, ROOT_DIR_SECTOR))
+		PANIC ("root directory creation failed");
 	fat_close ();
 #else
 	free_map_create ();
