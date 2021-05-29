@@ -5,6 +5,7 @@
 #include "threads/synch.h"
 #include <stdio.h>
 #include <string.h>
+#include "bitmap.h"
 
 /* Should be less than DISK_SECTOR_SIZE */
 struct fat_boot {
@@ -23,6 +24,7 @@ struct fat_fs {
 	unsigned int fat_length;
 	disk_sector_t data_start;
 	cluster_t last_clst;
+	struct bitmap *map;
 	struct lock write_lock;
 };
 
@@ -153,11 +155,26 @@ fat_boot_create (void) {
 void
 fat_fs_init (void) {
 	/* TODO: Your code goes here. */
+	fat_fs->fat_length = sector_to_cluster(fat_fs->bs.fat_sectors); //157
+	fat_fs->data_start = sector_to_cluster(fat_fs->bs.fat_start + fat_fs->bs.fat_sectors); //158
+	fat_fs->last_clst = sector_to_cluster(fat_fs->bs.total_sectors - SECTORS_PER_CLUSTER); //20159
+	fat_fs->map = bitmap_create(disk_size (filesys_disk));
+	lock_init(&fat_fs->write_lock);
 }
 
 /*----------------------------------------------------------------------------*/
 /* FAT handling                                                               */
 /*----------------------------------------------------------------------------*/
+
+cluster_t
+fat_get_free (void) {
+	for (int i = fat_fs->data_start; i <= fat_fs->last_clst; i++) {
+		if (!bitmap_test(fat_fs->map, i)) {
+			return (cluster_t) i;
+		}
+	}
+	return NULL;
+}
 
 /* Add a cluster to the chain.
  * If CLST is 0, start a new chain.
@@ -165,6 +182,24 @@ fat_fs_init (void) {
 cluster_t
 fat_create_chain (cluster_t clst) {
 	/* TODO: Your code goes here. */
+	cluster_t new;
+
+	lock_acquire(&fat_fs->write_lock);
+	new = fat_get_free();
+	if (new == NULL) {
+		lock_release(&fat_fs->write_lock);
+		return 0;
+	}
+	bitmap_mark(fat_fs->map, (int) new);
+
+	if (clst == 0) {
+		fat_put(new, EOChain);
+	}	else {
+		fat_put(new, fat_get(clst));
+		fat_put(clst, new);
+	}
+	lock_release(&fat_fs->write_lock);
+	return new;
 }
 
 /* Remove the chain of clusters starting from CLST.
@@ -172,22 +207,39 @@ fat_create_chain (cluster_t clst) {
 void
 fat_remove_chain (cluster_t clst, cluster_t pclst) {
 	/* TODO: Your code goes here. */
+	cluster_t cur = clst;
+	cluster_t next;
+
+	lock_acquire(&fat_fs->write_lock);
+	while (cur != EOChain) {
+		next = fat_get(cur);
+		fat_put(cur, EOChain);		
+		bitmap_reset(fat_fs->map, (int) cur);
+		cur = next;	
+	}
+
+	if (pclst != 0)
+		fat_put(pclst, EOChain);
+	lock_release(&fat_fs->write_lock);
 }
 
 /* Update a value in the FAT table. */
 void
 fat_put (cluster_t clst, cluster_t val) {
 	/* TODO: Your code goes here. */
+	fat_fs->fat[clst] = val;
 }
 
 /* Fetch a value in the FAT table. */
 cluster_t
 fat_get (cluster_t clst) {
 	/* TODO: Your code goes here. */
+	return fat_fs->fat[clst];
 }
 
 /* Covert a cluster # to a sector number. */
 disk_sector_t
 cluster_to_sector (cluster_t clst) {
 	/* TODO: Your code goes here. */
+	return (disk_sector_t) clst * SECTORS_PER_CLUSTER;
 }
