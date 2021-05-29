@@ -263,20 +263,26 @@ inode_extend (struct inode *inode, off_t size) {
 	struct inode_disk *disk_inode = &inode->data;
 	cluster_t end, new;
 	bool success = false;
+	size_t sectors, margin, written;
 
 	ASSERT (size >= 0);
 	ASSERT (disk_inode != NULL);
 	ASSERT (sizeof *disk_inode == DISK_SECTOR_SIZE);
 
-	size_t sectors = bytes_to_sectors (size);
 	end = fat_end_of_chain(disk_inode->start);
 
-	if (inode_length(inode) % DISK_SECTOR_SIZE > size) {
-		disk_inode->length += size;
+	margin = inode_length(inode) % DISK_SECTOR_SIZE;
+	if (margin > 0) {
+		written = margin > size ? size : margin;
+		disk_inode->length += written;
+		size -= written;
+	}
+	if (!size) {
 		disk_write (filesys_disk, inode->sector, disk_inode);
 		return true;
 	}
 
+	sectors = bytes_to_sectors (size);
 	new = fat_create_chain_multiple(end, sectors);
 	if (new) {
 		disk_inode->start = new;
