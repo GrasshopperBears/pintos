@@ -1,6 +1,7 @@
 #ifndef THREADS_THREAD_H
 #define THREADS_THREAD_H
 
+#include "filesys/directory.h"
 #include <debug.h>
 #include <list.h>
 #include <stdint.h>
@@ -113,6 +114,7 @@ struct thread {
 	// struct lock *filesys_lock;
 	struct file *running_file;
 
+	struct dir* current_dir;
 
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */

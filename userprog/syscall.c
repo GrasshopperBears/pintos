@@ -12,6 +12,8 @@
 #include "userprog/gdt.h"
 #include "threads/flags.h"
 #include "filesys/inode.h"
+#include "filesys/fat.h"
+#include "filesys/directory.h"
 #include "intrinsic.h"
 #ifdef VM
 #include "vm/vm.h"
@@ -22,22 +24,6 @@ void syscall_handler (struct intr_frame *);
 bool compare_file_elem (const struct list_elem *e1, const struct list_elem *e2);
 
 struct lock filesys_lock;
-
-struct inode_disk {
-	disk_sector_t start;                /* First data sector. */
-	off_t length;                       /* File size in bytes. */
-	unsigned magic;                     /* Magic number. */
-	uint32_t unused[125];               /* Not used. */
-};
-
-struct inode {
-	struct list_elem elem;              /* Element in inode list. */
-	disk_sector_t sector;               /* Sector number of disk location. */
-	int open_cnt;                       /* Number of openers. */
-	bool removed;                       /* True if deleted, false otherwise. */
-	int deny_write_cnt;                 /* 0: writes ok, >0: deny writes. */
-	struct inode_disk data;             /* Inode content. */
-};
 
 /* System call.
  *
@@ -119,7 +105,10 @@ close_all_files(void) {
 			if (!is_closed(closed_files, f_el->file, idx)) {
 				closed_files[idx] = f_el->file;
 				lock_acquire(&filesys_lock);
-				file_close(f_el->file);
+				if (f_el->is_file)
+					file_close(f_el->file);
+				else
+					dir_close(f_el->dir);
 				lock_release(&filesys_lock);
 				idx++;
 			}
@@ -209,17 +198,24 @@ remove (const char *file) {
 int
 open (const char *file) {
 	struct thread* curr = thread_current();
-	struct file* opened_file;
+	struct file* opened_file = NULL;
+	struct dir* opened_dir = NULL;
 	struct file_elem* new_f_el = malloc(sizeof(struct file_elem));
 	int new_fd = 2;
 	struct list_elem* el;
 	struct file_elem* f_el;
+	struct inode* inode;
 
 	if (file == NULL || new_f_el == NULL) {
 		exit(-1);
 	}
 	lock_acquire(&filesys_lock);
-	opened_file = filesys_open(file);
+	dir_lookup (curr->current_dir, file, &inode);	// inode에 무엇을?
+	if (inode->data.is_file) {
+		opened_file = file_open(inode);
+	} else {
+		opened_dir = dir_open(inode);
+	}
 
 	if (opened_file == NULL) {
 		lock_release(&filesys_lock);
@@ -235,7 +231,9 @@ open (const char *file) {
 			new_fd++;
 		}
 	}
+	new_f_el->is_file = inode->data.is_file;
 	new_f_el->file = opened_file;
+	new_f_el->dir = opened_dir;
 	new_f_el->fd = new_fd;
 	new_f_el->reference = -1;
 	list_insert_ordered(&curr->files_list, &new_f_el->elem, compare_file_elem, NULL);
@@ -380,7 +378,10 @@ close (int fd) {
 	} else {
 		if (!other_fd_open(f_el)) {
 			lock_acquire(&filesys_lock);
-			file_close(f_el->file);
+			if (f_el->is_file)
+				file_close(f_el->file);
+			else
+				dir_close(f_el->dir);
 			lock_release(&filesys_lock);
 		}
 		list_remove(&f_el->elem);
@@ -453,37 +454,73 @@ is_valid_user_ptr(void* ptr) {
 
 bool
 chdir(const char *dir) {
+	struct inode *inode = NULL;
 	bool success = false;
+	struct dir_entry e;
+	struct dir *new_dir;
 
-	return success;
+	if (lookup (thread_current()->current_dir, dir, &e, NULL)) {
+		inode = inode_open (e.inode_sector);
+		if (inode->data.is_file)
+			return false;
+		new_dir = dir_open(inode);
+		if (new_dir == NULL)
+			return false;
+		thread_current()->current_dir = new_dir;
+		return true;
+	}	else
+		return false;
 }
 
 bool
 mkdir(const char *dir) {
 	bool success = false;
+	char* last = strrchr(dir, '/');
+	struct dir* parent_dir = dir_reopen(thread_current()->current_dir);
+	struct inode *inode = NULL;
+	struct dir_entry e;
+	struct dir *new_dir;
 
+	if (last != NULL) {
+		if (lookup (thread_current()->current_dir, dir, &e, NULL)) {
+			new_dir = dir_open(inode_open (e.inode_sector));
+			if (new_dir == NULL)
+				return false;
+			dir_close(parent_dir);
+			parent_dir = new_dir;
+		}	else
+			return false;
+	}
+	success = dir_create(fat_create_chain(0), 16, parent_dir->inode->sector);
+	dir_close(parent_dir);
 	return success;
 }
 
 bool
 readdir(int fd, char *name) {
-	bool success = false;
+	struct file_elem* f_el = file_elem_by_fd(fd);
 
-	return success;
+	if (f_el->is_file)
+		return false;
+	
+	return dir_readdir(f_el->dir, name);
 }
 
 bool
 isdir(int fd) {
-	bool success = false;
+	struct file_elem* f_el = file_elem_by_fd(fd);
 
-	return success;
+	return f_el->is_file;
 }
 
-bool
+int
 inumber(int fd) {
-	bool success = false;
+	struct file_elem* f_el = file_elem_by_fd(fd);
 
-	return success;
+	if (f_el->is_file) 
+		return f_el->file->inode->sector;
+	else
+		return f_el->dir->inode->sector;
 }
 
 /* The main system call interface */

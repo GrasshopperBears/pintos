@@ -6,24 +6,16 @@
 #include "filesys/inode.h"
 #include "threads/malloc.h"
 
-/* A directory. */
-struct dir {
-	struct inode *inode;                /* Backing store. */
-	off_t pos;                          /* Current position. */
-};
-
-/* A single directory entry. */
-struct dir_entry {
-	disk_sector_t inode_sector;         /* Sector number of header. */
-	char name[NAME_MAX + 1];            /* Null terminated file name. */
-	bool in_use;                        /* In use or free? */
-};
-
 /* Creates a directory with space for ENTRY_CNT entries in the
  * given SECTOR.  Returns true if successful, false on failure. */
 bool
-dir_create (disk_sector_t sector, size_t entry_cnt) {
-	return inode_create (sector, entry_cnt * sizeof (struct dir_entry));
+dir_create (disk_sector_t sector, size_t entry_cnt, disk_sector_t parent_sector) {
+	bool success = inode_create (sector, entry_cnt * sizeof (struct dir_entry), false);
+	struct dir* curr = dir_open (inode_open (sector));
+	dir_add(curr, '.', sector);
+	dir_add(curr, '..', parent_sector);
+	dir_close(curr);
+	return success;
 }
 
 /* Opens and returns the directory for the given INODE, of which
@@ -76,25 +68,54 @@ dir_get_inode (struct dir *dir) {
  * if EP is non-null, and sets *OFSP to the byte offset of the
  * directory entry if OFSP is non-null.
  * otherwise, returns false and ignores EP and OFSP. */
-static bool
+bool
 lookup (const struct dir *dir, const char *name,
 		struct dir_entry *ep, off_t *ofsp) {
 	struct dir_entry e;
-	size_t ofs;
+	size_t ofs, find_name_len;
+	struct dir* curr_dir = dir_reopen(dir);
+	char *slash_pos, *curr_pos, *find_name;
+	bool curr_success;
 
 	ASSERT (dir != NULL);
 	ASSERT (name != NULL);
 
-	for (ofs = 0; inode_read_at (dir->inode, &e, sizeof e, ofs) == sizeof e;
-			ofs += sizeof e)
-		if (e.in_use && !strcmp (name, e.name)) {
-			if (ep != NULL)
-				*ep = e;
-			if (ofsp != NULL)
-				*ofsp = ofs;
-			return true;
+	curr_pos = name;
+	while (curr_pos < strlen(name)) {
+		slash_pos = strstr(curr_pos, '/');
+		curr_success = false;
+		if (slash_pos == NULL)
+			break;
+		if (slash_pos == curr_pos) {
+			curr_dir = dir_open(inode_open(ROOT_DIR_SECTOR));
+		} else {
+			find_name = malloc(slash_pos - curr_pos + 1);
+			find_name_len = strlen(slash_pos) - strlen(curr_pos);
+			strlcpy(find_name, curr_pos, find_name_len);
+			find_name[find_name_len] = '\0';
+
+			dir_close(curr_dir);
+			curr_dir = dir_open(inode_open(e.inode_sector));
+
+			for (ofs = 0; inode_read_at (curr_dir->inode, &e, sizeof e, ofs) == sizeof e; ofs += sizeof e) {
+				if (e.in_use && !strcmp (find_name, e.name)) {
+					if (ep != NULL)
+						*ep = e;
+					if (ofsp != NULL)
+						*ofsp = ofs;
+					curr_success = true;
+				}
+			}
+			free(find_name);
+			if (!curr_success) {		
+				dir_close(curr_dir);
+				return false;
+			}
 		}
-	return false;
+		curr_pos = slash_pos + 1;
+	}
+	dir_close(curr_dir);
+	return true;
 }
 
 /* Searches DIR for a file with the given NAME
@@ -175,6 +196,9 @@ dir_remove (struct dir *dir, const char *name) {
 	ASSERT (dir != NULL);
 	ASSERT (name != NULL);
 
+	if (dir->inode->sector == ROOT_DIR_SECTOR)
+		return false;
+
 	/* Find directory entry. */
 	if (!lookup (dir, name, &e, &ofs))
 		goto done;
@@ -183,6 +207,12 @@ dir_remove (struct dir *dir, const char *name) {
 	inode = inode_open (e.inode_sector);
 	if (inode == NULL)
 		goto done;
+	
+	if (!inode->data.is_file) {
+		for (; inode_read_at (dir->inode, &e, sizeof e, ofs) == sizeof e;	ofs += sizeof e)
+			if (e.in_use && (!strcmp(e.name, '.') || !strcmp(e.name, '..')))
+				goto done;
+	}
 
 	/* Erase directory entry. */
 	e.in_use = false;

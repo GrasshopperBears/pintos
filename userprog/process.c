@@ -279,8 +279,8 @@ __do_fork (void *aux) {
 	c_el = palloc_get_page(PAL_ZERO);
 	if (c_el == NULL)
 		exit(-1);
-
 	lock_acquire(&filesys_lock);
+	current->current_dir = dir_reopen(parent->current_dir);
 	current->running_file = file_reopen(parent->running_file);
 	lock_release(&filesys_lock);
 	current->parent = parent;

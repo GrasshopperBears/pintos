@@ -3,6 +3,7 @@
 
 #include "threads/thread.h"
 #include "filesys/file.h"
+#include "filesys/directory.h"
 
 /* Returns the running thread.
  * Read the CPU's stack pointer `rsp', and then round that
@@ -31,6 +32,8 @@ struct file_elem {
   unsigned int fd;
   bool open;
   int reference;
+  bool is_file;
+  struct dir* dir;
 };
 
 #endif /* userprog/process.h */
