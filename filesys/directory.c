@@ -22,7 +22,7 @@ dir_create (disk_sector_t sector, size_t entry_cnt, disk_sector_t parent_sector)
  * it takes ownership.  Returns a null pointer on failure. */
 struct dir *
 dir_open (struct inode *inode) {
-	printf("dir open start\n");
+	// printf("dir open start\n");
 	struct dir *dir = calloc (1, sizeof *dir);
 	if (inode != NULL && dir != NULL) {
 		dir->inode = inode;
@@ -187,7 +187,7 @@ dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector) {
 	 * inode_read_at() will only return a short read at end of file.
 	 * Otherwise, we'd need to verify that we didn't get a short
 	 * read due to something intermittent such as low memory. */
-	printf("lookup passed\n");
+	// printf("lookup passed\n");
 	for (ofs = 0; inode_read_at (dir->inode, &e, sizeof e, ofs) == sizeof e;
 			ofs += sizeof e)
 		if (!e.in_use)

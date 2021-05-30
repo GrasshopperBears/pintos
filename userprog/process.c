@@ -577,6 +577,7 @@ load (const char *file_name, struct intr_frame *if_) {
 		printf ("load: %s: error loading executable\n", file_name);
 		goto done;
 	}
+	// printf("file read done\n");
 
 	/* Read program headers. */
 	file_ofs = ehdr.e_phoff;

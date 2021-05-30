@@ -245,7 +245,7 @@ fat_remove_chain (cluster_t clst, cluster_t pclst) {
 cluster_t
 fat_end_of_chain (cluster_t clst) {
 	cluster_t curr = clst;
-	printf("fat_end_of_chain start: %d\n", clst);
+	// printf("fat_end_of_chain start: %d\n", clst);
 	while (curr != EOChain) {
 		curr = fat_get(curr);
 	}
