@@ -75,6 +75,8 @@ inode_create (disk_sector_t sector, off_t length, bool is_file) {
 	if (disk_inode != NULL) {
 		size_t sectors = bytes_to_sectors (length);
 
+		if (!sectors)
+			sectors = 1;
 		disk_inode->length = length;
 		disk_inode->is_file = is_file;
 		disk_inode->magic = INODE_MAGIC;
