@@ -276,8 +276,7 @@ perl -I../.. ../../tests/filesys/base/syn-read.ck tests/filesys/base/syn-read te
 pass tests/filesys/base/syn-read
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/syn-remove:syn-remove --swap-disk=4 -- -q   -f run syn-remove < /dev/null 2> tests/filesys/base/syn-remove.errors > tests/filesys/base/syn-remove.output
 perl -I../.. ../../tests/filesys/base/syn-remove.ck tests/filesys/base/syn-remove tests/filesys/base/syn-remove.result
-FAIL tests/filesys/base/syn-remove
-run: remove "deleteme": FAILED
+pass tests/filesys/base/syn-remove
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/syn-write:syn-write -p tests/filesys/base/child-syn-wrt:child-syn-wrt --swap-disk=4 -- -q   -f run syn-write < /dev/null 2> tests/filesys/base/syn-write.errors > tests/filesys/base/syn-write.output
 perl -I../.. ../../tests/filesys/base/syn-write.ck tests/filesys/base/syn-write tests/filesys/base/syn-write.result
 pass tests/filesys/base/syn-write
@@ -820,57 +819,26 @@ perl -I../.. ../../tests/vm/mmap-overlap.ck tests/vm/mmap-overlap tests/vm/mmap-
 pass tests/vm/mmap-overlap
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-twice:mmap-twice -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-twice < /dev/null 2> tests/vm/mmap-twice.errors > tests/vm/mmap-twice.output
 perl -I../.. ../../tests/vm/mmap-twice.ck tests/vm/mmap-twice tests/vm/mmap-twice.result
-FAIL tests/vm/mmap-twice
-Kernel panic in run: PANIC at ../../filesys/inode.c:373 in inode_allow_write(): assertion `inode->deny_write_cnt > 0' failed.
-Call stack: 0x8004214aff 0x800421f101 0x800421d8d6 0x800421d683 0x8004218edc 0x800420757b 0x800421a7ad 0x800421a23b 0x800420963e 0x8004209a5c 0x800421cdcd 0x800421ce9f 0x800421ed0b 0x800421ee5e 0x800421d7d6 0x8004225a84 0x8004225adb 0x8004224a67 0x8004225096 0x80042170cd 0x80042250d8 0x8004218f4e 0x8004218f18 0x800420757b 0x800421a7ad 0x800421b933 0x800421a342 0x400dc8
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421f101: inode_allow_write (filesys/inode.c:374)
-0x000000800421d8d6: file_allow_write (filesys/file.c:131)
-0x000000800421d683: file_close (filesys/file.c:50)
-0x0000008004218edc: process_exit (userprog/process.c:432)
-0x000000800420757b: thread_exit (threads/thread.c:355)
-0x000000800421a7ad: fork (userprog/syscall.c:134)
-0x000000800421a23b: page_fault (userprog/exception.c:156)
-0x000000800420963e: intr_handler (threads/interrupt.c:352)
-0x0000008004209a5c: intr_entry (threads/intr-stubs.o:?)
-0x000000800421cdcd: fat_create_chain (filesys/fat.c:198)
-0x000000800421ce9f: fat_create_chain_multiple (filesys/fat.c:213)
-0x000000800421ed0b: inode_extend (filesys/inode.c:269)
-0x000000800421ee5e: inode_write_at (filesys/inode.c:307)
-0x000000800421d7d6: file_write_at (filesys/file.c:108)
-0x0000008004225a84: file_backed_swap_out (vm/file.c:73)
-0x0000008004225adb: file_backed_destroy (vm/file.c:85)
-0x0000008004224a67: vm_dealloc_page (vm/vm.c:324)
-0x0000008004225096: kill_spt_hash (vm/vm.c:444)
-0x00000080042170cd: hash_clear (lib/kernel/hash.c:58)
-0x00000080042250d8: supplemental_page_table_kill (vm/vm.c:453)
-0x0000008004218f4e: process_cleanup (userprog/process.c:449)
-0x0000008004218f18: process_exit (userprog/process.c:434)
-0x000000800420757b: thread_exit (threads/thread.c:355)
-0x000000800421a7ad: fork (userprog/syscall.c:134)
-0x000000800421b933: syscall_handler (userprog/syscall.c:545)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400dc8: (unknown)
+pass tests/vm/mmap-twice
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-write:mmap-write --swap-disk=4 -- -q   -f run mmap-write < /dev/null 2> tests/vm/mmap-write.errors > tests/vm/mmap-write.output
 perl -I../.. ../../tests/vm/mmap-write.ck tests/vm/mmap-write tests/vm/mmap-write.result
 FAIL tests/vm/mmap-write
 Kernel panic in run: PANIC at ../../threads/synch.c:278 in lock_acquire(): assertion `!lock_held_by_current_thread (lock)' failed.
-Call stack: 0x8004214aff 0x800420ae21 0x800421cd39 0x800421ce9f 0x800421ed0b 0x800421ee5e 0x800421d7d6 0x8004225a84 0x8004225adb 0x8004224a67 0x8004225096 0x80042170cd 0x80042250d8 0x8004218f4e 0x8004218f18 0x800420757b 0x800421a7ad 0x800421a23b 0x800420963e 0x8004209a5c 0x800421cdcd 0x800421ce9f 0x800421ed0b 0x800421ee5e 0x800421d7d6 0x8004225f5b 0x800421b5cf 0x800421bc85 0x800421a342 0x400261 0x400dce 0x400e17
+Call stack: 0x8004214aff 0x800420ae21 0x800421cd39 0x800421ce9f 0x800421ecf2 0x800421ee45 0x800421d7d6 0x8004225a6b 0x8004225ac2 0x8004224a4e 0x800422507d 0x80042170cd 0x80042250bf 0x8004218f4e 0x8004218f18 0x800420757b 0x800421a7ad 0x800421a23b 0x800420963e 0x8004209a5c 0x800421cdcd 0x800421ce9f 0x800421ecf2 0x800421ee45 0x800421d7d6 0x8004225f42 0x800421b5cf 0x800421bc85 0x800421a342 0x400261 0x400dce 0x400e17
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
 0x000000800420ae21: lock_acquire (threads/synch.c:280)
 0x000000800421cd39: fat_create_chain (filesys/fat.c:188)
 0x000000800421ce9f: fat_create_chain_multiple (filesys/fat.c:213)
-0x000000800421ed0b: inode_extend (filesys/inode.c:269)
-0x000000800421ee5e: inode_write_at (filesys/inode.c:307)
+0x000000800421ecf2: inode_extend (filesys/inode.c:269)
+0x000000800421ee45: inode_write_at (filesys/inode.c:307)
 0x000000800421d7d6: file_write_at (filesys/file.c:108)
-0x0000008004225a84: file_backed_swap_out (vm/file.c:73)
-0x0000008004225adb: file_backed_destroy (vm/file.c:85)
-0x0000008004224a67: vm_dealloc_page (vm/vm.c:324)
-0x0000008004225096: kill_spt_hash (vm/vm.c:444)
+0x0000008004225a6b: file_backed_swap_out (vm/file.c:73)
+0x0000008004225ac2: file_backed_destroy (vm/file.c:85)
+0x0000008004224a4e: vm_dealloc_page (vm/vm.c:324)
+0x000000800422507d: kill_spt_hash (vm/vm.c:444)
 0x00000080042170cd: hash_clear (lib/kernel/hash.c:58)
-0x00000080042250d8: supplemental_page_table_kill (vm/vm.c:453)
+0x00000080042250bf: supplemental_page_table_kill (vm/vm.c:453)
 0x0000008004218f4e: process_cleanup (userprog/process.c:449)
 0x0000008004218f18: process_exit (userprog/process.c:434)
 0x000000800420757b: thread_exit (threads/thread.c:355)
@@ -880,10 +848,10 @@ Translation of call stack:
 0x0000008004209a5c: intr_entry (threads/intr-stubs.o:?)
 0x000000800421cdcd: fat_create_chain (filesys/fat.c:198)
 0x000000800421ce9f: fat_create_chain_multiple (filesys/fat.c:213)
-0x000000800421ed0b: inode_extend (filesys/inode.c:269)
-0x000000800421ee5e: inode_write_at (filesys/inode.c:307)
+0x000000800421ecf2: inode_extend (filesys/inode.c:269)
+0x000000800421ee45: inode_write_at (filesys/inode.c:307)
 0x000000800421d7d6: file_write_at (filesys/file.c:108)
-0x0000008004225f5b: do_munmap (vm/file.c:171)
+0x0000008004225f42: do_munmap (vm/file.c:171)
 0x000000800421b5cf: munmap (userprog/syscall.c:450)
 0x000000800421bc85: syscall_handler (userprog/syscall.c:596)
 0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
@@ -895,20 +863,7 @@ perl -I../.. ../../tests/vm/mmap-ro.ck tests/vm/mmap-ro tests/vm/mmap-ro.result
 pass tests/vm/mmap-ro
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-exit:mmap-exit -p tests/vm/child-mm-wrt:child-mm-wrt --swap-disk=4 -- -q   -f run mmap-exit < /dev/null 2> tests/vm/mmap-exit.errors > tests/vm/mmap-exit.output
 perl -I../.. ../../tests/vm/mmap-exit.ck tests/vm/mmap-exit tests/vm/mmap-exit.result
-FAIL tests/vm/mmap-exit
-Kernel panic in run: PANIC at ../../threads/thread.c:332 in thread_current(): assertion `t->status == THREAD_RUNNING' failed.
-Call stack: 0x8004214aff 0x80042074ff 0x8004206e34 0x800420e899 0x800420963e 0x8004209a5c 0x800421a342 0x400113 0x400ca8 0x400cf1
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x00000080042074ff: thread_current (threads/thread.c:334)
-0x0000008004206e34: thread_tick (threads/thread.c:163)
-0x000000800420e899: timer_interrupt (devices/timer.c:129)
-0x000000800420963e: intr_handler (threads/interrupt.c:352)
-0x0000008004209a5c: intr_entry (threads/intr-stubs.o:?)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400113: (unknown)
-0x0000000000400ca8: (unknown)
-0x0000000000400cf1: (unknown)
+pass tests/vm/mmap-exit
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/mmap-shuffle:mmap-shuffle --swap-disk=4 -- -q   -f run mmap-shuffle < /dev/null 2> tests/vm/mmap-shuffle.errors > tests/vm/mmap-shuffle.output
 perl -I../.. ../../tests/vm/mmap-shuffle.ck tests/vm/mmap-shuffle tests/vm/mmap-shuffle.result
 pass tests/vm/mmap-shuffle
@@ -922,10 +877,10 @@ pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-inherit:mmap-inherit -p
 perl -I../.. ../../tests/vm/mmap-inherit.ck tests/vm/mmap-inherit tests/vm/mmap-inherit.result
 FAIL tests/vm/mmap-inherit
 Kernel panic in run: PANIC at ../../filesys/inode.c:373 in inode_allow_write(): assertion `inode->deny_write_cnt > 0' failed.
-Call stack: 0x8004214aff 0x800421f101 0x800421d8d6 0x800421d683 0x8004218edc 0x800420757b 0x800421a7ad 0x800421a23b 0x800420963e 0x8004209a5c 0x800421cdcd 0x800421ce9f 0x800421ed0b 0x800421ee5e 0x800421d7d6 0x8004225a84 0x8004225adb 0x8004224a67 0x8004225096 0x80042170cd 0x80042250d8 0x8004218f4e 0x8004218f18 0x800420757b 0x800421a7ad 0x800421b933 0x800421a342 0x400e5c
+Call stack: 0x8004214aff 0x800421f0e8 0x800421d8d6 0x800421d683 0x8004218edc 0x800420757b 0x800421a7ad 0x800421a23b 0x800420963e 0x8004209a5c 0x800421cdcd 0x800421ce9f 0x800421ecf2 0x800421ee45 0x800421d7d6 0x8004225a6b 0x8004225ac2 0x8004224a4e 0x800422507d 0x80042170cd 0x80042250bf 0x8004218f4e 0x8004218f18 0x800420757b 0x800421a7ad 0x800421b933 0x800421a342 0x400e5c
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421f101: inode_allow_write (filesys/inode.c:374)
+0x000000800421f0e8: inode_allow_write (filesys/inode.c:374)
 0x000000800421d8d6: file_allow_write (filesys/file.c:131)
 0x000000800421d683: file_close (filesys/file.c:50)
 0x0000008004218edc: process_exit (userprog/process.c:432)
@@ -936,15 +891,15 @@ Translation of call stack:
 0x0000008004209a5c: intr_entry (threads/intr-stubs.o:?)
 0x000000800421cdcd: fat_create_chain (filesys/fat.c:198)
 0x000000800421ce9f: fat_create_chain_multiple (filesys/fat.c:213)
-0x000000800421ed0b: inode_extend (filesys/inode.c:269)
-0x000000800421ee5e: inode_write_at (filesys/inode.c:307)
+0x000000800421ecf2: inode_extend (filesys/inode.c:269)
+0x000000800421ee45: inode_write_at (filesys/inode.c:307)
 0x000000800421d7d6: file_write_at (filesys/file.c:108)
-0x0000008004225a84: file_backed_swap_out (vm/file.c:73)
-0x0000008004225adb: file_backed_destroy (vm/file.c:85)
-0x0000008004224a67: vm_dealloc_page (vm/vm.c:324)
-0x0000008004225096: kill_spt_hash (vm/vm.c:444)
+0x0000008004225a6b: file_backed_swap_out (vm/file.c:73)
+0x0000008004225ac2: file_backed_destroy (vm/file.c:85)
+0x0000008004224a4e: vm_dealloc_page (vm/vm.c:324)
+0x000000800422507d: kill_spt_hash (vm/vm.c:444)
 0x00000080042170cd: hash_clear (lib/kernel/hash.c:58)
-0x00000080042250d8: supplemental_page_table_kill (vm/vm.c:453)
+0x00000080042250bf: supplemental_page_table_kill (vm/vm.c:453)
 0x0000008004218f4e: process_cleanup (userprog/process.c:449)
 0x0000008004218f18: process_exit (userprog/process.c:434)
 0x000000800420757b: thread_exit (threads/thread.c:355)
@@ -969,8 +924,7 @@ perl -I../.. ../../tests/vm/mmap-over-stk.ck tests/vm/mmap-over-stk tests/vm/mma
 pass tests/vm/mmap-over-stk
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-remove:mmap-remove -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-remove < /dev/null 2> tests/vm/mmap-remove.errors > tests/vm/mmap-remove.output
 perl -I../.. ../../tests/vm/mmap-remove.ck tests/vm/mmap-remove tests/vm/mmap-remove.result
-FAIL tests/vm/mmap-remove
-run: remove "sample.txt": FAILED
+pass tests/vm/mmap-remove
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-zero:mmap-zero --swap-disk=4 -- -q   -f run mmap-zero < /dev/null 2> tests/vm/mmap-zero.errors > tests/vm/mmap-zero.output
 perl -I../.. ../../tests/vm/mmap-zero.ck tests/vm/mmap-zero tests/vm/mmap-zero.result
 pass tests/vm/mmap-zero
@@ -1034,10 +988,10 @@ Prerequisite test tests/filesys/extended/dir-rm-parent failed.
 perl -I../.. ../../tests/filesys/extended/dir-rm-root-persistence.ck tests/filesys/extended/dir-rm-root-persistence tests/filesys/extended/dir-rm-root-persistence.result
 FAIL tests/filesys/extended/dir-rm-root-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421f847 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x800421f82e 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421f847: fsutil_get (filesys/fsutil.c:163)
+0x000000800421f82e: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/dir-rm-tree-persistence.ck tests/filesys/extended/dir-rm-tree-persistence tests/filesys/extended/dir-rm-tree-persistence.result
@@ -1055,10 +1009,10 @@ Prerequisite test tests/filesys/extended/dir-vine failed.
 perl -I../.. ../../tests/filesys/extended/grow-create-persistence.ck tests/filesys/extended/grow-create-persistence tests/filesys/extended/grow-create-persistence.result
 FAIL tests/filesys/extended/grow-create-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421f847 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x800421f82e 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421f847: fsutil_get (filesys/fsutil.c:163)
+0x000000800421f82e: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/grow-dir-lg-persistence.ck tests/filesys/extended/grow-dir-lg-persistence tests/filesys/extended/grow-dir-lg-persistence.result
@@ -1192,7 +1146,7 @@ pass tests/filesys/base/sm-random
 pass tests/filesys/base/sm-seq-block
 pass tests/filesys/base/sm-seq-random
 pass tests/filesys/base/syn-read
-FAIL tests/filesys/base/syn-remove
+pass tests/filesys/base/syn-remove
 pass tests/filesys/base/syn-write
 FAIL tests/filesys/extended/dir-empty-name
 FAIL tests/filesys/extended/dir-mk-tree
@@ -1239,10 +1193,10 @@ pass tests/vm/mmap-read
 pass tests/vm/mmap-close
 pass tests/vm/mmap-unmap
 pass tests/vm/mmap-overlap
-FAIL tests/vm/mmap-twice
+pass tests/vm/mmap-twice
 FAIL tests/vm/mmap-write
 pass tests/vm/mmap-ro
-FAIL tests/vm/mmap-exit
+pass tests/vm/mmap-exit
 pass tests/vm/mmap-shuffle
 pass tests/vm/mmap-bad-fd
 pass tests/vm/mmap-clean
@@ -1252,7 +1206,7 @@ pass tests/vm/mmap-null
 pass tests/vm/mmap-over-code
 pass tests/vm/mmap-over-data
 pass tests/vm/mmap-over-stk
-FAIL tests/vm/mmap-remove
+pass tests/vm/mmap-remove
 pass tests/vm/mmap-zero
 pass tests/vm/mmap-bad-fd2
 pass tests/vm/mmap-bad-fd3
@@ -1292,5 +1246,5 @@ FAIL tests/filesys/extended/syn-rw-persistence
 FAIL tests/filesys/extended/symlink-file-persistence
 FAIL tests/filesys/extended/symlink-dir-persistence
 FAIL tests/filesys/extended/symlink-link-persistence
-56 of 192 tests failed.
+52 of 192 tests failed.
 ../../tests/Make.tests:28: recipe for target 'check' failed
