@@ -325,11 +325,12 @@ process_exec (void *f_name) {
 
 	/* We first kill the current context */
 	process_cleanup ();
-
+	// printf("check 1\n");
 	/* And then load the binary */
 	lock_acquire(&filesys_lock);
 	success = load (file_name, &_if);
 	lock_release(&filesys_lock);
+	// printf("check 2\n");
 
 	/* If load failed, quit. */
 	palloc_free_page (file_name);

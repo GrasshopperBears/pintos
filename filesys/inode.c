@@ -63,7 +63,7 @@ inode_init (void) {
 bool
 inode_create (disk_sector_t sector, off_t length, bool is_file) {
 	struct inode_disk *disk_inode = NULL;
-	cluster_t tmp;
+	cluster_t new;
 	bool success = false;
 
 	ASSERT (length >= 0);
@@ -81,17 +81,17 @@ inode_create (disk_sector_t sector, off_t length, bool is_file) {
 		disk_inode->length = length;
 		disk_inode->is_file = is_file;
 		disk_inode->magic = INODE_MAGIC;
-		disk_inode->start = sector;
 #ifdef EFILESYS
-		tmp = fat_create_chain_multiple(sector, sectors);
-		// printf("after create chain %d %d\n", sector, tmp);
+		new = fat_create_chain_multiple(sector, sectors);
+		disk_inode->start = new;
+		// printf("after create chain %d\n", sector);
 		if (disk_inode->start) {
 			disk_write (filesys_disk, sector, disk_inode);
 			// printf("inode create: after create chain=%d\n", sector);
 			if (sectors > 0) {
 				static char zeros[DISK_SECTOR_SIZE];
 				size_t i;
-				cluster_t curr = disk_inode->start;
+				cluster_t curr = sector;
 
 				for (i = 0; i < sectors; i++) {
 					curr = fat_get(curr);
