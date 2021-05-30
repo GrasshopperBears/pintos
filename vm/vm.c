@@ -91,7 +91,6 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 			printf("spt insert error\n");
 			goto err;
 		}
-		// printf("initiallize type at %p: %d\n", page->va, page_get_type(page));
 		return succ;
 	}
 err:
@@ -335,7 +334,6 @@ vm_claim_page (void *va UNUSED) {
 	page->writable = true;
 	page->owner = thread_current();
 	spt_insert_page(&thread_current()->spt, page);
-	// printf("inserted-claim: %p\n", va);
 
 	return vm_do_claim_page (page);
 }
@@ -358,7 +356,7 @@ vm_do_claim_page (struct page *page) {
 	page->uninit.page_initializer(page, page_get_type(page), frame->kva);
 	page->swapped_out = false;
 	list_push_front(&frame->referers, &page->referer_elem);
-	// printf("claimed page type: %d\n", VM_TYPE(page->operations->type));
+
 	return swap_in (page, frame->kva);
 }
 

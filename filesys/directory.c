@@ -80,15 +80,12 @@ lookup (const struct dir *dir, const char *name,
 
 	ASSERT (dir != NULL);
 	ASSERT (name != NULL);
-	// printf("lookup enter %s\n", name);
+
 	curr_pos = name;
 	while (curr_pos != '\0' && curr_pos <= name) {
-		// printf("iter 1\n");
 		slash_pos = strstr(curr_pos, "/");
-		// printf("iter 2\n");
 		curr_success = false;
 		if (slash_pos == NULL) {
-			// printf("iter 3: %d\n", found);
 			if (found)
 				break;
 		}
@@ -107,21 +104,17 @@ lookup (const struct dir *dir, const char *name,
 				dir_close(curr_dir);
 				curr_dir = dir_open(inode_open(e.inode_sector));
 			}
-			// printf("start for\n");
 			for (ofs = 0; inode_read_at (curr_dir->inode, &e, sizeof e, ofs) == sizeof e; ofs += sizeof e) {
-				// printf("%s %s\n", find_name, e.name);
 				if (e.in_use && !strcmp (find_name, e.name)) {
 					if (ep != NULL)
 						*ep = e;
 					if (ofsp != NULL)
 						*ofsp = ofs;
 					curr_success = true;
-					// printf("found!!\n");
 					found = true;
 					break;
 				}
 			}
-			// printf("end for\n");
 			if (slash_pos != NULL)
 				free(find_name);
 			if (!curr_success) {		

@@ -96,24 +96,23 @@ fsutil_put (char **argv) {
 	if (src == NULL)
 		PANIC ("couldn't open source disk (hdc or hd1:0)");
 
-	// printf("disk get done\n");
 	/* Read file size. */
 	disk_read (src, sector++, buffer);
 	if (memcmp (buffer, "PUT", 4))
 		PANIC ("%s: missing PUT signature on scratch disk", file_name);
 	size = ((int32_t *) buffer)[1];
-	// printf("read done\n");
+
 	if (size < 0)
 		PANIC ("%s: invalid file size %d", file_name, size);
 
 	/* Create destination file. */
 	if (!filesys_create (file_name, size))
 		PANIC ("%s: create failed", file_name);
-	// printf("create done\n");
+
 	dst = filesys_open (file_name);
 	if (dst == NULL)
 		PANIC ("%s: open failed", file_name);
-	// printf("open done\n");
+
 	/* Do copy. */
 	while (size > 0) {
 		int chunk_size = size > DISK_SECTOR_SIZE ? DISK_SECTOR_SIZE : size;
@@ -123,7 +122,7 @@ fsutil_put (char **argv) {
 					file_name, size);
 		size -= chunk_size;
 	}
-	// printf("copy done\n");
+
 	/* Finish up. */
 	file_close (dst);
 	free (buffer);

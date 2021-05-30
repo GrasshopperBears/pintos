@@ -150,11 +150,16 @@ copy_file_list(struct thread* parent, struct thread* child) {
 		
 		new_f_el->fd = f_el->fd;
 		new_f_el->open = f_el->open;
+		new_f_el->is_file = f_el->is_file;
 		new_f_el->reference = f_el->reference;
-		found_file = find_copied_file(map, size, f_el->file);
+		found_file = f_el->is_file ? find_copied_file(map, size, f_el->file) : NULL;
+		// LAB 4 TODO: DIRECTORY DUPLICATE. 일단은 그대로 pointing
+		new_f_el->dir = f_el->dir;
 		
 		if (found_file == NULL) {
-			if (f_el->fd > 1 && f_el->reference != 0 && f_el->reference != 1) {
+			if (!f_el->is_file) {
+				new_f_el->file = NULL;
+			} else if (f_el->fd > 1 && f_el->reference != 0 && f_el->reference != 1) {
 				new_f_el->file = file_duplicate(f_el->file);
 				if (new_f_el->file == NULL) {
 					free(new_f_el);
@@ -325,12 +330,11 @@ process_exec (void *f_name) {
 
 	/* We first kill the current context */
 	process_cleanup ();
-	// printf("check 1\n");
+
 	/* And then load the binary */
 	lock_acquire(&filesys_lock);
 	success = load (file_name, &_if);
 	lock_release(&filesys_lock);
-	// printf("check 2\n");
 
 	/* If load failed, quit. */
 	palloc_free_page (file_name);
@@ -577,7 +581,6 @@ load (const char *file_name, struct intr_frame *if_) {
 		printf ("load: %s: error loading executable\n", file_name);
 		goto done;
 	}
-	// printf("file read done\n");
 
 	/* Read program headers. */
 	file_ofs = ehdr.e_phoff;
@@ -681,7 +684,7 @@ load (const char *file_name, struct intr_frame *if_) {
 	memset(if_->rsp, 0, PTR_SIZE);
 	if_->R.rdi = argc;
 	if_->R.rsi = if_->rsp + PTR_SIZE;
-	hex_dump ((uintptr_t)if_->rsp, if_->rsp, USER_STACK - if_->rsp, true);
+	// hex_dump ((uintptr_t)if_->rsp, if_->rsp, USER_STACK - if_->rsp, true);
 
 	free(args_addr_list);
 	success = true;
@@ -853,10 +856,10 @@ lazy_load_segment (struct page *page, void *aux) {
 	/* TODO: VA is available when calling this function. */
 	struct lazy_parameter * params = (struct lazy_parameter *)aux;
 	bool acquired = false;
-
+	
 	if (params->file == NULL)
 		return false;
-	//TODO: success 여부 어떻게 체크할까?
+
 	if (params->read_bytes > 0) {
 		if (!lock_held_by_current_thread(&filesys_lock)) {
 			lock_acquire(&filesys_lock);
@@ -868,6 +871,7 @@ lazy_load_segment (struct page *page, void *aux) {
 	}
 	if (params->zero_bytes > 0)
 		memset(page->va + params->read_bytes, 0, params->zero_bytes);
+	file_close(params->file);
 	free(aux);
 	return true;
 }
@@ -877,7 +881,7 @@ copy_lazy_parameter(struct page* src, void* dst) {
 	struct lazy_parameter *aux = malloc(sizeof(struct lazy_parameter));
 	struct lazy_parameter *src_aux = (struct lazy_parameter *)src->uninit.aux;
 
-	aux->file = src_aux->file;
+	aux->file = file_reopen(src_aux->file);
 	aux->ofs = src_aux->ofs;
 	aux->read_bytes = src_aux->read_bytes;
 	aux->zero_bytes = src_aux->zero_bytes;
@@ -913,10 +917,10 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 		 * and zero the final PAGE_ZERO_BYTES bytes. */
 		size_t page_read_bytes = read_bytes < PGSIZE ? read_bytes : PGSIZE;
 		size_t page_zero_bytes = page_read_bytes < PGSIZE ? PGSIZE - page_read_bytes : 0;
-		// printf("zero_bytes: %d\n", page_zero_bytes);
+
 		/* TODO: Set up aux to pass information to the lazy_load_segment. */
 		struct lazy_parameter *aux = malloc(sizeof(struct lazy_parameter));
-		aux->file = file;
+		aux->file = file_reopen(file);
 		aux->ofs = ofs + cnt * PGSIZE;
 		aux->read_bytes = page_read_bytes;
 		aux->zero_bytes = page_zero_bytes;

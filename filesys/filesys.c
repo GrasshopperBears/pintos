@@ -65,22 +65,10 @@ bool
 filesys_create (const char *name, off_t initial_size) {
 	disk_sector_t inode_sector = 0;
 	struct dir *dir = dir_open_root ();
-	// printf("start: len %d\n", dir->inode->data.length);
 	bool success;
+	
 #ifdef EFILESYS
 	inode_sector = fat_create_chain(0);
-	// printf("check 1: %d\n", inode_sector);
-	// success = dir != NULL;
-	// printf("check 2: %d\n", success);
-	// success = inode_sector != 0;
-	// printf("check 3: %d\n", success);
-
-	// success = inode_create (inode_sector, initial_size, true);
-	// printf("check 4: %d\n", success);
-
-	// success = dir_add (dir, name, inode_sector);
-	// printf("check 5: %d\n", success);
-
 	success = (dir != NULL
 			&& inode_sector != 0
 			&& inode_create (inode_sector, initial_size, true)
@@ -108,12 +96,10 @@ struct file *
 filesys_open (const char *name) {
 	struct dir *dir = dir_open_root ();
 	struct inode *inode = NULL;
-	// printf("filesys open\n");
+
 	if (dir != NULL)
 		dir_lookup (dir, name, &inode);
-	// printf("filesys open: lookup done\n");
 	dir_close (dir);
-	// printf("filesys open: close done\n");
 
 	return file_open (inode);
 }

@@ -102,7 +102,6 @@ fat_close (void) {
 		if (bytes_left >= DISK_SECTOR_SIZE) {
 			disk_write (filesys_disk, fat_fs->bs.fat_start + i,
 			            buffer + bytes_wrote);
-			// printf("disk write sector: %d\n", fat_fs->bs.fat_start + i);
 			bytes_wrote += DISK_SECTOR_SIZE;
 		} else {
 			bounce = calloc (1, DISK_SECTOR_SIZE);
@@ -110,7 +109,6 @@ fat_close (void) {
 				PANIC ("FAT close failed");
 			memcpy (bounce, buffer + bytes_wrote, bytes_left);
 			disk_write (filesys_disk, fat_fs->bs.fat_start + i, bounce);
-			// printf("disk write sector: %d\n", fat_fs->bs.fat_start + i);
 			bytes_wrote += bytes_left;
 			free (bounce);
 		}
@@ -198,7 +196,6 @@ fat_create_chain (cluster_t clst) {
 		fat_put(new, EOChain);
 	}	else {
 		fat_put(new, fat_get(clst));
-		// printf("fat put(%d, %d)\n", new, fat_get(clst));
 		fat_put(clst, new);
 	}
 	lock_release(&fat_fs->write_lock);
@@ -249,7 +246,7 @@ fat_remove_chain (cluster_t clst, cluster_t pclst) {
 cluster_t
 fat_end_of_chain (cluster_t clst) {
 	cluster_t curr = clst;
-	// printf("fat_end_of_chain start: %d\n", clst);
+
 	while (curr != EOChain) {
 		curr = fat_get(curr);
 	}
