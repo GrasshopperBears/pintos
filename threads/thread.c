@@ -627,6 +627,7 @@ init_thread (struct thread *t, const char *name, int priority) {
 	list_init(&t->children_list);
 	if (t != initial_thread) {
 		t->parent = thread_current();
+		t->current_dir = thread_current()->current_dir;	// reopen 해야하나?
 		t->depth = thread_current()->depth + 1;
 	} else {
 		t->depth = 0;

@@ -58,6 +58,7 @@ process_create_initd (const char *file_name) {
 		return TID_ERROR;
 	strlcpy (fn_copy, file_name, PGSIZE);
 	thread_current()->parent = NULL;
+	thread_current()->current_dir = dir_open_root();
 
 	/* Create a new thread to execute FILE_NAME. */
 	tid = thread_create (strtok_r (file_name, " ", &save_ptr), PRI_DEFAULT, initd, fn_copy);

@@ -211,6 +211,8 @@ open (const char *file) {
 	}
 	lock_acquire(&filesys_lock);
 	dir_lookup (curr->current_dir, file, &inode);	// inode에 무엇을?
+	if (inode ==NULL)
+		exit(0);
 	if (inode->data.is_file) {
 		opened_file = file_open(inode);
 	} else {

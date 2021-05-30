@@ -51,7 +51,7 @@ filesys_done (void) {
 	/* Original FS */
 #ifdef EFILESYS
 	fat_close ();
-	dir_close(thread_current()->current_dir);
+	// dir_close(thread_current()->current_dir);
 #else
 	free_map_close ();
 #endif
@@ -66,7 +66,7 @@ filesys_create (const char *name, off_t initial_size) {
 	disk_sector_t inode_sector = 0;
 	struct dir *dir = dir_open_root ();
 	bool success;
-	
+
 #ifdef EFILESYS
 	inode_sector = fat_create_chain(0);
 	success = (dir != NULL
