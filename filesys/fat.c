@@ -155,7 +155,7 @@ fat_boot_create (void) {
 void
 fat_fs_init (void) {
 	/* TODO: Your code goes here. */
-	fat_fs->fat_length = sector_to_cluster(fat_fs->bs.fat_sectors); //157
+	fat_fs->fat_length = sector_to_cluster(fat_fs->bs.total_sectors);
 	fat_fs->data_start = sector_to_cluster(fat_fs->bs.fat_start + fat_fs->bs.fat_sectors); //158
 	fat_fs->last_clst = sector_to_cluster(fat_fs->bs.total_sectors - SECTORS_PER_CLUSTER); //20159
 	fat_fs->map = bitmap_create(disk_size (filesys_disk));
@@ -190,12 +190,13 @@ fat_create_chain (cluster_t clst) {
 		lock_release(&fat_fs->write_lock);
 		return 0;
 	}
-	bitmap_mark(fat_fs->map, (int) new);
+	bitmap_mark(fat_fs->map, new);
 
 	if (clst == 0) {
 		fat_put(new, EOChain);
 	}	else {
 		fat_put(new, fat_get(clst));
+		// printf("fat put(%d, %d)\n", new, fat_get(clst));
 		fat_put(clst, new);
 	}
 	lock_release(&fat_fs->write_lock);
@@ -205,25 +206,19 @@ fat_create_chain (cluster_t clst) {
 cluster_t
 fat_create_chain_multiple(cluster_t clst, size_t count) {
 	cluster_t curr = 0;
-	cluster_t init;
 
 	ASSERT(count > 0);
 
-	init = fat_create_chain(clst);
-	if (!init)
-		return 0;
-	
-	if (count > 1) {
-		curr = init;
-		for (int i = 1; i < count; i++) {
-			curr = fat_create_chain(curr);
-			if (!curr) {
-				fat_remove_chain(init, 0);
-				return 0;
-			}
+	curr = clst;
+	for (int i = 0; i < count; i++) {
+		curr = fat_create_chain(curr);
+		if (!curr) {
+			fat_remove_chain(clst, i);
+			return 0;
 		}
 	}
-	return init;
+
+	return fat_get(clst);
 }
 
 /* Remove the chain of clusters starting from CLST.
@@ -250,8 +245,10 @@ fat_remove_chain (cluster_t clst, cluster_t pclst) {
 cluster_t
 fat_end_of_chain (cluster_t clst) {
 	cluster_t curr = clst;
+	// printf("fat_end_of_chain start: %d\n", clst);
 	while (clst != EOChain) {
 		clst = fat_get(curr);
+		// printf("%d ", clst);
 	}
 	return curr;
 }
@@ -261,6 +258,7 @@ void
 fat_put (cluster_t clst, cluster_t val) {
 	/* TODO: Your code goes here. */
 	fat_fs->fat[clst] = val;
+	printf("put: %d %d\n", clst, val);
 }
 
 /* Fetch a value in the FAT table. */

@@ -123,7 +123,7 @@ fsutil_put (char **argv) {
 					file_name, size);
 		size -= chunk_size;
 	}
-
+	printf("copy done\n");
 	/* Finish up. */
 	file_close (dst);
 	free (buffer);

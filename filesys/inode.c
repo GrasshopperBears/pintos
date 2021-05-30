@@ -63,6 +63,7 @@ inode_init (void) {
 bool
 inode_create (disk_sector_t sector, off_t length, bool is_file) {
 	struct inode_disk *disk_inode = NULL;
+	cluster_t tmp;
 	bool success = false;
 
 	ASSERT (length >= 0);
@@ -70,27 +71,36 @@ inode_create (disk_sector_t sector, off_t length, bool is_file) {
 	/* If this assertion fails, the inode structure is not exactly
 	 * one sector in size, and you should fix that. */
 	ASSERT (sizeof *disk_inode == DISK_SECTOR_SIZE);
+	printf("inode create start\n");
 
 	disk_inode = calloc (1, sizeof *disk_inode);
 	if (disk_inode != NULL) {
 		size_t sectors = bytes_to_sectors (length);
+		// printf("inode create: b_to_s=%d %d\n", sectors, length);
+		// printf("inode create 1 %d\n", list_size(&open_inodes));
 		disk_inode->length = length;
 		disk_inode->is_file = is_file;
 		disk_inode->magic = INODE_MAGIC;
+		disk_inode->start = sector;
 #ifdef EFILESYS
-		disk_inode->start = fat_create_chain_multiple(0, sectors);
+		tmp = fat_create_chain_multiple(sector, sectors);
+		// printf("after create chain %d %d\n", sector, tmp);
 		if (disk_inode->start) {
 			disk_write (filesys_disk, sector, disk_inode);
+			// printf("inode create: after create chain=%d\n", sector);
 			if (sectors > 0) {
 				static char zeros[DISK_SECTOR_SIZE];
 				size_t i;
 				cluster_t curr = disk_inode->start;
 
 				for (i = 0; i < sectors; i++) {
-					disk_write (filesys_disk, cluster_to_sector(curr), zeros);
 					curr = fat_get(curr);
+					// printf("inode create: iterating=%d %d\n", i, cluster_to_sector(curr));
+					disk_write (filesys_disk, cluster_to_sector(curr), zeros);
 				}
 			}
+			// printf("inode create 3 %d\n", list_size(&open_inodes));
+			// printf("iter done\n");
 			success = true; 
 		}
 #else
@@ -109,6 +119,7 @@ inode_create (disk_sector_t sector, off_t length, bool is_file) {
 done:
 		free (disk_inode);
 	}
+	printf("inode created %d\n", list_size(&open_inodes));
 	return success;
 }
 
@@ -119,17 +130,19 @@ struct inode *
 inode_open (disk_sector_t sector) {
 	struct list_elem *e;
 	struct inode *inode;
-
+	printf("inode open start\n");
 	/* Check whether this inode is already open. */
 	for (e = list_begin (&open_inodes); e != list_end (&open_inodes);
 			e = list_next (e)) {
 		inode = list_entry (e, struct inode, elem);
 		if (inode->sector == sector) {
 			inode_reopen (inode);
+			printf("inode open found\n");
 			return inode; 
 		}
 	}
 
+	printf("create inode\n");
 	/* Allocate memory. */
 	inode = malloc (sizeof *inode);
 	if (inode == NULL)
@@ -142,6 +155,7 @@ inode_open (disk_sector_t sector) {
 	inode->deny_write_cnt = 0;
 	inode->removed = false;
 	disk_read (filesys_disk, inode->sector, &inode->data);
+	printf("inode open done\n");
 	return inode;
 }
 
@@ -253,8 +267,9 @@ inode_extend (struct inode *inode, off_t size) {
 	ASSERT (size >= 0);
 	ASSERT (disk_inode != NULL);
 	ASSERT (sizeof *disk_inode == DISK_SECTOR_SIZE);
-
+	printf("inode extend: start\n");
 	end = fat_end_of_chain(disk_inode->start);
+	printf("inode extend: eochain done\n");
 
 	margin = inode_length(inode) % DISK_SECTOR_SIZE;
 	if (margin > 0) {
@@ -266,9 +281,11 @@ inode_extend (struct inode *inode, off_t size) {
 		disk_write (filesys_disk, inode->sector, disk_inode);
 		return true;
 	}
+	printf("inode extend: write done\n");
 
 	sectors = bytes_to_sectors (size);
 	new = fat_create_chain_multiple(end, sectors);
+	printf("inode extend: create multiple done\n");
 	if (new) {
 		disk_inode->start = new;
 		disk_inode->length += size;
@@ -277,13 +294,17 @@ inode_extend (struct inode *inode, off_t size) {
 			static char zeros[DISK_SECTOR_SIZE];
 			size_t i;
 
+			printf("inode extend: start for\n");
 			for (i = 0; i < sectors; i++) {
 				disk_write (filesys_disk, cluster_to_sector(new), zeros);
 				new = fat_get(new);
 			}
+			printf("inode extend: end for\n");
 		}
 		success = true; 
 	}
+	
+	printf("inode extend: ret %d\n", success);
 	return success;
 }
 
@@ -302,11 +323,13 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
 	if (inode->deny_write_cnt)
 		return 0;
-
+	// printf("inode read at %d\n", list_size(&open_inodes));
 #ifdef EFILESYS
 	if (gap >= 0) {
-		if (inode_extend(inode, gap))
+		printf("extend start\n");
+		if (!inode_extend(inode, gap))
 			return 0;
+		printf("extend end\n");
 	}
 #endif
 

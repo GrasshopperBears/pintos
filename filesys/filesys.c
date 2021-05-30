@@ -108,10 +108,12 @@ struct file *
 filesys_open (const char *name) {
 	struct dir *dir = dir_open_root ();
 	struct inode *inode = NULL;
-
+	printf("filesys open\n");
 	if (dir != NULL)
 		dir_lookup (dir, name, &inode);
+	printf("filesys open: lookup done\n");
 	dir_close (dir);
+	printf("filesys open: close done\n");
 
 	return file_open (inode);
 }

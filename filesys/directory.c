@@ -22,6 +22,7 @@ dir_create (disk_sector_t sector, size_t entry_cnt, disk_sector_t parent_sector)
  * it takes ownership.  Returns a null pointer on failure. */
 struct dir *
 dir_open (struct inode *inode) {
+	printf("dir open start\n");
 	struct dir *dir = calloc (1, sizeof *dir);
 	if (inode != NULL && dir != NULL) {
 		dir->inode = inode;
@@ -81,11 +82,13 @@ lookup (const struct dir *dir, const char *name,
 	ASSERT (name != NULL);
 	// printf("lookup enter %s\n", name);
 	curr_pos = name;
-	while (curr_pos <= name) {
-		// printf("iter\n");
+	while (curr_pos != '\0' && curr_pos <= name) {
+		// printf("iter 1\n");
 		slash_pos = strstr(curr_pos, "/");
+		// printf("iter 2\n");
 		curr_success = false;
 		if (slash_pos == NULL) {
+			// printf("iter 3: %d\n", found);
 			if (found)
 				break;
 		}
@@ -113,7 +116,9 @@ lookup (const struct dir *dir, const char *name,
 					if (ofsp != NULL)
 						*ofsp = ofs;
 					curr_success = true;
+					// printf("found!!\n");
 					found = true;
+					break;
 				}
 			}
 			// printf("end for\n");
@@ -124,6 +129,8 @@ lookup (const struct dir *dir, const char *name,
 				return false;
 			}
 		}
+		if (slash_pos == NULL)
+			break;
 		curr_pos = slash_pos + 1;
 	}
 	dir_close(curr_dir);
