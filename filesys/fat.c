@@ -245,10 +245,9 @@ fat_remove_chain (cluster_t clst, cluster_t pclst) {
 cluster_t
 fat_end_of_chain (cluster_t clst) {
 	cluster_t curr = clst;
-	// printf("fat_end_of_chain start: %d\n", clst);
-	while (clst != EOChain) {
-		clst = fat_get(curr);
-		// printf("%d ", clst);
+	printf("fat_end_of_chain start: %d\n", clst);
+	while (curr != EOChain) {
+		curr = fat_get(curr);
 	}
 	return curr;
 }
@@ -258,7 +257,6 @@ void
 fat_put (cluster_t clst, cluster_t val) {
 	/* TODO: Your code goes here. */
 	fat_fs->fat[clst] = val;
-	printf("put: %d %d\n", clst, val);
 }
 
 /* Fetch a value in the FAT table. */
