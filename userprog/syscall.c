@@ -211,15 +211,17 @@ open (const char *file) {
 	}
 	lock_acquire(&filesys_lock);
 	dir_lookup (curr->current_dir, file, &inode);	// inode에 무엇을?
-	if (inode ==NULL)
-		exit(0);
+	if (inode == NULL) {
+		lock_release(&filesys_lock);
+		return -1;
+	}
 	if (inode->data.is_file) {
 		opened_file = file_open(inode);
 	} else {
 		opened_dir = dir_open(inode);
 	}
 
-	if (opened_file == NULL) {
+	if ((inode->data.is_file && opened_file == NULL) || (!inode->data.is_file && opened_dir == NULL)) {
 		lock_release(&filesys_lock);
 		return -1;
 	}
