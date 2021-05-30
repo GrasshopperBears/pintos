@@ -681,7 +681,7 @@ load (const char *file_name, struct intr_frame *if_) {
 	memset(if_->rsp, 0, PTR_SIZE);
 	if_->R.rdi = argc;
 	if_->R.rsi = if_->rsp + PTR_SIZE;
-	// hex_dump ((uintptr_t)if_->rsp, if_->rsp, USER_STACK - if_->rsp, true);
+	hex_dump ((uintptr_t)if_->rsp, if_->rsp, USER_STACK - if_->rsp, true);
 
 	free(args_addr_list);
 	success = true;

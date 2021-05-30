@@ -71,7 +71,7 @@ filesys_create (const char *name, off_t initial_size) {
 	inode_sector = fat_create_chain(0);
 	// printf("check 1: %d\n", inode_sector);
 	// success = dir != NULL;
-	// // printf("check 2: %d\n", success);
+	// printf("check 2: %d\n", success);
 	// success = inode_sector != 0;
 	// printf("check 3: %d\n", success);
 
@@ -134,6 +134,7 @@ filesys_remove (const char *name) {
 /* Formats the file system. */
 static void
 do_format (void) {
+	struct dir* curr;
 	printf ("Formatting file system...");
 
 #ifdef EFILESYS

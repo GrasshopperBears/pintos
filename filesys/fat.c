@@ -97,11 +97,12 @@ fat_close (void) {
 	off_t bytes_wrote = 0;
 	off_t bytes_left = sizeof (fat_fs->fat);
 	const off_t fat_size_in_bytes = fat_fs->fat_length * sizeof (cluster_t);
-	for (unsigned i = 0; i < fat_fs->bs.fat_sectors; i++) {
+	for (unsigned i = 1; i < fat_fs->bs.fat_sectors; i++) {
 		bytes_left = fat_size_in_bytes - bytes_wrote;
 		if (bytes_left >= DISK_SECTOR_SIZE) {
 			disk_write (filesys_disk, fat_fs->bs.fat_start + i,
 			            buffer + bytes_wrote);
+			// printf("disk write sector: %d\n", fat_fs->bs.fat_start + i);
 			bytes_wrote += DISK_SECTOR_SIZE;
 		} else {
 			bounce = calloc (1, DISK_SECTOR_SIZE);
@@ -109,6 +110,7 @@ fat_close (void) {
 				PANIC ("FAT close failed");
 			memcpy (bounce, buffer + bytes_wrote, bytes_left);
 			disk_write (filesys_disk, fat_fs->bs.fat_start + i, bounce);
+			// printf("disk write sector: %d\n", fat_fs->bs.fat_start + i);
 			bytes_wrote += bytes_left;
 			free (bounce);
 		}
@@ -205,20 +207,22 @@ fat_create_chain (cluster_t clst) {
 
 cluster_t
 fat_create_chain_multiple(cluster_t clst, size_t count) {
-	cluster_t curr = 0;
+	cluster_t curr = 0, init;
 
 	ASSERT(count > 0);
 
-	curr = clst;
+	init = curr = clst;
 	for (int i = 0; i < count; i++) {
 		curr = fat_create_chain(curr);
+		if (init == 0)
+			init = curr;
 		if (!curr) {
 			fat_remove_chain(clst, i);
 			return 0;
 		}
 	}
 
-	return fat_get(clst);
+	return init;
 }
 
 /* Remove the chain of clusters starting from CLST.

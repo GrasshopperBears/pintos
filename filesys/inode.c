@@ -32,9 +32,9 @@ byte_to_sector (const struct inode *inode, off_t pos) {
 		cluster_t tmp;
 		for (int i = 0; i < pos / DISK_SECTOR_SIZE; i++) {
 			curr = fat_get(curr);
-			if (tmp == EOChain) {
-				curr = fat_create_chain(curr);
-			} else
+			if (tmp == EOChain)
+				return -1;
+			else
 				curr = tmp;
 		}
 		return cluster_to_sector(curr);
@@ -63,7 +63,6 @@ inode_init (void) {
 bool
 inode_create (disk_sector_t sector, off_t length, bool is_file) {
 	struct inode_disk *disk_inode = NULL;
-	cluster_t new;
 	bool success = false;
 
 	ASSERT (length >= 0);
@@ -82,8 +81,7 @@ inode_create (disk_sector_t sector, off_t length, bool is_file) {
 		disk_inode->is_file = is_file;
 		disk_inode->magic = INODE_MAGIC;
 #ifdef EFILESYS
-		new = fat_create_chain_multiple(sector, sectors);
-		disk_inode->start = new;
+		disk_inode->start = fat_create_chain_multiple(0, sectors);
 		// printf("after create chain %d\n", sector);
 		if (disk_inode->start) {
 			disk_write (filesys_disk, sector, disk_inode);
@@ -91,10 +89,11 @@ inode_create (disk_sector_t sector, off_t length, bool is_file) {
 			if (sectors > 0) {
 				static char zeros[DISK_SECTOR_SIZE];
 				size_t i;
-				cluster_t curr = sector;
+				cluster_t curr = disk_inode->start;
 
 				for (i = 0; i < sectors; i++) {
-					curr = fat_get(curr);
+					if (i != 0)
+						curr = fat_get(curr);
 					// printf("inode create: iterating=%d %d\n", i, cluster_to_sector(curr));
 					disk_write (filesys_disk, cluster_to_sector(curr), zeros);
 				}
@@ -220,10 +219,12 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset) {
 	while (size > 0) {
 		/* Disk sector to read, starting byte offset within sector. */
 		disk_sector_t sector_idx = byte_to_sector (inode, offset);
+		// printf("%d ", sector_idx);
 		int sector_ofs = offset % DISK_SECTOR_SIZE;
 
 		/* Bytes left in inode, bytes left in sector, lesser of the two. */
 		off_t inode_left = inode_length (inode) - offset;
+		// printf("%d ", inode_left);
 		int sector_left = DISK_SECTOR_SIZE - sector_ofs;
 		int min_left = inode_left < sector_left ? inode_left : sector_left;
 
@@ -253,7 +254,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset) {
 		bytes_read += chunk_size;
 	}
 	free (bounce);
-
+	// printf("%d ",bytes_read);
 	return bytes_read;
 }
 
