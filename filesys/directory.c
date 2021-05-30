@@ -209,8 +209,8 @@ dir_remove (struct dir *dir, const char *name) {
 	ASSERT (dir != NULL);
 	ASSERT (name != NULL);
 
-	if (dir->inode->sector == ROOT_DIR_SECTOR)
-		return false;
+	// if (dir->inode->sector == ROOT_DIR_SECTOR)
+	// 	return false;
 
 	/* Find directory entry. */
 	if (!lookup (dir, name, &e, &ofs))
