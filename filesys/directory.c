@@ -114,7 +114,7 @@ lookup (const struct dir *dir, const char *name,
 	struct dir_entry e;
 	size_t ofs, find_name_len;
 	struct dir* curr_dir = dir_reopen(dir);
-	char *slash_pos, *curr_pos, *find_name;
+	char *slash_pos, *curr_pos, *find_name, *last = strrchr(name, '/');
 	bool curr_success, found = false;
 	int name_len = strlen(name);
 
@@ -122,13 +122,16 @@ lookup (const struct dir *dir, const char *name,
 	ASSERT (name != NULL);
 
 	curr_pos = name;
+
+	if (last != NULL && last == name && name_len == 1) {
+		ep->inode_sector = ROOT_DIR_SECTOR;
+		return true;
+	}
+	
 	while (curr_pos != '\0' && curr_pos <= name + name_len) {
 		slash_pos = strstr(curr_pos, "/");
 		curr_success = false;
-		// if (slash_pos == NULL) {
-		// 	if (found)
-		// 		break;
-		// }
+
 		if (slash_pos == curr_pos) {
 			curr_dir = dir_open(inode_open(ROOT_DIR_SECTOR));
 		} else {

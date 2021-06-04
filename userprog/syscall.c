@@ -214,9 +214,9 @@ open (const char *file) {
 	}
 	lock_acquire(&filesys_lock);
 
-	if (last != NULL && last == file && strlen(last) == 1) {
-		opened_dir = dir_open_root();
+	if (last != NULL && last == file && strlen(file) == 1) {
 		inode->data.is_file = false;
+		opened_dir = dir_open_root();
 		goto done;
 	}
 
