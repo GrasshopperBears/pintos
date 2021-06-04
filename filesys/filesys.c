@@ -143,7 +143,7 @@ filesys_create_symlink (const char *target, const char *linkpath) {
 	
 	disk_inode = calloc (1, sizeof *disk_inode);
 	disk_inode->is_symlink = true;
-	disk_inode->start = target_inode->data.start;
+	disk_inode->start = target_inode->sector;
 	disk_inode->magic = INODE_MAGIC;
 	disk_write (filesys_disk, inode_sector, disk_inode);
 	free(disk_inode);
