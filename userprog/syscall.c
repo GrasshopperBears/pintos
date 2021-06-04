@@ -191,7 +191,7 @@ bool
 remove (const char *file) {
 	// TODO: 열려 있는 파일의 remove 처리
 	bool ret;
-	
+
 	lock_acquire(&filesys_lock);
 	ret = filesys_remove(file);
 	lock_release(&filesys_lock);
@@ -505,13 +505,20 @@ mkdir(const char *dir) {
 	int parent_dir_len = last - dir;
 	struct dir *parent_dir;
 	struct inode *inode = NULL;
-	struct dir_entry e;
+	struct dir_entry e, target_e;
+	off_t target_ofs;
 
 	if (dir == NULL || strlen(dir) == 0) 
 		return false;
 
 	if (!get_parent_dir(dir, &parent_dir))
 		return false;
+	
+	for (target_ofs = 0; inode_read_at (parent_dir->inode, &target_e, sizeof target_e, target_ofs) == sizeof target_e; target_ofs += sizeof target_e) {
+		if (target_e.in_use && !strcmp(target_e.name, dir))
+			return false;
+	}
+
 	success = dir_create(fat_create_chain(0), 16, parent_dir->inode->sector, last == NULL ? dir : last + 1);
 	dir_close(parent_dir);
 	return success;
