@@ -261,7 +261,6 @@ inode_extend (struct inode *inode, off_t size) {
 		disk_inode->length += written;
 		size -= written;
 		if (!size) {
-			disk_inode->length += written;
 			disk_write (filesys_disk, inode->sector, disk_inode);
 			return true;
 		}
