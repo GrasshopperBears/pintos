@@ -245,7 +245,7 @@ done:
 bool
 dir_remove (struct dir *dir, const char *name) {
 	struct dir_entry e, target_e;
-	struct inode *inode = NULL;
+	struct inode *inode = NULL, *target_inode;
 	bool success = false;
 	off_t ofs, target_ofs;
 
@@ -262,10 +262,12 @@ dir_remove (struct dir *dir, const char *name) {
 		goto done;
 	
 	if (!inode->data.is_file) {
-		for (target_ofs = 0; inode_read_at (dir->inode, &target_e, sizeof target_e, target_ofs) == sizeof target_e; target_ofs += sizeof target_e) {
-			if (target_e.in_use && (!strcmp(target_e.name, ".") || !strcmp(target_e.name, "..")))
+		target_inode = inode_open(e.inode_sector);
+		for (target_ofs = 0; inode_read_at (target_inode, &target_e, sizeof target_e, target_ofs) == sizeof target_e; target_ofs += sizeof target_e) {
+			if (target_e.in_use && strcmp(target_e.name, ".") && strcmp(target_e.name, ".."))
 				goto done;
 		}
+		inode_close(target_inode);
 	}
 
 	/* Erase directory entry. */
