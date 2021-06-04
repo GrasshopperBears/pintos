@@ -92,13 +92,12 @@ get_parent_dir(char *dir, struct dir **parent_dir) {
 	strlcpy(cpy_parent_dir, dir, parent_dir_len + 1);
 	cpy_parent_dir[parent_dir_len] = '\0';
 
-	if (last != NULL) {
-		if (lookup (thread_current()->current_dir, cpy_parent_dir, &e, NULL)) {
-			*parent_dir = dir_open(inode_open (e.inode_sector));
-			if (parent_dir != NULL)
-				success = true;
-		}
+	if (lookup (thread_current()->current_dir, cpy_parent_dir, &e, NULL)) {
+		*parent_dir = dir_open(inode_open (e.inode_sector));
+		if (parent_dir != NULL)
+			success = true;
 	}
+	
 	free(cpy_parent_dir);
 	return success;
 }
