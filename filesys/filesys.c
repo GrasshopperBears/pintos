@@ -127,7 +127,16 @@ filesys_remove (const char *name) {
 
 bool
 filesys_create_symlink (const char *target, const char *linkpath) {
-	return true;
+	struct dir *link_dir, *target_dir;
+	char *last = strrchr(linkpath, '/');
+	struct inode* target_inode;
+
+	if (!get_parent_dir(linkpath, &link_dir) || !get_parent_dir(target, &target_dir))
+		return false;
+	
+	dir_lookup (target_dir, last == NULL ? target : last + 1, &target_inode);
+
+	return dir_add (link_dir, last == NULL ? linkpath : last + 1, target_inode->sector);
 }
 
 /* Formats the file system. */
