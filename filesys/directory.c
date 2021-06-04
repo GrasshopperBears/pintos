@@ -244,16 +244,13 @@ done:
  * which occurs only if there is no file with the given NAME. */
 bool
 dir_remove (struct dir *dir, const char *name) {
-	struct dir_entry e;
+	struct dir_entry e, target_e;
 	struct inode *inode = NULL;
 	bool success = false;
-	off_t ofs;
+	off_t ofs, target_ofs;
 
 	ASSERT (dir != NULL);
 	ASSERT (name != NULL);
-
-	// if (dir->inode->sector == ROOT_DIR_SECTOR)
-	// 	return false;
 
 	/* Find directory entry. */
 	if (!lookup (dir, name, &e, &ofs))
@@ -265,9 +262,10 @@ dir_remove (struct dir *dir, const char *name) {
 		goto done;
 	
 	if (!inode->data.is_file) {
-		for (ofs = 0; inode_read_at (dir->inode, &e, sizeof e, ofs) == sizeof e;	ofs += sizeof e)
-			if (e.in_use && (!strcmp(e.name, ".") || !strcmp(e.name, "..")))
+		for (target_ofs = 0; inode_read_at (dir->inode, &target_e, sizeof target_e, target_ofs) == sizeof target_e; target_ofs += sizeof target_e) {
+			if (target_e.in_use && (!strcmp(target_e.name, ".") || !strcmp(target_e.name, "..")))
 				goto done;
+		}
 	}
 
 	/* Erase directory entry. */

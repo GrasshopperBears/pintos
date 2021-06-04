@@ -171,6 +171,8 @@ create (const char *file, unsigned initial_size) {
 
 	if (file == NULL) {
 		exit(-1);
+	} else if (thread_current()->current_dir->inode->removed) {
+		return false;
 	}
 	lock_acquire(&filesys_lock);
 	ret = filesys_create(file, initial_size);
@@ -212,6 +214,9 @@ open (const char *file) {
 	if (file == NULL || new_f_el == NULL) {
 		exit(-1);
 	}
+	if (thread_current()->current_dir->inode->removed) {
+		return -1;
+	}
 	lock_acquire(&filesys_lock);
 
 	if (last != NULL && last == file && strlen(file) == 1) {
@@ -220,12 +225,14 @@ open (const char *file) {
 		goto done;
 	}
 
-	if (!get_parent_dir(file, &parent_dir))
+	if (!get_parent_dir(file, &parent_dir)) {
+		dir_close(parent_dir);
 		return -1;
+	}
 
 	dir_lookup (parent_dir, last == NULL ? file : last, &inode);	// inode에 무엇을?
 	dir_close(parent_dir);
-	if (inode == NULL) {
+	if (inode == NULL || inode->removed) {
 		lock_release(&filesys_lock);
 		return -1;
 	}

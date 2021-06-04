@@ -113,8 +113,13 @@ filesys_open (const char *name) {
  * or if an internal memory allocation fails. */
 bool
 filesys_remove (const char *name) {
-	struct dir *dir = dir_open_root ();
-	bool success = dir != NULL && dir_remove (dir, name);
+	struct dir *dir;
+	bool success;
+
+	if (!get_parent_dir(name, &dir))
+		return false;
+
+	success = dir != NULL && dir_remove (dir, name);
 	dir_close (dir);
 
 	return success;
