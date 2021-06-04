@@ -556,6 +556,11 @@ inumber(int fd) {
 		return f_el->dir->inode->sector;
 }
 
+int
+symlink (const char *target, const char *linkpath) {
+	return 0;
+}
+
 /* The main system call interface */
 void
 syscall_handler (struct intr_frame *f UNUSED) {
@@ -640,6 +645,11 @@ syscall_handler (struct intr_frame *f UNUSED) {
 		break;
 	case SYS_INUMBER:
 		f->R.rax = inumber(f->R.rdi);
+		break;
+	case SYS_SYMLINK:
+		is_valid_user_ptr(f->R.rdi);
+		is_valid_user_ptr(f->R.rsi);
+		f->R.rax = symlink(f->R.rdi, f->R.rsi);
 		break;
 	default:
 		thread_exit ();
