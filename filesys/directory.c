@@ -262,8 +262,8 @@ dir_remove (struct dir *dir, const char *name) {
 		goto done;
 	
 	if (!inode->data.is_file) {
-		for (; inode_read_at (dir->inode, &e, sizeof e, ofs) == sizeof e;	ofs += sizeof e)
-			if (e.in_use && (!strcmp(e.name, '.') || !strcmp(e.name, '..')))
+		for (ofs = 0; inode_read_at (dir->inode, &e, sizeof e, ofs) == sizeof e;	ofs += sizeof e)
+			if (e.in_use && (!strcmp(e.name, ".") || !strcmp(e.name, "..")))
 				goto done;
 	}
 
@@ -290,7 +290,7 @@ dir_readdir (struct dir *dir, char name[NAME_MAX + 1]) {
 
 	while (inode_read_at (dir->inode, &e, sizeof e, dir->pos) == sizeof e) {
 		dir->pos += sizeof e;
-		if (e.in_use) {
+		if (e.in_use && strcmp(e.name, ".") && strcmp(e.name, "..")) {
 			strlcpy (name, e.name, NAME_MAX + 1);
 			return true;
 		}

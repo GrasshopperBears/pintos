@@ -206,12 +206,25 @@ open (const char *file) {
 	struct list_elem* el;
 	struct file_elem* f_el;
 	struct inode* inode;
+	char *last = strrchr(file, '/');
+	struct dir *parent_dir;
 
 	if (file == NULL || new_f_el == NULL) {
 		exit(-1);
 	}
 	lock_acquire(&filesys_lock);
-	dir_lookup (curr->current_dir, file, &inode);	// inode에 무엇을?
+
+	if (last != NULL && last == file && strlen(last) == 1) {
+		opened_dir = dir_open_root();
+		inode->data.is_file = false;
+		goto done;
+	}
+
+	if (!get_parent_dir(file, &parent_dir))
+		return -1;
+
+	dir_lookup (parent_dir, last == NULL ? file : last, &inode);	// inode에 무엇을?
+	dir_close(parent_dir);
 	if (inode == NULL) {
 		lock_release(&filesys_lock);
 		return -1;
@@ -226,6 +239,7 @@ open (const char *file) {
 		lock_release(&filesys_lock);
 		return -1;
 	}
+done:
 	if (!list_empty(&curr->files_list)) {
 		el = list_front(&curr->files_list);
 		while (el != list_end(&curr->files_list)) {
