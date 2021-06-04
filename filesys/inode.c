@@ -255,21 +255,22 @@ inode_extend (struct inode *inode, off_t size) {
 	ASSERT (sizeof *disk_inode == DISK_SECTOR_SIZE);
 
 	end = fat_end_of_chain(disk_inode->start);
-	margin = inode_length(inode) % DISK_SECTOR_SIZE;
+	margin = DISK_SECTOR_SIZE - inode_length(inode) % DISK_SECTOR_SIZE;
 	if (margin > 0) {
 		written = margin > size ? size : margin;
 		disk_inode->length += written;
 		size -= written;
-	}
-	if (!size) {
-		disk_write (filesys_disk, inode->sector, disk_inode);
-		return true;
+		if (!size) {
+			disk_inode->length += written;
+			disk_write (filesys_disk, inode->sector, disk_inode);
+			return true;
+		}
 	}
 	sectors = bytes_to_sectors (size);
 	new = fat_create_chain_multiple(end, sectors);
 
 	if (new) {
-		disk_inode->start = new;
+		// disk_inode->start = new;
 		disk_inode->length += size;
 		disk_write (filesys_disk, inode->sector, disk_inode);
 		if (sectors > 0) {

@@ -245,10 +245,13 @@ fat_remove_chain (cluster_t clst, cluster_t pclst) {
 
 cluster_t
 fat_end_of_chain (cluster_t clst) {
-	cluster_t curr = clst;
+	cluster_t curr = clst, nxt;
 
 	while (curr != EOChain) {
-		curr = fat_get(curr);
+		nxt = fat_get(curr);
+		if (nxt == EOChain)
+			break;
+		curr = nxt;
 	}
 	return curr;
 }

@@ -507,6 +507,7 @@ mkdir(const char *dir) {
 	struct inode *inode = NULL;
 	struct dir_entry e, target_e;
 	off_t target_ofs;
+	uint32_t new_clst;
 
 	if (dir == NULL || strlen(dir) == 0) 
 		return false;
@@ -519,7 +520,11 @@ mkdir(const char *dir) {
 			return false;
 	}
 
+	if (!(new_clst = fat_create_chain(0)))
+		goto done;
+
 	success = dir_create(fat_create_chain(0), 16, parent_dir->inode->sector, last == NULL ? dir : last + 1);
+done:
 	dir_close(parent_dir);
 	return success;
 }
