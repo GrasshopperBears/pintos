@@ -226,7 +226,7 @@ open (const char *file) {
 	}
 
 	if (!get_parent_dir(file, &parent_dir)) {
-		dir_close(parent_dir);
+		lock_release(&filesys_lock);
 		return -1;
 	}
 
