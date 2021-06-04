@@ -15,6 +15,7 @@
 #include "filesys/fat.h"
 #include "filesys/directory.h"
 #include "intrinsic.h"
+#include <string.h>
 #ifdef VM
 #include "vm/vm.h"
 #endif
@@ -485,6 +486,8 @@ mkdir(const char *dir) {
 	struct dir_entry e;
 	struct dir *new_dir;
 
+	if (dir == NULL || strlen(dir) == 0)
+		return false;
 	if (last != NULL) {
 		if (lookup (thread_current()->current_dir, dir, &e, NULL)) {
 			new_dir = dir_open(inode_open (e.inode_sector));
