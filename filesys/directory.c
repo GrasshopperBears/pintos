@@ -79,12 +79,13 @@ get_parent_dir(char *dir, struct dir **parent_dir) {
 	int parent_dir_len = last - dir;
 	struct inode *inode = NULL;
 	struct dir_entry e;
+	struct dir *current_dir = thread_current()->current_dir;
 
 	if (last == dir) {
 		*parent_dir = dir_open_root();
 		return true;
 	} else if (last == NULL) {
-		*parent_dir = thread_current()->current_dir;
+		*parent_dir = current_dir == NULL ? dir_open_root() : dir_reopen(current_dir);
 		return true;
 	}
 
@@ -92,7 +93,7 @@ get_parent_dir(char *dir, struct dir **parent_dir) {
 	strlcpy(cpy_parent_dir, dir, parent_dir_len + 1);
 	cpy_parent_dir[parent_dir_len] = '\0';
 
-	if (lookup (thread_current()->current_dir, cpy_parent_dir, &e, NULL)) {
+	if (lookup (current_dir, cpy_parent_dir, &e, NULL)) {
 		*parent_dir = dir_open(inode_open (e.inode_sector));
 		if (parent_dir != NULL)
 			success = true;

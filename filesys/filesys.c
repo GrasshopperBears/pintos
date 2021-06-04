@@ -64,7 +64,7 @@ filesys_done (void) {
 bool
 filesys_create (const char *name, off_t initial_size) {
 	disk_sector_t inode_sector = 0;
-	struct dir *dir = dir_open_root ();
+	struct dir *dir;
 	bool success;
 	char *last = strrchr(name, '/');
 
