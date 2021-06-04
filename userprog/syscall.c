@@ -489,26 +489,10 @@ mkdir(const char *dir) {
 	if (dir == NULL || strlen(dir) == 0) 
 		return false;
 
-	cpy_parent_dir = malloc(parent_dir_len + 1);
-	strlcpy(cpy_parent_dir, dir, parent_dir_len + 1);
-	cpy_parent_dir[parent_dir_len] = '\0';
-
-	if (last == dir)
-		parent_dir = dir_open_root();
-	else if (last != NULL) {
-		if (lookup (thread_current()->current_dir, cpy_parent_dir, &e, NULL)) {
-			parent_dir = dir_open(inode_open (e.inode_sector));
-			if (parent_dir == NULL) {
-				goto done;
-			}
-		}	else {
-			goto done;
-		}
-	}
+	if (!get_parent_dir(dir, &parent_dir))
+		return false;
 	success = dir_create(fat_create_chain(0), 16, parent_dir->inode->sector, last == NULL ? dir : last + 1);
 	dir_close(parent_dir);
-done:
-	free(cpy_parent_dir);
 	return success;
 }
 
