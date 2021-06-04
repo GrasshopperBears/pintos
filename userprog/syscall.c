@@ -558,7 +558,13 @@ inumber(int fd) {
 
 int
 symlink (const char *target, const char *linkpath) {
-	return 0;
+	bool success = false;
+
+	lock_acquire(&filesys_lock);
+	success = filesys_create_symlink(target, linkpath);
+	lock_release(&filesys_lock);
+
+	return success ? 0 : -1;
 }
 
 /* The main system call interface */

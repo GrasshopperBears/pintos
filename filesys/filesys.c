@@ -125,6 +125,11 @@ filesys_remove (const char *name) {
 	return success;
 }
 
+bool
+filesys_create_symlink (const char *target, const char *linkpath) {
+	return true;
+}
+
 /* Formats the file system. */
 static void
 do_format (void) {
