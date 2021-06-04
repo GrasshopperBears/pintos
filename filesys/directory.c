@@ -5,16 +5,24 @@
 #include "filesys/filesys.h"
 #include "filesys/inode.h"
 #include "threads/malloc.h"
+#include "threads/thread.h"
 
 /* Creates a directory with space for ENTRY_CNT entries in the
  * given SECTOR.  Returns true if successful, false on failure. */
 bool
-dir_create (disk_sector_t sector, size_t entry_cnt, disk_sector_t parent_sector) {
+dir_create (disk_sector_t sector, size_t entry_cnt, disk_sector_t parent_sector, char *dir_name) {
 	bool success = inode_create (sector, entry_cnt * sizeof (struct dir_entry), false);
+	struct dir* parent;
 	struct dir* curr = dir_open (inode_open (sector));
 	dir_add(curr, ".", sector);
 	dir_add(curr, "..", parent_sector);
 	dir_close(curr);
+
+	if (dir_name != NULL) {
+		parent = dir_open (inode_open (parent_sector));
+		dir_add(parent, dir_name, sector);
+		dir_close(parent);
+	}
 	return success;
 }
 
@@ -64,6 +72,37 @@ dir_get_inode (struct dir *dir) {
 	return dir->inode;
 }
 
+bool
+get_parent_dir(char *dir, struct dir **parent_dir) {
+	bool success = false;
+	char *cpy_parent_dir, *last = strrchr(dir, '/');
+	int parent_dir_len = last - dir;
+	struct inode *inode = NULL;
+	struct dir_entry e;
+
+	if (last == dir) {
+		*parent_dir = dir_open_root();
+		return true;
+	} else if (last == NULL) {
+		*parent_dir = thread_current()->current_dir;
+		return true;
+	}
+
+	cpy_parent_dir = calloc(sizeof(char), parent_dir_len + 1);
+	strlcpy(cpy_parent_dir, dir, parent_dir_len + 1);
+	cpy_parent_dir[parent_dir_len] = '\0';
+
+	if (last != NULL) {
+		if (lookup (thread_current()->current_dir, cpy_parent_dir, &e, NULL)) {
+			*parent_dir = dir_open(inode_open (e.inode_sector));
+			if (parent_dir != NULL)
+				success = true;
+		}
+	}
+	free(cpy_parent_dir);
+	return success;
+}
+
 /* Searches DIR for a file with the given NAME.
  * If successful, returns true, sets *EP to the directory entry
  * if EP is non-null, and sets *OFSP to the byte offset of the
@@ -77,27 +116,28 @@ lookup (const struct dir *dir, const char *name,
 	struct dir* curr_dir = dir_reopen(dir);
 	char *slash_pos, *curr_pos, *find_name;
 	bool curr_success, found = false;
+	int name_len = strlen(name);
 
 	ASSERT (dir != NULL);
 	ASSERT (name != NULL);
 
 	curr_pos = name;
-	while (curr_pos != '\0' && curr_pos <= name) {
+	while (curr_pos != '\0' && curr_pos <= name + name_len) {
 		slash_pos = strstr(curr_pos, "/");
 		curr_success = false;
-		if (slash_pos == NULL) {
-			if (found)
-				break;
-		}
+		// if (slash_pos == NULL) {
+		// 	if (found)
+		// 		break;
+		// }
 		if (slash_pos == curr_pos) {
 			curr_dir = dir_open(inode_open(ROOT_DIR_SECTOR));
 		} else {
 			if (slash_pos == NULL) {
-				find_name = name;
+				find_name = curr_pos;
 			} else {
-				find_name = malloc(slash_pos - curr_pos + 1);
-				find_name_len = strlen(curr_pos) - strlen(slash_pos);
-				strlcpy(find_name, curr_pos, find_name_len);
+				find_name_len = slash_pos - curr_pos;
+				find_name = malloc(find_name_len + 1);
+				strlcpy(find_name, curr_pos, find_name_len + 1);
 				find_name[find_name_len] = '\0';
 			}
 			if (found) {

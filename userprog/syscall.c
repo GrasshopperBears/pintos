@@ -480,26 +480,37 @@ chdir(const char *dir) {
 bool
 mkdir(const char *dir) {
 	bool success = false;
-	char* last = strrchr(dir, '/');
-	struct dir* parent_dir = dir_reopen(thread_current()->current_dir);
+	char *cpy_parent_dir, *last = strrchr(dir, '/');
+	int parent_dir_len = last - dir;
+	struct dir *parent_dir;
 	struct inode *inode = NULL;
 	struct dir_entry e;
-	struct dir *new_dir;
 
-	if (dir == NULL || strlen(dir) == 0)
+	printf("mkdir start: %s\n", dir);
+	if (dir == NULL || strlen(dir) == 0) 
 		return false;
-	if (last != NULL) {
-		if (lookup (thread_current()->current_dir, dir, &e, NULL)) {
-			new_dir = dir_open(inode_open (e.inode_sector));
-			if (new_dir == NULL)
-				return false;
-			dir_close(parent_dir);
-			parent_dir = new_dir;
-		}	else
-			return false;
+
+	cpy_parent_dir = malloc(parent_dir_len + 1);
+	strlcpy(cpy_parent_dir, dir, parent_dir_len + 1);
+	cpy_parent_dir[parent_dir_len] = '\0';
+
+	if (last == dir)
+		parent_dir = dir_open_root();
+	else if (last != NULL) {
+		if (lookup (thread_current()->current_dir, cpy_parent_dir, &e, NULL)) {
+			parent_dir = dir_open(inode_open (e.inode_sector));
+			if (parent_dir == NULL) {
+				goto done;
+			}
+		}	else {
+			goto done;
+		}
 	}
-	success = dir_create(fat_create_chain(0), 16, parent_dir->inode->sector);
+	success = dir_create(fat_create_chain(0), 16, parent_dir->inode->sector, last == NULL ? dir : last + 1);
+	printf("mkdir done: %s\n", dir);
 	dir_close(parent_dir);
+done:
+	free(cpy_parent_dir);
 	return success;
 }
 
