@@ -68,6 +68,8 @@ filesys_create (const char *name, off_t initial_size) {
 	bool success;
 
 #ifdef EFILESYS
+	if (!get_parent_dir(name, &dir))
+		return false;
 	inode_sector = fat_create_chain(0);
 	success = (dir != NULL
 			&& inode_sector != 0

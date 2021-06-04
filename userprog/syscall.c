@@ -486,7 +486,6 @@ mkdir(const char *dir) {
 	struct inode *inode = NULL;
 	struct dir_entry e;
 
-	printf("mkdir start: %s\n", dir);
 	if (dir == NULL || strlen(dir) == 0) 
 		return false;
 
@@ -507,7 +506,6 @@ mkdir(const char *dir) {
 		}
 	}
 	success = dir_create(fat_create_chain(0), 16, parent_dir->inode->sector, last == NULL ? dir : last + 1);
-	printf("mkdir done: %s\n", dir);
 	dir_close(parent_dir);
 done:
 	free(cpy_parent_dir);
