@@ -117,6 +117,7 @@ lookup (const struct dir *dir, const char *name,
 	char *slash_pos, *curr_pos, *find_name, *last = strrchr(name, '/');
 	bool curr_success, found = false;
 	int name_len = strlen(name);
+	struct inode *inode, *symlink_inode;
 
 	ASSERT (dir != NULL);
 	ASSERT (name != NULL);
@@ -149,6 +150,13 @@ lookup (const struct dir *dir, const char *name,
 			}
 			for (ofs = 0; inode_read_at (curr_dir->inode, &e, sizeof e, ofs) == sizeof e; ofs += sizeof e) {
 				if (e.in_use && !strcmp (find_name, e.name)) {
+					inode = inode_open(e.inode_sector);
+					if (inode->data.is_symlink) {
+						symlink_inode = inode_open(inode->data.start);
+						inode_read_at (symlink_inode, &e, sizeof e, 0);
+						inode_close(symlink_inode);
+					}
+					inode_close(inode);
 					if (ep != NULL)
 						*ep = e;
 					if (ofsp != NULL)

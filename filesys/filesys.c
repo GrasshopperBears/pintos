@@ -129,14 +129,29 @@ bool
 filesys_create_symlink (const char *target, const char *linkpath) {
 	struct dir *link_dir, *target_dir;
 	char *last = strrchr(linkpath, '/');
-	struct inode* target_inode;
+	struct inode* target_inode, *link_inode;
+	bool success;
+	disk_sector_t inode_sector;
+	struct inode_disk *disk_inode = NULL;
 
 	if (!get_parent_dir(linkpath, &link_dir) || !get_parent_dir(target, &target_dir))
 		return false;
 	
 	dir_lookup (target_dir, last == NULL ? target : last + 1, &target_inode);
 
-	return dir_add (link_dir, last == NULL ? linkpath : last + 1, target_inode->sector);
+	inode_sector = fat_create_chain(0);
+	
+	disk_inode = calloc (1, sizeof *disk_inode);
+	disk_inode->is_symlink = true;
+	disk_inode->start = target_inode->data.start;
+	disk_inode->magic = INODE_MAGIC;
+	disk_write (filesys_disk, inode_sector, disk_inode);
+	free(disk_inode);
+
+	success = disk_inode && dir_add (link_dir, last == NULL ? linkpath : last + 1, inode_sector);
+	dir_close(link_dir);
+	dir_close(target_dir);
+	return success;
 }
 
 /* Formats the file system. */

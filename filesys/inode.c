@@ -8,9 +8,6 @@
 #include "filesys/fat.h"
 #include "threads/malloc.h"
 
-/* Identifies an inode. */
-#define INODE_MAGIC 0x494e4f44
-
 /* Returns the number of sectors to allocate for an inode SIZE
  * bytes long. */
 static inline size_t
@@ -79,6 +76,7 @@ inode_create (disk_sector_t sector, off_t length, bool is_file) {
 			sectors = 1;
 		disk_inode->length = length;
 		disk_inode->is_file = is_file;
+		disk_inode->is_symlink = false;
 		disk_inode->magic = INODE_MAGIC;
 #ifdef EFILESYS
 		disk_inode->start = fat_create_chain_multiple(0, sectors);

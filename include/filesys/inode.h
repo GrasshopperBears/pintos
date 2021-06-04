@@ -8,13 +8,17 @@
 
 struct bitmap;
 
+/* Identifies an inode. */
+#define INODE_MAGIC 0x494e4f44
+
 /* On-disk inode.
  * Must be exactly DISK_SECTOR_SIZE bytes long. */
 struct inode_disk {
 	disk_sector_t start;                /* First data sector. */
 	off_t length;                       /* File size in bytes. */
 	bool is_file;
-	bool unused_bool[3];
+	bool is_symlink;
+	bool unused_bool[2];
 	unsigned magic;                     /* Magic number. */
 	uint32_t unused[124];               /* Not used. */
 };
