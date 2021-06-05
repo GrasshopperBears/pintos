@@ -253,7 +253,7 @@ done:
 bool
 dir_remove (struct dir *dir, const char *name) {
 	struct dir_entry e, target_e;
-	struct inode *inode = NULL, *target_inode;
+	struct inode *inode = NULL, *target_inode, *tmp;
 	bool success = false;
 	off_t ofs, target_ofs;
 
@@ -272,8 +272,14 @@ dir_remove (struct dir *dir, const char *name) {
 	if (!inode->data.is_file) {
 		target_inode = inode_open(e.inode_sector);
 		for (target_ofs = 0; inode_read_at (target_inode, &target_e, sizeof target_e, target_ofs) == sizeof target_e; target_ofs += sizeof target_e) {
-			if (target_e.in_use && strcmp(target_e.name, ".") && strcmp(target_e.name, ".."))
-				goto done;
+			if (target_e.in_use && strcmp(target_e.name, ".") && strcmp(target_e.name, "..")) {
+				tmp = inode_open(target_e.inode_sector);
+				if (!tmp->removed) {
+					inode_close(tmp);
+					goto done;
+				}
+				inode_close(tmp);
+			}
 		}
 		inode_close(target_inode);
 	}

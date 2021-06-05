@@ -524,6 +524,8 @@ mkdir(const char *dir) {
 		goto done;
 
 	success = dir_create(fat_create_chain(0), 16, parent_dir->inode->sector, last == NULL ? dir : last + 1);
+	if (!success)
+		remove(dir);
 done:
 	dir_close(parent_dir);
 	return success;
