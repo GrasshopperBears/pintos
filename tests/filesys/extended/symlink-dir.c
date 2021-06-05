@@ -43,6 +43,7 @@ test_main (void)
 	CHECK (mkdir ("a/b"), "mkdir \"a/b\"");
 	CHECK (symlink ("/a/b", "/a/link_b") == 0, "create symlink \"a/link_b\"");
 
+	// CHECK (create ("a/b/file", 0), "create \"a/b/file\"");
 	CHECK (create ("a/link_b/file", 0), "create \"a/link_b/file\"");
 	CHECK ((fd = open ("/a/link_b/file")) > 1, "open \"file\"");
 

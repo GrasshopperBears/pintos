@@ -116,7 +116,7 @@ lookup (const struct dir *dir, const char *name,
 	struct dir* curr_dir = dir_reopen(dir);
 	char *slash_pos, *curr_pos, *find_name, *last = strrchr(name, '/');
 	bool curr_success, found = false;
-	int name_len = strlen(name);
+	int name_len = strlen(name), tmp_clst;
 	struct inode *inode, *symlink_inode, *real_data;
 
 	ASSERT (dir != NULL);
@@ -130,6 +130,12 @@ lookup (const struct dir *dir, const char *name,
 	}
 	
 	while (curr_pos != '\0' && curr_pos <= name + name_len) {
+		while(curr_dir->inode->data.is_symlink) {
+			tmp_clst = curr_dir->inode->data.start;
+			dir_close(curr_dir);
+			curr_dir = dir_open(inode_open(tmp_clst));
+		}
+
 		slash_pos = strstr(curr_pos, "/");
 		curr_success = false;
 
@@ -212,6 +218,7 @@ dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector) {
 	struct dir_entry e;
 	off_t ofs;
 	bool success = false;
+	int tmp_clst;
 
 	ASSERT (dir != NULL);
 	ASSERT (name != NULL);
@@ -232,6 +239,12 @@ dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector) {
 	 * Otherwise, we'd need to verify that we didn't get a short
 	 * read due to something intermittent such as low memory. */
 	// printf("lookup passed\n");
+	while(dir->inode->data.is_symlink) {
+		tmp_clst = dir->inode->data.start;
+		dir_close(dir);
+		dir = dir_open(inode_open(tmp_clst));
+	}
+
 	for (ofs = 0; inode_read_at (dir->inode, &e, sizeof e, ofs) == sizeof e;
 			ofs += sizeof e)
 		if (!e.in_use)

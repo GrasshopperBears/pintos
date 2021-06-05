@@ -207,9 +207,10 @@ open (const char *file) {
 	int new_fd = 2;
 	struct list_elem* el;
 	struct file_elem* f_el;
-	struct inode* inode;
+	struct inode* inode, *tmp;
 	char *last = strrchr(file, '/');
 	struct dir *parent_dir;
+	struct dir_entry e;
 
 	if (file == NULL || new_f_el == NULL) {
 		exit(-1);
@@ -230,8 +231,21 @@ open (const char *file) {
 		return -1;
 	}
 
-	dir_lookup (parent_dir, last == NULL ? file : last + 1, &inode);	// inode에 무엇을?
-	dir_close(parent_dir);
+	if (lookup (parent_dir, last == NULL ? file : last + 1, &e, NULL)) {
+		tmp = inode_open (e.inode_sector);
+		if (tmp->data.is_symlink) {
+			inode = inode_open(tmp->data.start);
+			inode_close(tmp);
+		} else
+			inode = tmp;
+	} else {
+		lock_release(&filesys_lock);
+		return -1;
+	}
+
+
+	// dir_lookup (parent_dir, last == NULL ? file : last + 1, &inode);	// inode에 무엇을?
+	// dir_close(parent_dir);
 	if (inode == NULL || inode->removed) {
 		lock_release(&filesys_lock);
 		return -1;

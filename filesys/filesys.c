@@ -97,11 +97,24 @@ filesys_create (const char *name, off_t initial_size) {
  * or if an internal memory allocation fails. */
 struct file *
 filesys_open (const char *name) {
-	struct dir *dir = dir_open_root ();
-	struct inode *inode = NULL;
+	struct dir *dir;
+	struct inode *inode = NULL, *tmp;
+	struct dir_entry e;
+	char *last = strrchr(name, '/');
 
-	if (dir != NULL)
-		dir_lookup (dir, name, &inode);
+	if (!get_parent_dir(name, &dir))
+		return false;
+
+	if (dir != NULL) {
+		if (lookup (dir, last == NULL ? name : last + 1, &e, NULL)) {
+			tmp = inode_open (e.inode_sector);
+			if (tmp->data.is_symlink) {
+				inode = inode_open(tmp->data.start);
+				inode_close(tmp);
+			} else
+				inode = tmp;
+		}
+	}
 	dir_close (dir);
 
 	return file_open (inode);
