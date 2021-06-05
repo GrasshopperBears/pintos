@@ -255,41 +255,12 @@ inode_extend (struct inode *inode, int sectors, int new_size) {
 
 	end = fat_end_of_chain(disk_inode->start);
 	result = fat_create_chain_multiple(end, sectors == 0 ? 1 : sectors);
-	inode->data.length = new_size;
-	disk_write (filesys_disk, inode->sector, &inode->data);
-	
+	if (new_size > inode_length(inode)){
+		inode->data.length = new_size;
+		disk_write (filesys_disk, inode->sector, &inode->data);
+		// printf("ex: %d size to %d\n", inode->sector, new_size);
+	}
 	return result != 0;
-
-
-	// margin = DISK_SECTOR_SIZE - inode_length(inode) % DISK_SECTOR_SIZE;
-	// if (margin > 0) {
-	// 	written = margin > size ? size : margin;
-	// 	disk_inode->length += written;
-	// 	size -= written;
-	// 	if (!size) {
-	// 		disk_write (filesys_disk, inode->sector, disk_inode);
-	// 		return true;
-	// 	}
-	// }
-	// sectors = bytes_to_sectors (size);
-	// new = fat_create_chain_multiple(end, sectors);
-
-	// if (new) {
-	// 	// disk_inode->start = new;
-	// 	disk_inode->length += size;
-	// 	disk_write (filesys_disk, inode->sector, disk_inode);
-	// 	if (sectors > 0) {
-	// 		static char zeros[DISK_SECTOR_SIZE];
-	// 		size_t i;
-
-	// 		for (i = 0; i < sectors; i++) {
-	// 			disk_write (filesys_disk, cluster_to_sector(new), zeros);
-	// 			new = fat_get(new);
-	// 		}
-	// 	}
-	// 	success = true; 
-	// }
-	// return success;
 }
 
 int
@@ -327,10 +298,6 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 		/* Sector to write, starting byte offset within sector. */
 		disk_sector_t sector_idx = byte_to_sector (inode, offset);
 		int sector_ofs = offset % DISK_SECTOR_SIZE;
-
-		if (sector_idx > 1000) {
-			printf('opver\n');
-		}
 
 		/* Bytes left in inode, bytes left in sector, lesser of the two. */
 		off_t inode_left = inode_length (inode) - offset;
@@ -374,9 +341,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 	if (size + offset > inode_length(inode)) {
 		inode->data.length = size + offset;
 		disk_write (filesys_disk, inode->sector, &inode->data);
-	}
-	if (bytes_written == 0) {
-		printf("bytes_written 0\n");
+		// printf("wr: %d size to %d\n", inode->sector, size + offset);
 	}
 	return bytes_written;
 }

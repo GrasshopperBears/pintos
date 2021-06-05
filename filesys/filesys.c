@@ -139,7 +139,7 @@ filesys_create_symlink (const char *target, const char *linkpath) {
 	// } else if (!strcmp(linkpath, "link_43")) {
 	// 	printf("link_43\n");
 	// }
-	printf("%s\n", linkpath);
+	// printf("%s\n", linkpath);
 
 	if (!get_parent_dir(linkpath, &link_dir))
 		return false;
