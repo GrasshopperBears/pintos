@@ -211,6 +211,7 @@ open (const char *file) {
 	char *last = strrchr(file, '/');
 	struct dir *parent_dir;
 	struct dir_entry e;
+	bool is_root = false;
 
 	if (file == NULL || new_f_el == NULL) {
 		exit(-1);
@@ -221,7 +222,7 @@ open (const char *file) {
 	lock_acquire(&filesys_lock);
 
 	if (last != NULL && last == file && strlen(file) == 1) {
-		inode->data.is_file = false;
+		is_root = true;
 		opened_dir = dir_open_root();
 		goto done;
 	}
@@ -271,7 +272,7 @@ done:
 			new_fd++;
 		}
 	}
-	new_f_el->is_file = inode->data.is_file;
+	new_f_el->is_file = is_root ? false : inode->data.is_file;
 	new_f_el->file = opened_file;
 	new_f_el->dir = opened_dir;
 	new_f_el->fd = new_fd;

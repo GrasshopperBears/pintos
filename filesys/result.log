@@ -167,21 +167,7 @@ perl -I../.. ../../tests/userprog/fork-once.ck tests/userprog/fork-once tests/us
 pass tests/userprog/fork-once
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-multiple:fork-multiple --swap-disk=4 -- -q   -f run fork-multiple < /dev/null 2> tests/userprog/fork-multiple.errors > tests/userprog/fork-multiple.output
 perl -I../.. ../../tests/userprog/fork-multiple.ck tests/userprog/fork-multiple tests/userprog/fork-multiple.result
-FAIL tests/userprog/fork-multiple
-Kernel panic in run: PANIC at ../../threads/thread.c:332 in thread_current(): assertion `t->status == THREAD_RUNNING' failed.
-Call stack: 0x8004214aff 0x80042074ff 0x8004206e34 0x800420e899 0x800420963e 0x8004209a5c 0x800421a342 0x400121 0x4001a7 0x400229 0x400cca
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x00000080042074ff: thread_current (threads/thread.c:334)
-0x0000008004206e34: thread_tick (threads/thread.c:163)
-0x000000800420e899: timer_interrupt (devices/timer.c:129)
-0x000000800420963e: intr_handler (threads/interrupt.c:352)
-0x0000008004209a5c: intr_entry (threads/intr-stubs.o:?)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400121: (unknown)
-0x00000000004001a7: (unknown)
-0x0000000000400229: (unknown)
-0x0000000000400cca: (unknown)
+pass tests/userprog/fork-multiple
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-recursive:fork-recursive --swap-disk=4 -- -q   -f run fork-recursive < /dev/null 2> tests/userprog/fork-recursive.errors > tests/userprog/fork-recursive.output
 perl -I../.. ../../tests/userprog/fork-recursive.ck tests/userprog/fork-recursive tests/userprog/fork-recursive.result
 pass tests/userprog/fork-recursive
@@ -393,8 +379,7 @@ pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/grow-dir-
 pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-dir-lg.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-dir-lg-persistence.errors > tests/filesys/extended/grow-dir-lg-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/grow-dir-lg.ck tests/filesys/extended/grow-dir-lg tests/filesys/extended/grow-dir-lg.result
-FAIL tests/filesys/extended/grow-dir-lg
-run: open "/x/file0": FAILED
+pass tests/filesys/extended/grow-dir-lg
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/grow-file-size:grow-file-size -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run grow-file-size < /dev/null 2> tests/filesys/extended/grow-file-size.errors > tests/filesys/extended/grow-file-size.output
@@ -471,37 +456,7 @@ pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/symlink-d
 pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/symlink-dir.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/symlink-dir-persistence.errors > tests/filesys/extended/symlink-dir-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/symlink-dir.ck tests/filesys/extended/symlink-dir tests/filesys/extended/symlink-dir.result
-FAIL tests/filesys/extended/symlink-dir
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (symlink-dir) begin
-  (symlink-dir) mkdir "/a"
-  (symlink-dir) mkdir "a/b"
-  (symlink-dir) create symlink "a/link_b"
-  (symlink-dir) create "a/link_b/file"
-  (symlink-dir) open "file"
-  (symlink-dir) write "file"
-  (symlink-dir) close "file"
-  (symlink-dir) open "a/b/file" for verification
-  (symlink-dir) verified contents of "a/b/file"
-  (symlink-dir) close "a/b/file"
-  (symlink-dir) end
-Differences in `diff -u' format:
-  (symlink-dir) begin
-  (symlink-dir) mkdir "/a"
-  (symlink-dir) mkdir "a/b"
-  (symlink-dir) create symlink "a/link_b"
-- (symlink-dir) create "a/link_b/file"
-- (symlink-dir) open "file"
-- (symlink-dir) write "file"
-- (symlink-dir) close "file"
-- (symlink-dir) open "a/b/file" for verification
-- (symlink-dir) verified contents of "a/b/file"
-- (symlink-dir) close "a/b/file"
-- (symlink-dir) end
-
-(Process exit codes are excluded for matching purposes.)
+pass tests/filesys/extended/symlink-dir
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/symlink-link:symlink-link -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run symlink-link < /dev/null 2> tests/filesys/extended/symlink-link.errors > tests/filesys/extended/symlink-link.output
@@ -700,216 +655,228 @@ pass tests/vm/swap-fork
 perl -I../.. ../../tests/filesys/extended/dir-empty-name-persistence.ck tests/filesys/extended/dir-empty-name-persistence tests/filesys/extended/dir-empty-name-persistence.result
 FAIL tests/filesys/extended/dir-empty-name-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/dir-mk-tree-persistence.ck tests/filesys/extended/dir-mk-tree-persistence tests/filesys/extended/dir-mk-tree-persistence.result
 FAIL tests/filesys/extended/dir-mk-tree-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/dir-mkdir-persistence.ck tests/filesys/extended/dir-mkdir-persistence tests/filesys/extended/dir-mkdir-persistence.result
 FAIL tests/filesys/extended/dir-mkdir-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/dir-open-persistence.ck tests/filesys/extended/dir-open-persistence tests/filesys/extended/dir-open-persistence.result
 FAIL tests/filesys/extended/dir-open-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/dir-over-file-persistence.ck tests/filesys/extended/dir-over-file-persistence tests/filesys/extended/dir-over-file-persistence.result
 FAIL tests/filesys/extended/dir-over-file-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/dir-rm-cwd-persistence.ck tests/filesys/extended/dir-rm-cwd-persistence tests/filesys/extended/dir-rm-cwd-persistence.result
 FAIL tests/filesys/extended/dir-rm-cwd-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/dir-rm-parent-persistence.ck tests/filesys/extended/dir-rm-parent-persistence tests/filesys/extended/dir-rm-parent-persistence.result
 FAIL tests/filesys/extended/dir-rm-parent-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/dir-rm-root-persistence.ck tests/filesys/extended/dir-rm-root-persistence tests/filesys/extended/dir-rm-root-persistence.result
 FAIL tests/filesys/extended/dir-rm-root-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/dir-rm-tree-persistence.ck tests/filesys/extended/dir-rm-tree-persistence tests/filesys/extended/dir-rm-tree-persistence.result
 FAIL tests/filesys/extended/dir-rm-tree-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/dir-rmdir-persistence.ck tests/filesys/extended/dir-rmdir-persistence tests/filesys/extended/dir-rmdir-persistence.result
 FAIL tests/filesys/extended/dir-rmdir-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/dir-under-file-persistence.ck tests/filesys/extended/dir-under-file-persistence tests/filesys/extended/dir-under-file-persistence.result
 FAIL tests/filesys/extended/dir-under-file-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/dir-vine-persistence.ck tests/filesys/extended/dir-vine-persistence tests/filesys/extended/dir-vine-persistence.result
 FAIL tests/filesys/extended/dir-vine-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/grow-create-persistence.ck tests/filesys/extended/grow-create-persistence tests/filesys/extended/grow-create-persistence.result
 FAIL tests/filesys/extended/grow-create-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/grow-dir-lg-persistence.ck tests/filesys/extended/grow-dir-lg-persistence tests/filesys/extended/grow-dir-lg-persistence.result
 FAIL tests/filesys/extended/grow-dir-lg-persistence
-Prerequisite test tests/filesys/extended/grow-dir-lg failed.
+Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
+Translation of call stack:
+0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
+0x00000080042068cc: run_actions (threads/init.c:297)
+0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/grow-file-size-persistence.ck tests/filesys/extended/grow-file-size-persistence tests/filesys/extended/grow-file-size-persistence.result
 FAIL tests/filesys/extended/grow-file-size-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/grow-root-lg-persistence.ck tests/filesys/extended/grow-root-lg-persistence tests/filesys/extended/grow-root-lg-persistence.result
 FAIL tests/filesys/extended/grow-root-lg-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/grow-root-sm-persistence.ck tests/filesys/extended/grow-root-sm-persistence tests/filesys/extended/grow-root-sm-persistence.result
 FAIL tests/filesys/extended/grow-root-sm-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/grow-seq-lg-persistence.ck tests/filesys/extended/grow-seq-lg-persistence tests/filesys/extended/grow-seq-lg-persistence.result
 FAIL tests/filesys/extended/grow-seq-lg-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/grow-seq-sm-persistence.ck tests/filesys/extended/grow-seq-sm-persistence tests/filesys/extended/grow-seq-sm-persistence.result
 FAIL tests/filesys/extended/grow-seq-sm-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/grow-sparse-persistence.ck tests/filesys/extended/grow-sparse-persistence tests/filesys/extended/grow-sparse-persistence.result
 FAIL tests/filesys/extended/grow-sparse-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/grow-tell-persistence.ck tests/filesys/extended/grow-tell-persistence tests/filesys/extended/grow-tell-persistence.result
 FAIL tests/filesys/extended/grow-tell-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/grow-two-files-persistence.ck tests/filesys/extended/grow-two-files-persistence tests/filesys/extended/grow-two-files-persistence.result
 FAIL tests/filesys/extended/grow-two-files-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/syn-rw-persistence.ck tests/filesys/extended/syn-rw-persistence tests/filesys/extended/syn-rw-persistence.result
 FAIL tests/filesys/extended/syn-rw-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/symlink-file-persistence.ck tests/filesys/extended/symlink-file-persistence tests/filesys/extended/symlink-file-persistence.result
 FAIL tests/filesys/extended/symlink-file-persistence
 Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
-Call stack: 0x8004214aff 0x800421ff4c 0x80042068cc 0x8004206186
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
 Translation of call stack:
 0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ff4c: fsutil_get (filesys/fsutil.c:163)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
 0x00000080042068cc: run_actions (threads/init.c:297)
 0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/symlink-dir-persistence.ck tests/filesys/extended/symlink-dir-persistence tests/filesys/extended/symlink-dir-persistence.result
 FAIL tests/filesys/extended/symlink-dir-persistence
-Prerequisite test tests/filesys/extended/symlink-dir failed.
+Kernel panic in file system extraction run: PANIC at ../../filesys/fsutil.c:162 in fsutil_get(): fs.tar: open failed
+Call stack: 0x8004214aff 0x8004220156 0x80042068cc 0x8004206186
+Translation of call stack:
+0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
+0x0000008004220156: fsutil_get (filesys/fsutil.c:163)
+0x00000080042068cc: run_actions (threads/init.c:297)
+0x0000008004206186: main (threads/init.c:125)
 perl -I../.. ../../tests/filesys/extended/symlink-link-persistence.ck tests/filesys/extended/symlink-link-persistence tests/filesys/extended/symlink-link-persistence.result
 FAIL tests/filesys/extended/symlink-link-persistence
 Prerequisite test tests/filesys/extended/symlink-link failed.
@@ -968,7 +935,7 @@ pass tests/userprog/write-zero
 pass tests/userprog/write-stdin
 pass tests/userprog/write-bad-fd
 pass tests/userprog/fork-once
-FAIL tests/userprog/fork-multiple
+pass tests/userprog/fork-multiple
 pass tests/userprog/fork-recursive
 pass tests/userprog/fork-read
 pass tests/userprog/fork-close
@@ -1020,7 +987,7 @@ pass tests/filesys/extended/dir-rmdir
 pass tests/filesys/extended/dir-under-file
 pass tests/filesys/extended/dir-vine
 pass tests/filesys/extended/grow-create
-FAIL tests/filesys/extended/grow-dir-lg
+pass tests/filesys/extended/grow-dir-lg
 pass tests/filesys/extended/grow-file-size
 pass tests/filesys/extended/grow-root-lg
 pass tests/filesys/extended/grow-root-sm
@@ -1031,7 +998,7 @@ pass tests/filesys/extended/grow-tell
 pass tests/filesys/extended/grow-two-files
 pass tests/filesys/extended/syn-rw
 pass tests/filesys/extended/symlink-file
-FAIL tests/filesys/extended/symlink-dir
+pass tests/filesys/extended/symlink-dir
 FAIL tests/filesys/extended/symlink-link
 pass tests/vm/pt-grow-stack
 pass tests/vm/pt-grow-bad
@@ -1105,7 +1072,7 @@ FAIL tests/filesys/extended/syn-rw-persistence
 FAIL tests/filesys/extended/symlink-file-persistence
 FAIL tests/filesys/extended/symlink-dir-persistence
 FAIL tests/filesys/extended/symlink-link-persistence
-31 of 192 tests failed.
+28 of 192 tests failed.
 ../../tests/Make.tests:28: recipe for target 'check' failed
 make[1]: Leaving directory '/home/kaist/pintos/filesys/build'
 ../Makefile.kernel:10: recipe for target 'check' failed
