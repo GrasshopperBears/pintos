@@ -195,7 +195,7 @@ fat_create_chain (cluster_t clst) {
 	if (clst == 0) {
 		fat_put(new, EOChain);
 	}	else {
-		fat_put(new, fat_get(clst));
+		fat_put(new, fat_get(clst) == 0 ? EOChain : fat_get(clst));
 		fat_put(clst, new);
 	}
 	lock_release(&fat_fs->write_lock);
@@ -249,7 +249,7 @@ fat_end_of_chain (cluster_t clst) {
 
 	while (curr != EOChain) {
 		nxt = fat_get(curr);
-		if (nxt == EOChain)
+		if (nxt == EOChain || nxt == 0)
 			break;
 		curr = nxt;
 	}

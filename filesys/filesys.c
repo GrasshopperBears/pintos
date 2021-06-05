@@ -134,12 +134,24 @@ filesys_create_symlink (const char *target, const char *linkpath) {
 	disk_sector_t inode_sector;
 	struct inode_disk *disk_inode = NULL;
 
-	if (!get_parent_dir(linkpath, &link_dir) || !get_parent_dir(target, &target_dir))
+	// if (!strcmp(linkpath, "link_42")) {
+	// 	printf("link_42\n");
+	// } else if (!strcmp(linkpath, "link_43")) {
+	// 	printf("link_43\n");
+	// }
+	printf("%s\n", linkpath);
+
+	if (!get_parent_dir(linkpath, &link_dir))
 		return false;
+	if (!get_parent_dir(target, &target_dir))
+		return false;
+	// if (!get_parent_dir(linkpath, &link_dir) || !get_parent_dir(target, &target_dir))
+	// 	return false;
 	
 	dir_lookup (target_dir, last == NULL ? target : last + 1, &target_inode);
 
 	inode_sector = fat_create_chain(0);
+	// printf("Sector: %d\n", inode_sector);
 	
 	disk_inode = calloc (1, sizeof *disk_inode);
 	disk_inode->is_symlink = true;

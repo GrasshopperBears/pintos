@@ -242,46 +242,62 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset) {
 }
 
 bool
-inode_extend (struct inode *inode, off_t size) {
+inode_extend (struct inode *inode, int sectors, int new_size) {
 	struct inode_disk *disk_inode = &inode->data;
 	cluster_t end, new;
 	bool success = false;
-	size_t sectors, margin, written;
+	// size_t sectors, margin, written;
+	int result = 0;
 
-	ASSERT (size >= 0);
+	// ASSERT (size >= 0);
 	ASSERT (disk_inode != NULL);
 	ASSERT (sizeof *disk_inode == DISK_SECTOR_SIZE);
 
 	end = fat_end_of_chain(disk_inode->start);
-	margin = DISK_SECTOR_SIZE - inode_length(inode) % DISK_SECTOR_SIZE;
-	if (margin > 0) {
-		written = margin > size ? size : margin;
-		disk_inode->length += written;
-		size -= written;
-		if (!size) {
-			disk_write (filesys_disk, inode->sector, disk_inode);
-			return true;
-		}
-	}
-	sectors = bytes_to_sectors (size);
-	new = fat_create_chain_multiple(end, sectors);
+	result = fat_create_chain_multiple(end, sectors == 0 ? 1 : sectors);
+	inode->data.length = new_size;
+	disk_write (filesys_disk, inode->sector, &inode->data);
+	
+	return result != 0;
 
-	if (new) {
-		// disk_inode->start = new;
-		disk_inode->length += size;
-		disk_write (filesys_disk, inode->sector, disk_inode);
-		if (sectors > 0) {
-			static char zeros[DISK_SECTOR_SIZE];
-			size_t i;
 
-			for (i = 0; i < sectors; i++) {
-				disk_write (filesys_disk, cluster_to_sector(new), zeros);
-				new = fat_get(new);
-			}
-		}
-		success = true; 
-	}
-	return success;
+	// margin = DISK_SECTOR_SIZE - inode_length(inode) % DISK_SECTOR_SIZE;
+	// if (margin > 0) {
+	// 	written = margin > size ? size : margin;
+	// 	disk_inode->length += written;
+	// 	size -= written;
+	// 	if (!size) {
+	// 		disk_write (filesys_disk, inode->sector, disk_inode);
+	// 		return true;
+	// 	}
+	// }
+	// sectors = bytes_to_sectors (size);
+	// new = fat_create_chain_multiple(end, sectors);
+
+	// if (new) {
+	// 	// disk_inode->start = new;
+	// 	disk_inode->length += size;
+	// 	disk_write (filesys_disk, inode->sector, disk_inode);
+	// 	if (sectors > 0) {
+	// 		static char zeros[DISK_SECTOR_SIZE];
+	// 		size_t i;
+
+	// 		for (i = 0; i < sectors; i++) {
+	// 			disk_write (filesys_disk, cluster_to_sector(new), zeros);
+	// 			new = fat_get(new);
+	// 		}
+	// 	}
+	// 	success = true; 
+	// }
+	// return success;
+}
+
+int
+byte_to_sec(int byte) {
+	int a = byte / DISK_SECTOR_SIZE;
+	int b = byte % DISK_SECTOR_SIZE;
+	int c = a + b == 0 ? 0 : 1;
+	return byte / DISK_SECTOR_SIZE + (byte % DISK_SECTOR_SIZE == 0 ? 0 : 1);
 }
 
 /* Writes SIZE bytes from BUFFER into INODE, starting at OFFSET.
@@ -295,14 +311,14 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 	const uint8_t *buffer = buffer_;
 	off_t bytes_written = 0;
 	uint8_t *bounce = NULL;
-	off_t gap = offset + size - inode_length(inode);
+	off_t gap = byte_to_sec(offset + size) - byte_to_sec(inode_length(inode));
 
 	if (inode->deny_write_cnt)
 		return 0;
 
 #ifdef EFILESYS
 	if (gap >= 0) {
-		if (!inode_extend(inode, gap))
+		if (!inode_extend(inode, gap, offset + size))
 			return 0;
 	}
 #endif
@@ -311,6 +327,10 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 		/* Sector to write, starting byte offset within sector. */
 		disk_sector_t sector_idx = byte_to_sector (inode, offset);
 		int sector_ofs = offset % DISK_SECTOR_SIZE;
+
+		if (sector_idx > 1000) {
+			printf('opver\n');
+		}
 
 		/* Bytes left in inode, bytes left in sector, lesser of the two. */
 		off_t inode_left = inode_length (inode) - offset;
@@ -324,7 +344,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
 		if (sector_ofs == 0 && chunk_size == DISK_SECTOR_SIZE) {
 			/* Write full sector directly to disk. */
-			disk_write (filesys_disk, sector_idx, buffer + bytes_written); 
+			disk_write (filesys_disk, sector_idx, buffer + bytes_written);
 		} else {
 			/* We need a bounce buffer. */
 			if (bounce == NULL) {
@@ -351,6 +371,13 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 	}
 	free (bounce);
 
+	if (size + offset > inode_length(inode)) {
+		inode->data.length = size + offset;
+		disk_write (filesys_disk, inode->sector, &inode->data);
+	}
+	if (bytes_written == 0) {
+		printf("bytes_written 0\n");
+	}
 	return bytes_written;
 }
 
