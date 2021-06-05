@@ -243,22 +243,14 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset) {
 
 bool
 inode_extend (struct inode *inode, int sectors, int new_size) {
-	struct inode_disk *disk_inode = &inode->data;
-	cluster_t end, new;
-	bool success = false;
-	// size_t sectors, margin, written;
+	cluster_t end;
 	int result = 0;
 
-	// ASSERT (size >= 0);
-	ASSERT (disk_inode != NULL);
-	ASSERT (sizeof *disk_inode == DISK_SECTOR_SIZE);
-
-	end = fat_end_of_chain(disk_inode->start);
+	end = fat_end_of_chain(inode->data.start);
 	result = fat_create_chain_multiple(end, sectors == 0 ? 1 : sectors);
 	if (new_size > inode_length(inode)){
 		inode->data.length = new_size;
 		disk_write (filesys_disk, inode->sector, &inode->data);
-		// printf("ex: %d size to %d\n", inode->sector, new_size);
 	}
 	return result != 0;
 }
@@ -341,7 +333,6 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 	if (size + offset > inode_length(inode)) {
 		inode->data.length = size + offset;
 		disk_write (filesys_disk, inode->sector, &inode->data);
-		// printf("wr: %d size to %d\n", inode->sector, size + offset);
 	}
 	return bytes_written;
 }

@@ -150,13 +150,6 @@ lookup (const struct dir *dir, const char *name,
 			}
 			for (ofs = 0; inode_read_at (curr_dir->inode, &e, sizeof e, ofs) == sizeof e; ofs += sizeof e) {
 				if (e.in_use && !strcmp (find_name, e.name)) {
-					// inode = inode_open(e.inode_sector);
-					// if (inode->data.is_symlink) {
-					// 	// symlink_inode = inode_open(inode->data.start);
-					// 	e.inode_sector = inode->data.start;
-					// 	// inode_close(symlink_inode);
-					// }
-					// inode_close(inode);
 					if (ep != NULL)
 						*ep = e;
 					if (ofsp != NULL)
