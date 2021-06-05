@@ -230,7 +230,7 @@ open (const char *file) {
 		return -1;
 	}
 
-	dir_lookup (parent_dir, last == NULL ? file : last, &inode);	// inode에 무엇을?
+	dir_lookup (parent_dir, last == NULL ? file : last + 1, &inode);	// inode에 무엇을?
 	dir_close(parent_dir);
 	if (inode == NULL || inode->removed) {
 		lock_release(&filesys_lock);

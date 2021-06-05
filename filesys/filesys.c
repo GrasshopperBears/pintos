@@ -128,7 +128,7 @@ filesys_remove (const char *name) {
 bool
 filesys_create_symlink (const char *target, const char *linkpath) {
 	struct dir *link_dir, *target_dir;
-	char *last = strrchr(linkpath, '/');
+	char *link_last = strrchr(linkpath, '/'), *target_last = strrchr(target, '/');
 	struct inode* target_inode, *link_inode;
 	bool success;
 	disk_sector_t inode_sector;
@@ -137,7 +137,7 @@ filesys_create_symlink (const char *target, const char *linkpath) {
 	if (!get_parent_dir(linkpath, &link_dir) || !get_parent_dir(target, &target_dir))
 		return false;
 	
-	dir_lookup (target_dir, last == NULL ? target : last + 1, &target_inode);
+	dir_lookup (target_dir, target_last == NULL ? target : target_last + 1, &target_inode);
 
 	inode_sector = fat_create_chain(0);
 	
@@ -148,7 +148,7 @@ filesys_create_symlink (const char *target, const char *linkpath) {
 	disk_write (filesys_disk, inode_sector, disk_inode);
 	free(disk_inode);
 
-	success = disk_inode && dir_add (link_dir, last == NULL ? linkpath : last + 1, inode_sector);
+	success = disk_inode && dir_add (link_dir, link_last == NULL ? linkpath : link_last + 1, inode_sector);
 	dir_close(link_dir);
 	dir_close(target_dir);
 	return success;
