@@ -178,7 +178,8 @@ inode_close (struct inode *inode) {
 		/* Deallocate blocks if removed. */
 		if (inode->removed) {
 			fat_remove_chain (inode->sector, 0); // inode가 있는 sector부터 일단 remove
-			fat_remove_chain (inode->data.start, 0); // 이후 data start부터 chain을 따라가며 remove
+			if (!inode->data.is_symlink)
+				fat_remove_chain (inode->data.start, 0); // 이후 data start부터 chain을 따라가며 remove
 		}
 
 		free (inode); 

@@ -26,6 +26,7 @@ struct fat_fs {
 	disk_sector_t data_start;
 	cluster_t last_clst;
 	struct lock write_lock;
+	unsigned int free_head;
 };
 
 static struct fat_fs *fat_fs;
@@ -57,7 +58,7 @@ void
 init_fat_link(void) {
 	unsigned int tail;
 
-	fat_fs->bs.free_head = fat_fs->data_start;
+	fat_fs->free_head = fat_fs->data_start;
 	tail = fat_fs->data_start;
 	for (int i = fat_fs->data_start + 1; i <= fat_fs->last_clst; i++) {
 		fat_put(tail, i);
@@ -65,13 +66,12 @@ init_fat_link(void) {
 	}
 	if (tail)
 		fat_put(tail, EOChain);
-	printf("head %d\n", fat_fs->bs.free_head);
 }
 
 void
 fat_open (void) {
 	fat_fs->fat = calloc (fat_fs->fat_length, sizeof (cluster_t));
-	memset(fat_fs->fat, 0, fat_fs->fat_length * sizeof (cluster_t));
+	// memset(fat_fs->fat, 0, fat_fs->fat_length * sizeof (cluster_t));
 	if (fat_fs->fat == NULL)
 		PANIC ("FAT load failed");
 
@@ -80,7 +80,7 @@ fat_open (void) {
 	off_t bytes_read = 0;
 	off_t bytes_left = sizeof (fat_fs->fat);
 	const off_t fat_size_in_bytes = fat_fs->fat_length * sizeof (cluster_t);
-	for (unsigned i = 1; i <= fat_fs->bs.fat_sectors; i++) {
+	for (unsigned i = 1; i < fat_fs->bs.fat_sectors; i++) {
 		bytes_left = fat_size_in_bytes - bytes_read;
 		if (bytes_left >= DISK_SECTOR_SIZE) {
 			disk_read (filesys_disk, fat_fs->bs.fat_start + i,
@@ -104,6 +104,7 @@ fat_close (void) {
 	uint8_t *bounce = calloc (1, DISK_SECTOR_SIZE);
 	if (bounce == NULL)
 		PANIC ("FAT close failed");
+	fat_fs->bs.free_head = fat_fs->free_head;
 	memcpy (bounce, &fat_fs->bs, sizeof (fat_fs->bs));
 	disk_write (filesys_disk, FAT_BOOT_SECTOR, bounce);
 	free (bounce);
@@ -113,7 +114,7 @@ fat_close (void) {
 	off_t bytes_wrote = 0;
 	off_t bytes_left = sizeof (fat_fs->fat);
 	const off_t fat_size_in_bytes = fat_fs->fat_length * sizeof (cluster_t);
-	for (unsigned i = 1; i <= fat_fs->bs.fat_sectors; i++) {
+	for (unsigned i = 1; i < fat_fs->bs.fat_sectors; i++) {
 		bytes_left = fat_size_in_bytes - bytes_wrote;
 		if (bytes_left >= DISK_SECTOR_SIZE) {
 			disk_write (filesys_disk, fat_fs->bs.fat_start + i,
@@ -139,7 +140,7 @@ fat_create (void) {
 
 	// Create FAT table
 	fat_fs->fat = calloc (fat_fs->fat_length, sizeof (cluster_t));
-	memset(fat_fs->fat, 0, fat_fs->fat_length * sizeof (cluster_t));
+	// memset(fat_fs->fat, 0, fat_fs->fat_length * sizeof (cluster_t));
 	if (fat_fs->fat == NULL)
 		PANIC ("FAT creation failed");
 
@@ -176,6 +177,7 @@ fat_fs_init (void) {
 	fat_fs->fat_length = sector_to_cluster(fat_fs->bs.total_sectors);
 	fat_fs->data_start = sector_to_cluster(fat_fs->bs.fat_start + fat_fs->bs.fat_sectors); //158
 	fat_fs->last_clst = sector_to_cluster(fat_fs->bs.total_sectors - SECTORS_PER_CLUSTER); //20159
+	fat_fs->free_head = fat_fs->bs.free_head;
 	lock_init(&fat_fs->write_lock);
 }
 
@@ -187,10 +189,10 @@ cluster_t
 fat_get_free (void) {
 	unsigned int ret;
 
-	if (fat_fs->bs.free_head == EOChain)
+	if (fat_fs->free_head == EOChain)
 		return NULL;
-	ret = fat_fs->bs.free_head;
-	fat_fs->bs.free_head = fat_get(fat_fs->bs.free_head);
+	ret = fat_fs->free_head;
+	fat_fs->free_head = fat_get(fat_fs->free_head);
 	fat_put(ret, EOChain);
 	return ret;
 }
@@ -251,15 +253,15 @@ fat_remove_chain (cluster_t clst, cluster_t pclst) {
 	lock_acquire(&fat_fs->write_lock);
 	while (cur != EOChain) {
 		next = fat_get(cur);
-		fat_put(cur, fat_fs->bs.free_head);
-		fat_fs->bs.free_head = cur;
+		fat_put(cur, fat_fs->free_head);
+		fat_fs->free_head = cur;
 		// fat_fs->fat[cur] = 0;
 		cur = next;	
 	}
 
 	if (pclst != 0) {
-		fat_put(pclst, fat_fs->bs.free_head);
-		fat_fs->bs.free_head = pclst;
+		fat_put(pclst, fat_fs->free_head);
+		fat_fs->free_head = pclst;
 	}
 	lock_release(&fat_fs->write_lock);
 }

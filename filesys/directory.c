@@ -282,7 +282,7 @@ dir_remove (struct dir *dir, const char *name) {
 	if (inode == NULL)
 		goto done;
 	
-	if (!inode->data.is_file) {
+	if (!inode->data.is_file && !inode->data.is_symlink) {
 		target_inode = inode_open(e.inode_sector);
 		for (target_ofs = 0; inode_read_at (target_inode, &target_e, sizeof target_e, target_ofs) == sizeof target_e; target_ofs += sizeof target_e) {
 			if (target_e.in_use && strcmp(target_e.name, ".") && strcmp(target_e.name, "..")) {
