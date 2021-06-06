@@ -320,7 +320,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 			else
 				memset (bounce, 0, DISK_SECTOR_SIZE);
 			memcpy (bounce + sector_ofs, buffer + bytes_written, chunk_size);
-			disk_write (filesys_disk, sector_idx, bounce); 
+			disk_write (filesys_disk, sector_idx, bounce);
 		}
 
 		/* Advance. */

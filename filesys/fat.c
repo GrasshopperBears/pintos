@@ -24,7 +24,6 @@ struct fat_fs {
 	unsigned int fat_length;
 	disk_sector_t data_start;
 	cluster_t last_clst;
-	struct bitmap *map;
 	struct lock write_lock;
 };
 
@@ -56,6 +55,7 @@ fat_init (void) {
 void
 fat_open (void) {
 	fat_fs->fat = calloc (fat_fs->fat_length, sizeof (cluster_t));
+	memset(fat_fs->fat, 0, fat_fs->fat_length * sizeof (cluster_t));
 	if (fat_fs->fat == NULL)
 		PANIC ("FAT load failed");
 
@@ -64,7 +64,7 @@ fat_open (void) {
 	off_t bytes_read = 0;
 	off_t bytes_left = sizeof (fat_fs->fat);
 	const off_t fat_size_in_bytes = fat_fs->fat_length * sizeof (cluster_t);
-	for (unsigned i = 0; i < fat_fs->bs.fat_sectors; i++) {
+	for (unsigned i = 1; i <= fat_fs->bs.fat_sectors; i++) {
 		bytes_left = fat_size_in_bytes - bytes_read;
 		if (bytes_left >= DISK_SECTOR_SIZE) {
 			disk_read (filesys_disk, fat_fs->bs.fat_start + i,
@@ -97,7 +97,7 @@ fat_close (void) {
 	off_t bytes_wrote = 0;
 	off_t bytes_left = sizeof (fat_fs->fat);
 	const off_t fat_size_in_bytes = fat_fs->fat_length * sizeof (cluster_t);
-	for (unsigned i = 1; i < fat_fs->bs.fat_sectors; i++) {
+	for (unsigned i = 1; i <= fat_fs->bs.fat_sectors; i++) {
 		bytes_left = fat_size_in_bytes - bytes_wrote;
 		if (bytes_left >= DISK_SECTOR_SIZE) {
 			disk_write (filesys_disk, fat_fs->bs.fat_start + i,
@@ -123,6 +123,7 @@ fat_create (void) {
 
 	// Create FAT table
 	fat_fs->fat = calloc (fat_fs->fat_length, sizeof (cluster_t));
+	memset(fat_fs->fat, 0, fat_fs->fat_length * sizeof (cluster_t));
 	if (fat_fs->fat == NULL)
 		PANIC ("FAT creation failed");
 
@@ -158,7 +159,6 @@ fat_fs_init (void) {
 	fat_fs->fat_length = sector_to_cluster(fat_fs->bs.total_sectors);
 	fat_fs->data_start = sector_to_cluster(fat_fs->bs.fat_start + fat_fs->bs.fat_sectors); //158
 	fat_fs->last_clst = sector_to_cluster(fat_fs->bs.total_sectors - SECTORS_PER_CLUSTER); //20159
-	fat_fs->map = bitmap_create(disk_size (filesys_disk));
 	lock_init(&fat_fs->write_lock);
 }
 
@@ -169,7 +169,7 @@ fat_fs_init (void) {
 cluster_t
 fat_get_free (void) {
 	for (int i = fat_fs->data_start; i <= fat_fs->last_clst; i++) {
-		if (!bitmap_test(fat_fs->map, i)) {
+		if (!fat_fs->fat[i]) {
 			return (cluster_t) i;
 		}
 	}
@@ -190,7 +190,6 @@ fat_create_chain (cluster_t clst) {
 		lock_release(&fat_fs->write_lock);
 		return 0;
 	}
-	bitmap_mark(fat_fs->map, new);
 
 	if (clst == 0) {
 		fat_put(new, EOChain);
@@ -233,8 +232,8 @@ fat_remove_chain (cluster_t clst, cluster_t pclst) {
 	lock_acquire(&fat_fs->write_lock);
 	while (cur != EOChain) {
 		next = fat_get(cur);
-		fat_put(cur, EOChain);		
-		bitmap_reset(fat_fs->map, (int) cur);
+		fat_put(cur, EOChain);
+		fat_fs->fat[cur] = 0;
 		cur = next;	
 	}
 
