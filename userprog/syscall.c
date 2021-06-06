@@ -244,9 +244,6 @@ open (const char *file) {
 		return -1;
 	}
 
-
-	// dir_lookup (parent_dir, last == NULL ? file : last + 1, &inode);	// inode에 무엇을?
-	// dir_close(parent_dir);
 	if (inode == NULL || inode->removed) {
 		lock_release(&filesys_lock);
 		return -1;
@@ -560,7 +557,7 @@ bool
 isdir(int fd) {
 	struct file_elem* f_el = file_elem_by_fd(fd);
 
-	return f_el->is_file;
+	return !f_el->is_file;
 }
 
 int

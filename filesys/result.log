@@ -653,387 +653,62 @@ pintos -v -k -T 600 -m 40   --fs-disk=10 -p tests/vm/swap-fork:swap-fork -p test
 perl -I../.. ../../tests/vm/swap-fork.ck tests/vm/swap-fork tests/vm/swap-fork.result
 pass tests/vm/swap-fork
 perl -I../.. ../../tests/filesys/extended/dir-empty-name-persistence.ck tests/filesys/extended/dir-empty-name-persistence tests/filesys/extended/dir-empty-name-persistence.result
-FAIL tests/filesys/extended/dir-empty-name-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/dir-empty-name-persistence
 perl -I../.. ../../tests/filesys/extended/dir-mk-tree-persistence.ck tests/filesys/extended/dir-mk-tree-persistence tests/filesys/extended/dir-mk-tree-persistence.result
-FAIL tests/filesys/extended/dir-mk-tree-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/dir-mk-tree-persistence
 perl -I../.. ../../tests/filesys/extended/dir-mkdir-persistence.ck tests/filesys/extended/dir-mkdir-persistence tests/filesys/extended/dir-mkdir-persistence.result
-FAIL tests/filesys/extended/dir-mkdir-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/dir-mkdir-persistence
 perl -I../.. ../../tests/filesys/extended/dir-open-persistence.ck tests/filesys/extended/dir-open-persistence tests/filesys/extended/dir-open-persistence.result
-FAIL tests/filesys/extended/dir-open-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/dir-open-persistence
 perl -I../.. ../../tests/filesys/extended/dir-over-file-persistence.ck tests/filesys/extended/dir-over-file-persistence tests/filesys/extended/dir-over-file-persistence.result
-FAIL tests/filesys/extended/dir-over-file-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/dir-over-file-persistence
 perl -I../.. ../../tests/filesys/extended/dir-rm-cwd-persistence.ck tests/filesys/extended/dir-rm-cwd-persistence tests/filesys/extended/dir-rm-cwd-persistence.result
-FAIL tests/filesys/extended/dir-rm-cwd-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/dir-rm-cwd-persistence
 perl -I../.. ../../tests/filesys/extended/dir-rm-parent-persistence.ck tests/filesys/extended/dir-rm-parent-persistence tests/filesys/extended/dir-rm-parent-persistence.result
-FAIL tests/filesys/extended/dir-rm-parent-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/dir-rm-parent-persistence
 perl -I../.. ../../tests/filesys/extended/dir-rm-root-persistence.ck tests/filesys/extended/dir-rm-root-persistence tests/filesys/extended/dir-rm-root-persistence.result
-FAIL tests/filesys/extended/dir-rm-root-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/dir-rm-root-persistence
 perl -I../.. ../../tests/filesys/extended/dir-rm-tree-persistence.ck tests/filesys/extended/dir-rm-tree-persistence tests/filesys/extended/dir-rm-tree-persistence.result
-FAIL tests/filesys/extended/dir-rm-tree-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/dir-rm-tree-persistence
 perl -I../.. ../../tests/filesys/extended/dir-rmdir-persistence.ck tests/filesys/extended/dir-rmdir-persistence tests/filesys/extended/dir-rmdir-persistence.result
-FAIL tests/filesys/extended/dir-rmdir-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/dir-rmdir-persistence
 perl -I../.. ../../tests/filesys/extended/dir-under-file-persistence.ck tests/filesys/extended/dir-under-file-persistence tests/filesys/extended/dir-under-file-persistence.result
-FAIL tests/filesys/extended/dir-under-file-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/dir-under-file-persistence
 perl -I../.. ../../tests/filesys/extended/dir-vine-persistence.ck tests/filesys/extended/dir-vine-persistence tests/filesys/extended/dir-vine-persistence.result
-FAIL tests/filesys/extended/dir-vine-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/dir-vine-persistence
 perl -I../.. ../../tests/filesys/extended/grow-create-persistence.ck tests/filesys/extended/grow-create-persistence tests/filesys/extended/grow-create-persistence.result
-FAIL tests/filesys/extended/grow-create-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/grow-create-persistence
 perl -I../.. ../../tests/filesys/extended/grow-dir-lg-persistence.ck tests/filesys/extended/grow-dir-lg-persistence tests/filesys/extended/grow-dir-lg-persistence.result
-FAIL tests/filesys/extended/grow-dir-lg-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/grow-dir-lg-persistence
 perl -I../.. ../../tests/filesys/extended/grow-file-size-persistence.ck tests/filesys/extended/grow-file-size-persistence tests/filesys/extended/grow-file-size-persistence.result
-FAIL tests/filesys/extended/grow-file-size-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/grow-file-size-persistence
 perl -I../.. ../../tests/filesys/extended/grow-root-lg-persistence.ck tests/filesys/extended/grow-root-lg-persistence tests/filesys/extended/grow-root-lg-persistence.result
-FAIL tests/filesys/extended/grow-root-lg-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/grow-root-lg-persistence
 perl -I../.. ../../tests/filesys/extended/grow-root-sm-persistence.ck tests/filesys/extended/grow-root-sm-persistence tests/filesys/extended/grow-root-sm-persistence.result
-FAIL tests/filesys/extended/grow-root-sm-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/grow-root-sm-persistence
 perl -I../.. ../../tests/filesys/extended/grow-seq-lg-persistence.ck tests/filesys/extended/grow-seq-lg-persistence tests/filesys/extended/grow-seq-lg-persistence.result
-FAIL tests/filesys/extended/grow-seq-lg-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/grow-seq-lg-persistence
 perl -I../.. ../../tests/filesys/extended/grow-seq-sm-persistence.ck tests/filesys/extended/grow-seq-sm-persistence tests/filesys/extended/grow-seq-sm-persistence.result
-FAIL tests/filesys/extended/grow-seq-sm-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/grow-seq-sm-persistence
 perl -I../.. ../../tests/filesys/extended/grow-sparse-persistence.ck tests/filesys/extended/grow-sparse-persistence tests/filesys/extended/grow-sparse-persistence.result
-FAIL tests/filesys/extended/grow-sparse-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/grow-sparse-persistence
 perl -I../.. ../../tests/filesys/extended/grow-tell-persistence.ck tests/filesys/extended/grow-tell-persistence tests/filesys/extended/grow-tell-persistence.result
-FAIL tests/filesys/extended/grow-tell-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/grow-tell-persistence
 perl -I../.. ../../tests/filesys/extended/grow-two-files-persistence.ck tests/filesys/extended/grow-two-files-persistence tests/filesys/extended/grow-two-files-persistence.result
-FAIL tests/filesys/extended/grow-two-files-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/grow-two-files-persistence
 perl -I../.. ../../tests/filesys/extended/syn-rw-persistence.ck tests/filesys/extended/syn-rw-persistence tests/filesys/extended/syn-rw-persistence.result
-FAIL tests/filesys/extended/syn-rw-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/syn-rw-persistence
 perl -I../.. ../../tests/filesys/extended/symlink-file-persistence.ck tests/filesys/extended/symlink-file-persistence tests/filesys/extended/symlink-file-persistence.result
-FAIL tests/filesys/extended/symlink-file-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/symlink-file-persistence
 perl -I../.. ../../tests/filesys/extended/symlink-dir-persistence.ck tests/filesys/extended/symlink-dir-persistence tests/filesys/extended/symlink-dir-persistence.result
-FAIL tests/filesys/extended/symlink-dir-persistence
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
+pass tests/filesys/extended/symlink-dir-persistence
 perl -I../.. ../../tests/filesys/extended/symlink-link-persistence.ck tests/filesys/extended/symlink-link-persistence tests/filesys/extended/symlink-link-persistence.result
 FAIL tests/filesys/extended/symlink-link-persistence
 Prerequisite test tests/filesys/extended/symlink-link failed.
 ../../tests/make-grade ../.. results ../../tests/filesys/Grading.with-vm | tee grade
 warning: tests/filesys/mount/placeholder not tested, assuming failure
 warning: tests/filesys/journaling/placeholder not tested, assuming failure
-TOTAL TESTING SCORE: 76.7%
+TOTAL TESTING SCORE: 96.1%
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -1045,16 +720,16 @@ tests/threads/Rubric.alarm                      7/  7   2.0%/  2.0%
 tests/threads/Rubric.priority                  25/ 25   3.0%/  3.0%
 tests/userprog/Rubric.functionality            40/ 40  10.0%/ 10.0%
 tests/userprog/Rubric.robustness               40/ 40   5.0%/  5.0%
-tests/vm/Rubric.functionality                  74/ 82   7.2%/  8.0%
+tests/vm/Rubric.functionality                  76/ 82   7.4%/  8.0%
 tests/vm/Rubric.robustness                     29/ 29   2.0%/  2.0%
 tests/filesys/base/Rubric                      17/ 17  10.0%/ 10.0%
 tests/filesys/extended/Rubric.functionality    44/ 49  22.4%/ 25.0%
 tests/filesys/extended/Rubric.robustness       10/ 10  15.0%/ 15.0%
-tests/filesys/extended/Rubric.persistence       0/ 26   0.0%/ 20.0%
+tests/filesys/extended/Rubric.persistence      25/ 26  19.2%/ 20.0%
 tests/filesys/mount/Rubric                      0/  1   0.0%/ 10.0%
 tests/filesys/journaling/Rubric                 0/  1   0.0%/ 30.0%
 --------------------------------------------- --- --- ------ ------
-Total                                                  76.7%/140.0%
+Total                                                  96.1%/140.0%
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -1214,7 +889,7 @@ Functionality of virtual memory subsystem (tests/vm/Rubric.functionality):
 	     1/ 1 tests/vm/page-linear
 	     4/ 4 tests/vm/page-parallel
 	     2/ 2 tests/vm/page-shuffle
-	  ** 0/ 2 tests/vm/page-merge-seq
+	     2/ 2 tests/vm/page-merge-seq
 	     5/ 5 tests/vm/page-merge-par
 	     5/ 5 tests/vm/page-merge-mm
 	     5/ 5 tests/vm/page-merge-stk
@@ -1243,8 +918,8 @@ Functionality of virtual memory subsystem (tests/vm/Rubric.functionality):
 	     4/ 4 tests/vm/lazy-file
 
 	- Section summary.
-	     25/ 27 tests passed
-	     74/ 82 points subtotal
+	     26/ 27 tests passed
+	     76/ 82 points subtotal
 
 Robustness of virtual memory subsystem (tests/vm/Rubric.robustness):
 	- Test robustness of page table support.
@@ -1352,36 +1027,36 @@ Robustness of file system (tests/filesys/extended/Rubric.robustness):
 	     10/ 10 points subtotal
 
 Persistence of file system (tests/filesys/extended/Rubric.persistence):
-	  ** 0/ 1 tests/filesys/extended/dir-empty-name-persistence
-	  ** 0/ 1 tests/filesys/extended/dir-mk-tree-persistence
-	  ** 0/ 1 tests/filesys/extended/dir-mkdir-persistence
-	  ** 0/ 1 tests/filesys/extended/dir-open-persistence
-	  ** 0/ 1 tests/filesys/extended/dir-over-file-persistence
-	  ** 0/ 1 tests/filesys/extended/dir-rm-cwd-persistence
-	  ** 0/ 1 tests/filesys/extended/dir-rm-parent-persistence
-	  ** 0/ 1 tests/filesys/extended/dir-rm-root-persistence
-	  ** 0/ 1 tests/filesys/extended/dir-rm-tree-persistence
-	  ** 0/ 1 tests/filesys/extended/dir-rmdir-persistence
-	  ** 0/ 1 tests/filesys/extended/dir-under-file-persistence
-	  ** 0/ 1 tests/filesys/extended/dir-vine-persistence
-	  ** 0/ 1 tests/filesys/extended/grow-create-persistence
-	  ** 0/ 1 tests/filesys/extended/grow-dir-lg-persistence
-	  ** 0/ 1 tests/filesys/extended/grow-file-size-persistence
-	  ** 0/ 1 tests/filesys/extended/grow-root-lg-persistence
-	  ** 0/ 1 tests/filesys/extended/grow-root-sm-persistence
-	  ** 0/ 1 tests/filesys/extended/grow-seq-lg-persistence
-	  ** 0/ 1 tests/filesys/extended/grow-seq-sm-persistence
-	  ** 0/ 1 tests/filesys/extended/grow-sparse-persistence
-	  ** 0/ 1 tests/filesys/extended/grow-tell-persistence
-	  ** 0/ 1 tests/filesys/extended/grow-two-files-persistence
-	  ** 0/ 1 tests/filesys/extended/syn-rw-persistence
-	  ** 0/ 1 tests/filesys/extended/symlink-file-persistence
-	  ** 0/ 1 tests/filesys/extended/symlink-dir-persistence
+	     1/ 1 tests/filesys/extended/dir-empty-name-persistence
+	     1/ 1 tests/filesys/extended/dir-mk-tree-persistence
+	     1/ 1 tests/filesys/extended/dir-mkdir-persistence
+	     1/ 1 tests/filesys/extended/dir-open-persistence
+	     1/ 1 tests/filesys/extended/dir-over-file-persistence
+	     1/ 1 tests/filesys/extended/dir-rm-cwd-persistence
+	     1/ 1 tests/filesys/extended/dir-rm-parent-persistence
+	     1/ 1 tests/filesys/extended/dir-rm-root-persistence
+	     1/ 1 tests/filesys/extended/dir-rm-tree-persistence
+	     1/ 1 tests/filesys/extended/dir-rmdir-persistence
+	     1/ 1 tests/filesys/extended/dir-under-file-persistence
+	     1/ 1 tests/filesys/extended/dir-vine-persistence
+	     1/ 1 tests/filesys/extended/grow-create-persistence
+	     1/ 1 tests/filesys/extended/grow-dir-lg-persistence
+	     1/ 1 tests/filesys/extended/grow-file-size-persistence
+	     1/ 1 tests/filesys/extended/grow-root-lg-persistence
+	     1/ 1 tests/filesys/extended/grow-root-sm-persistence
+	     1/ 1 tests/filesys/extended/grow-seq-lg-persistence
+	     1/ 1 tests/filesys/extended/grow-seq-sm-persistence
+	     1/ 1 tests/filesys/extended/grow-sparse-persistence
+	     1/ 1 tests/filesys/extended/grow-tell-persistence
+	     1/ 1 tests/filesys/extended/grow-two-files-persistence
+	     1/ 1 tests/filesys/extended/syn-rw-persistence
+	     1/ 1 tests/filesys/extended/symlink-file-persistence
+	     1/ 1 tests/filesys/extended/symlink-dir-persistence
 	  ** 0/ 1 tests/filesys/extended/symlink-link-persistence
 
 	- Section summary.
-	      0/ 26 tests passed
-	      0/ 26 points subtotal
+	     25/ 26 tests passed
+	     25/ 26 points subtotal
 
 Functionality of mount (tests/filesys/mount/Rubric):
 	- Basic functionality for mount.
@@ -1402,81 +1077,6 @@ Functionality of journaling (tests/filesys/journaling/Rubric):
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-DETAILS OF tests/vm/page-merge-seq FAILURE:
-
-Kernel panic in run: PANIC at ../../threads/thread.c:332 in thread_current(): assertion `t->status == THREAD_RUNNING' failed.
-Call stack: 0x8004214aff 0x80042074ff 0x8004206e34 0x800420e899 0x800420963e 0x8004209a5c 0x800421a342 0x4002c7 0x400728 0x401435 0x40147e
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x00000080042074ff: thread_current (threads/thread.c:334)
-0x0000008004206e34: thread_tick (threads/thread.c:163)
-0x000000800420e899: timer_interrupt (devices/timer.c:129)
-0x000000800420963e: intr_handler (threads/interrupt.c:352)
-0x0000008004209a5c: intr_entry (threads/intr-stubs.o:?)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x00000000004002c7: (unknown)
-0x0000000000400728: (unknown)
-0x0000000000401435: (unknown)
-0x000000000040147e: (unknown)
-
-OUTPUT FROM tests/vm/page-merge-seq:
-
-Kernel command line: -q -f put page-merge-seq put child-sort run page-merge-seq
-0 ~ 9fc00 1
-100000 ~ 13e0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
-Calibrating timer...  52,377,600 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 216 sector (108 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Formatting file system...done.
-Boot complete.
-Putting 'page-merge-seq' into the file system...
-Putting 'child-sort' into the file system...
-Executing 'page-merge-seq':
-(page-merge-seq) begin
-(page-merge-seq) init
-(page-merge-seq) sort chunk 0
-(page-merge-seq) child[0] exec
-child-sort: exit(123)
-(page-merge-seq) child[0] wait success
-(page-merge-seq) sort chunk 1
-(page-merge-seq) child[1] exec
-child-sort: exit(123)
-(page-merge-seq) child[1] wait success
-(page-merge-seq) sort chunk 2
-(page-merge-seq) child[2] exec
-child-sort: exit(123)
-(page-merge-seq) child[2] wait success
-(page-merge-seq) sort chunk 3
-(page-merge-seq) child[3] exec
-child-sort: exit(123)
-(page-merge-seq) child[3] wait success
-(page-merge-seq) sort chunk 4
-(page-merge-seq) child[4] exec
-child-sort: exit(123)
-(page-merge-seq) child[4] wait success
-(page-merge-seq) sort chunk 5
-(page-merge-seq) child[5] exec
-child-sort: exit(123)
-(page-merge-seq) child[5] wait success
-(page-merge-seq) sort chunk 6
-Kernel PANIC at ../../threads/thread.c:332 in thread_current(): assertion `t->status == THREAD_RUNNING' failed.
-Call stack: 0x8004214aff 0x80042074ff 0x8004206e34 0x800420e899 0x800420963e 0x8004209a5c 0x800421a342 0x4002c7 0x400728 0x401435 0x40147e 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=00000000006254a0 error=               0
-rax 000080042087b100 rbx 0000800426ff7000 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 000000800426fd20 rbp 000000800426fd30 rsi 000000000000bc0f rdi 0000000000000000
-rip 0000008004211b39 r8 000000800426fc38  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000216 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 0010 ds: 0010 cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
 DETAILS OF tests/vm/swap-iter FAILURE:
 
 run: TIMEOUT
@@ -1489,7 +1089,7 @@ Kernel command line: -q -f put swap-iter put large.txt run swap-iter
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x9e0000 (Usable: 9,088 kB)
-Calibrating timer...  104,140,800 loops/s.
+Calibrating timer...  65,433,600 loops/s.
 hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 7,932 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -1584,7 +1184,7 @@ Kernel command line: -q -f put symlink-link put tar run symlink-link
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
-Calibrating timer...  52,326,400 loops/s.
+Calibrating timer...  167,936,000 loops/s.
 hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 227 sector (113 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -1598,8 +1198,8 @@ Executing 'symlink-link':
 (symlink-link) create symlink "link_a"
 symlink-link: exit(-1)
 Execution of 'symlink-link' complete.
-Timer: 88 ticks
-Thread: 45 idle ticks, 33 kernel ticks, 10 user ticks
+Timer: 97 ticks
+Thread: 54 idle ticks, 37 kernel ticks, 6 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 189 reads, 523 writes
 hd1:0: 227 reads, 0 writes
@@ -1608,1131 +1208,6 @@ Console: 1039 characters output
 Keyboard: 0 keys pressed
 Exception: 1 page faults
 Powering off...
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/dir-empty-name-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/dir-empty-name-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  13,094,400 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/dir-mk-tree-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/dir-mk-tree-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  120,422,400 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/dir-mkdir-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/dir-mkdir-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  78,131,200 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/dir-open-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/dir-open-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  209,510,400 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/dir-over-file-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/dir-over-file-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  52,377,600 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/dir-rm-cwd-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/dir-rm-cwd-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  104,755,200 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/dir-rm-parent-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/dir-rm-parent-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  26,188,800 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/dir-rm-root-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/dir-rm-root-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  28,057,600 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/dir-rm-tree-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/dir-rm-tree-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  52,377,600 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/dir-rmdir-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/dir-rmdir-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  19,609,600 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/dir-under-file-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/dir-under-file-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  111,616,000 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/dir-vine-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/dir-vine-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  111,411,200 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/grow-create-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/grow-create-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  51,968,000 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/grow-dir-lg-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/grow-dir-lg-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  51,763,200 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/grow-file-size-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/grow-file-size-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  52,377,600 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/grow-root-lg-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/grow-root-lg-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  111,206,400 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/grow-root-sm-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/grow-root-sm-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  26,188,800 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/grow-seq-lg-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/grow-seq-lg-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  111,206,400 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/grow-seq-sm-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/grow-seq-sm-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  39,270,400 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/grow-sparse-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/grow-sparse-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  117,964,800 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/grow-tell-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/grow-tell-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  51,558,400 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/grow-two-files-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/grow-two-files-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  196,608,000 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/syn-rw-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/syn-rw-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  32,665,600 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/symlink-file-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/symlink-file-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  49,100,800 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-DETAILS OF tests/filesys/extended/symlink-dir-persistence FAILURE:
-
-Kernel panic in file system extraction run: PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765
-Translation of call stack:
-0x0000008004214aff: debug_panic (lib/kernel/debug.c:32)
-0x000000800421e00c: file_length (filesys/file.c:137)
-0x000000800421ae5b: filesize (userprog/syscall.c:293)
-0x000000800421bd38: syscall_handler (userprog/syscall.c:625)
-0x000000800421a342: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400463: (unknown)
-0x00000000004003bd: (unknown)
-0x0000000000400294: (unknown)
-0x0000000000400137: (unknown)
-0x0000000000401765: (unknown)
-
-OUTPUT FROM tests/filesys/extended/symlink-dir-persistence:
-
-Kernel command line: -q run 'tar fs.tar /' get fs.tar
-0 ~ 9fc00 1
-100000 ~ ffe0000 1
-Pintos booting with: 
-	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  130,867,200 loops/s.
-hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
-hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Boot complete.
-Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -2748,24 +1223,26 @@ Kernel command line: -q run 'tar fs.tar /' get fs.tar
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  818,400 loops/s.
+Calibrating timer...  49,100,800 loops/s.
 hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 2,048 sector (1024 kB) disk, model "QEMU HARDDISK", serial "QM00003"
 hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
 Boot complete.
 Executing 'tar fs.tar /':
-Kernel PANIC at ../../filesys/file.c:136 in file_length(): assertion `file != NULL' failed.
-Call stack: 0x8004214aff 0x800421e00c 0x800421ae5b 0x800421bd38 0x800421a342 0x400463 0x4003bd 0x400294 0x400137 0x401765 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211b39
- cr2=0000000000402f05 error=               0
-rax 000080042087b100 rbx 0000000000000001 rcx 00000080040b8000 rdx 00000000000003d4
-rsp 00000080042c3e30 rbp 00000080042c3e40 rsi 000000000000ab0f rdi 0000000000000000
-rip 0000008004211b39 r8 00000080042c3d48  r9 0000008004217f78 r10 0000000000000000
-r11 0000000000000212 r12 000000800421bb60 r13 0000000000000200 r14 0000800422fe5800
-r15 0000800422fe4800 rflags 00000006
-es: 001b ds: 001b cs: 0008 ss: 0010
-Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
-bad signature on scratch disk
+tar: exit(0)
+Execution of 'tar' complete.
+Getting 'fs.tar' from the file system...
+Timer: 101 ticks
+Thread: 65 idle ticks, 26 kernel ticks, 11 user ticks
+hd0:0: 0 reads, 0 writes
+hd0:1: 604 reads, 493 writes
+hd1:0: 0 reads, 230 writes
+hd1:1: 0 reads, 0 writes
+Console: 875 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
