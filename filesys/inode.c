@@ -185,6 +185,26 @@ inode_close (struct inode *inode) {
 	}
 }
 
+void
+close_all_inodes(void) {
+	struct list_elem* el;
+	struct inode *inode;
+
+	if (list_empty(&open_inodes))
+		return;
+	el = list_begin(&open_inodes);
+	while (el != list_end(&open_inodes)) {
+		inode = list_entry(el, struct inode, elem);
+		list_remove (&inode->elem);
+
+		if (inode->removed) {
+			fat_remove_chain (inode->sector, 0);
+			fat_remove_chain (inode->data.start, 0);
+		}
+		el = el->next;
+	} 
+}
+
 /* Marks INODE to be deleted when it is closed by the last caller who
  * has it open. */
 void

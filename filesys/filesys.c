@@ -50,6 +50,7 @@ void
 filesys_done (void) {
 	/* Original FS */
 #ifdef EFILESYS
+	close_all_inodes();
 	fat_close ();
 	// dir_close(thread_current()->current_dir);
 #else

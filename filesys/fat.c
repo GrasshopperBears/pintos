@@ -15,6 +15,7 @@ struct fat_boot {
 	unsigned int fat_start;
 	unsigned int fat_sectors; /* Size of FAT in sectors. */
 	unsigned int root_dir_cluster;
+	unsigned int free_head;
 };
 
 /* FAT FS */
@@ -50,6 +51,21 @@ fat_init (void) {
 	if (fat_fs->bs.magic != FAT_MAGIC)
 		fat_boot_create ();
 	fat_fs_init ();
+}
+
+void
+init_fat_link(void) {
+	unsigned int tail;
+
+	fat_fs->bs.free_head = fat_fs->data_start;
+	tail = fat_fs->data_start;
+	for (int i = fat_fs->data_start + 1; i <= fat_fs->last_clst; i++) {
+		fat_put(tail, i);
+		tail = i;
+	}
+	if (tail)
+		fat_put(tail, EOChain);
+	printf("head %d\n", fat_fs->bs.free_head);
 }
 
 void
@@ -136,6 +152,7 @@ fat_create (void) {
 		PANIC ("FAT create failed due to OOM");
 	disk_write (filesys_disk, cluster_to_sector (ROOT_DIR_CLUSTER), buf);
 	free (buf);
+	init_fat_link();
 }
 
 void
@@ -168,12 +185,14 @@ fat_fs_init (void) {
 
 cluster_t
 fat_get_free (void) {
-	for (int i = fat_fs->data_start; i <= fat_fs->last_clst; i++) {
-		if (!fat_fs->fat[i]) {
-			return (cluster_t) i;
-		}
-	}
-	return NULL;
+	unsigned int ret;
+
+	if (fat_fs->bs.free_head == EOChain)
+		return NULL;
+	ret = fat_fs->bs.free_head;
+	fat_fs->bs.free_head = fat_get(fat_fs->bs.free_head);
+	fat_put(ret, EOChain);
+	return ret;
 }
 
 /* Add a cluster to the chain.
@@ -232,13 +251,16 @@ fat_remove_chain (cluster_t clst, cluster_t pclst) {
 	lock_acquire(&fat_fs->write_lock);
 	while (cur != EOChain) {
 		next = fat_get(cur);
-		fat_put(cur, EOChain);
-		fat_fs->fat[cur] = 0;
+		fat_put(cur, fat_fs->bs.free_head);
+		fat_fs->bs.free_head = cur;
+		// fat_fs->fat[cur] = 0;
 		cur = next;	
 	}
 
-	if (pclst != 0)
-		fat_put(pclst, EOChain);
+	if (pclst != 0) {
+		fat_put(pclst, fat_fs->bs.free_head);
+		fat_fs->bs.free_head = pclst;
+	}
 	lock_release(&fat_fs->write_lock);
 }
 
