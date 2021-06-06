@@ -285,182 +285,182 @@ pass tests/filesys/base/syn-write
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/dir-empty-name:dir-empty-name -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run dir-empty-name < /dev/null 2> tests/filesys/extended/dir-empty-name.errors > tests/filesys/extended/dir-empty-name.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-empty-name.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-empty-name-persistence.errors > tests/filesys/extended/dir-empty-name-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-empty-name.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-empty-name-persistence.errors > tests/filesys/extended/dir-empty-name-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/dir-empty-name.ck tests/filesys/extended/dir-empty-name tests/filesys/extended/dir-empty-name.result
 pass tests/filesys/extended/dir-empty-name
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/dir-mk-tree:dir-mk-tree -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run dir-mk-tree < /dev/null 2> tests/filesys/extended/dir-mk-tree.errors > tests/filesys/extended/dir-mk-tree.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-mk-tree.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-mk-tree-persistence.errors > tests/filesys/extended/dir-mk-tree-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-mk-tree.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-mk-tree-persistence.errors > tests/filesys/extended/dir-mk-tree-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/dir-mk-tree.ck tests/filesys/extended/dir-mk-tree tests/filesys/extended/dir-mk-tree.result
 pass tests/filesys/extended/dir-mk-tree
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/dir-mkdir:dir-mkdir -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run dir-mkdir < /dev/null 2> tests/filesys/extended/dir-mkdir.errors > tests/filesys/extended/dir-mkdir.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-mkdir.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-mkdir-persistence.errors > tests/filesys/extended/dir-mkdir-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-mkdir.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-mkdir-persistence.errors > tests/filesys/extended/dir-mkdir-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/dir-mkdir.ck tests/filesys/extended/dir-mkdir tests/filesys/extended/dir-mkdir.result
 pass tests/filesys/extended/dir-mkdir
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/dir-open:dir-open -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run dir-open < /dev/null 2> tests/filesys/extended/dir-open.errors > tests/filesys/extended/dir-open.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-open.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-open-persistence.errors > tests/filesys/extended/dir-open-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-open.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-open-persistence.errors > tests/filesys/extended/dir-open-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/dir-open.ck tests/filesys/extended/dir-open tests/filesys/extended/dir-open.result
 pass tests/filesys/extended/dir-open
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/dir-over-file:dir-over-file -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run dir-over-file < /dev/null 2> tests/filesys/extended/dir-over-file.errors > tests/filesys/extended/dir-over-file.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-over-file.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-over-file-persistence.errors > tests/filesys/extended/dir-over-file-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-over-file.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-over-file-persistence.errors > tests/filesys/extended/dir-over-file-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/dir-over-file.ck tests/filesys/extended/dir-over-file tests/filesys/extended/dir-over-file.result
 pass tests/filesys/extended/dir-over-file
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/dir-rm-cwd:dir-rm-cwd -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run dir-rm-cwd < /dev/null 2> tests/filesys/extended/dir-rm-cwd.errors > tests/filesys/extended/dir-rm-cwd.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-rm-cwd.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-rm-cwd-persistence.errors > tests/filesys/extended/dir-rm-cwd-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-rm-cwd.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-rm-cwd-persistence.errors > tests/filesys/extended/dir-rm-cwd-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/dir-rm-cwd.ck tests/filesys/extended/dir-rm-cwd tests/filesys/extended/dir-rm-cwd.result
 pass tests/filesys/extended/dir-rm-cwd
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/dir-rm-parent:dir-rm-parent -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run dir-rm-parent < /dev/null 2> tests/filesys/extended/dir-rm-parent.errors > tests/filesys/extended/dir-rm-parent.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-rm-parent.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-rm-parent-persistence.errors > tests/filesys/extended/dir-rm-parent-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-rm-parent.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-rm-parent-persistence.errors > tests/filesys/extended/dir-rm-parent-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/dir-rm-parent.ck tests/filesys/extended/dir-rm-parent tests/filesys/extended/dir-rm-parent.result
 pass tests/filesys/extended/dir-rm-parent
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/dir-rm-root:dir-rm-root -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run dir-rm-root < /dev/null 2> tests/filesys/extended/dir-rm-root.errors > tests/filesys/extended/dir-rm-root.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-rm-root.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-rm-root-persistence.errors > tests/filesys/extended/dir-rm-root-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-rm-root.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-rm-root-persistence.errors > tests/filesys/extended/dir-rm-root-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/dir-rm-root.ck tests/filesys/extended/dir-rm-root tests/filesys/extended/dir-rm-root.result
 pass tests/filesys/extended/dir-rm-root
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/dir-rm-tree:dir-rm-tree -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run dir-rm-tree < /dev/null 2> tests/filesys/extended/dir-rm-tree.errors > tests/filesys/extended/dir-rm-tree.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-rm-tree.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-rm-tree-persistence.errors > tests/filesys/extended/dir-rm-tree-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-rm-tree.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-rm-tree-persistence.errors > tests/filesys/extended/dir-rm-tree-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/dir-rm-tree.ck tests/filesys/extended/dir-rm-tree tests/filesys/extended/dir-rm-tree.result
 pass tests/filesys/extended/dir-rm-tree
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/dir-rmdir:dir-rmdir -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run dir-rmdir < /dev/null 2> tests/filesys/extended/dir-rmdir.errors > tests/filesys/extended/dir-rmdir.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-rmdir.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-rmdir-persistence.errors > tests/filesys/extended/dir-rmdir-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-rmdir.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-rmdir-persistence.errors > tests/filesys/extended/dir-rmdir-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/dir-rmdir.ck tests/filesys/extended/dir-rmdir tests/filesys/extended/dir-rmdir.result
 pass tests/filesys/extended/dir-rmdir
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/dir-under-file:dir-under-file -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run dir-under-file < /dev/null 2> tests/filesys/extended/dir-under-file.errors > tests/filesys/extended/dir-under-file.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-under-file.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-under-file-persistence.errors > tests/filesys/extended/dir-under-file-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-under-file.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-under-file-persistence.errors > tests/filesys/extended/dir-under-file-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/dir-under-file.ck tests/filesys/extended/dir-under-file tests/filesys/extended/dir-under-file.result
 pass tests/filesys/extended/dir-under-file
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 150 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/dir-vine:dir-vine -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run dir-vine < /dev/null 2> tests/filesys/extended/dir-vine.errors > tests/filesys/extended/dir-vine.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-vine.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-vine-persistence.errors > tests/filesys/extended/dir-vine-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/dir-vine.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/dir-vine-persistence.errors > tests/filesys/extended/dir-vine-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/dir-vine.ck tests/filesys/extended/dir-vine tests/filesys/extended/dir-vine.result
 pass tests/filesys/extended/dir-vine
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/grow-create:grow-create -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run grow-create < /dev/null 2> tests/filesys/extended/grow-create.errors > tests/filesys/extended/grow-create.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-create.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-create-persistence.errors > tests/filesys/extended/grow-create-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-create.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-create-persistence.errors > tests/filesys/extended/grow-create-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/grow-create.ck tests/filesys/extended/grow-create tests/filesys/extended/grow-create.result
 pass tests/filesys/extended/grow-create
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/grow-dir-lg:grow-dir-lg -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run grow-dir-lg < /dev/null 2> tests/filesys/extended/grow-dir-lg.errors > tests/filesys/extended/grow-dir-lg.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-dir-lg.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-dir-lg-persistence.errors > tests/filesys/extended/grow-dir-lg-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-dir-lg.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-dir-lg-persistence.errors > tests/filesys/extended/grow-dir-lg-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/grow-dir-lg.ck tests/filesys/extended/grow-dir-lg tests/filesys/extended/grow-dir-lg.result
 pass tests/filesys/extended/grow-dir-lg
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/grow-file-size:grow-file-size -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run grow-file-size < /dev/null 2> tests/filesys/extended/grow-file-size.errors > tests/filesys/extended/grow-file-size.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-file-size.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-file-size-persistence.errors > tests/filesys/extended/grow-file-size-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-file-size.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-file-size-persistence.errors > tests/filesys/extended/grow-file-size-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/grow-file-size.ck tests/filesys/extended/grow-file-size tests/filesys/extended/grow-file-size.result
 pass tests/filesys/extended/grow-file-size
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/grow-root-lg:grow-root-lg -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run grow-root-lg < /dev/null 2> tests/filesys/extended/grow-root-lg.errors > tests/filesys/extended/grow-root-lg.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-root-lg.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-root-lg-persistence.errors > tests/filesys/extended/grow-root-lg-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-root-lg.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-root-lg-persistence.errors > tests/filesys/extended/grow-root-lg-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/grow-root-lg.ck tests/filesys/extended/grow-root-lg tests/filesys/extended/grow-root-lg.result
 pass tests/filesys/extended/grow-root-lg
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/grow-root-sm:grow-root-sm -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run grow-root-sm < /dev/null 2> tests/filesys/extended/grow-root-sm.errors > tests/filesys/extended/grow-root-sm.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-root-sm.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-root-sm-persistence.errors > tests/filesys/extended/grow-root-sm-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-root-sm.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-root-sm-persistence.errors > tests/filesys/extended/grow-root-sm-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/grow-root-sm.ck tests/filesys/extended/grow-root-sm tests/filesys/extended/grow-root-sm.result
 pass tests/filesys/extended/grow-root-sm
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/grow-seq-lg:grow-seq-lg -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run grow-seq-lg < /dev/null 2> tests/filesys/extended/grow-seq-lg.errors > tests/filesys/extended/grow-seq-lg.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-seq-lg.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-seq-lg-persistence.errors > tests/filesys/extended/grow-seq-lg-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-seq-lg.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-seq-lg-persistence.errors > tests/filesys/extended/grow-seq-lg-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/grow-seq-lg.ck tests/filesys/extended/grow-seq-lg tests/filesys/extended/grow-seq-lg.result
 pass tests/filesys/extended/grow-seq-lg
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/grow-seq-sm:grow-seq-sm -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run grow-seq-sm < /dev/null 2> tests/filesys/extended/grow-seq-sm.errors > tests/filesys/extended/grow-seq-sm.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-seq-sm.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-seq-sm-persistence.errors > tests/filesys/extended/grow-seq-sm-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-seq-sm.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-seq-sm-persistence.errors > tests/filesys/extended/grow-seq-sm-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/grow-seq-sm.ck tests/filesys/extended/grow-seq-sm tests/filesys/extended/grow-seq-sm.result
 pass tests/filesys/extended/grow-seq-sm
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/grow-sparse:grow-sparse -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run grow-sparse < /dev/null 2> tests/filesys/extended/grow-sparse.errors > tests/filesys/extended/grow-sparse.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-sparse.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-sparse-persistence.errors > tests/filesys/extended/grow-sparse-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-sparse.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-sparse-persistence.errors > tests/filesys/extended/grow-sparse-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/grow-sparse.ck tests/filesys/extended/grow-sparse tests/filesys/extended/grow-sparse.result
 pass tests/filesys/extended/grow-sparse
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/grow-tell:grow-tell -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run grow-tell < /dev/null 2> tests/filesys/extended/grow-tell.errors > tests/filesys/extended/grow-tell.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-tell.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-tell-persistence.errors > tests/filesys/extended/grow-tell-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-tell.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-tell-persistence.errors > tests/filesys/extended/grow-tell-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/grow-tell.ck tests/filesys/extended/grow-tell tests/filesys/extended/grow-tell.result
 pass tests/filesys/extended/grow-tell
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/grow-two-files:grow-two-files -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run grow-two-files < /dev/null 2> tests/filesys/extended/grow-two-files.errors > tests/filesys/extended/grow-two-files.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-two-files.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-two-files-persistence.errors > tests/filesys/extended/grow-two-files-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/grow-two-files.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/grow-two-files-persistence.errors > tests/filesys/extended/grow-two-files-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/grow-two-files.ck tests/filesys/extended/grow-two-files tests/filesys/extended/grow-two-files.result
 pass tests/filesys/extended/grow-two-files
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/syn-rw:syn-rw -p tests/filesys/extended/tar:tar -p tests/filesys/extended/child-syn-rw:child-syn-rw --swap-disk=4 -- -q   -f run syn-rw < /dev/null 2> tests/filesys/extended/syn-rw.errors > tests/filesys/extended/syn-rw.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/syn-rw.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/syn-rw-persistence.errors > tests/filesys/extended/syn-rw-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/syn-rw.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/syn-rw-persistence.errors > tests/filesys/extended/syn-rw-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/syn-rw.ck tests/filesys/extended/syn-rw tests/filesys/extended/syn-rw.result
 pass tests/filesys/extended/syn-rw
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/symlink-file:symlink-file -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run symlink-file < /dev/null 2> tests/filesys/extended/symlink-file.errors > tests/filesys/extended/symlink-file.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/symlink-file.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/symlink-file-persistence.errors > tests/filesys/extended/symlink-file-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/symlink-file.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/symlink-file-persistence.errors > tests/filesys/extended/symlink-file-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/symlink-file.ck tests/filesys/extended/symlink-file tests/filesys/extended/symlink-file.result
 pass tests/filesys/extended/symlink-file
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/symlink-dir:symlink-dir -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run symlink-dir < /dev/null 2> tests/filesys/extended/symlink-dir.errors > tests/filesys/extended/symlink-dir.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/symlink-dir.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/symlink-dir-persistence.errors > tests/filesys/extended/symlink-dir-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/symlink-dir.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/symlink-dir-persistence.errors > tests/filesys/extended/symlink-dir-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/symlink-dir.ck tests/filesys/extended/symlink-dir tests/filesys/extended/symlink-dir.result
 pass tests/filesys/extended/symlink-dir
 rm -f tmp.dsk
 pintos-mkdisk tmp.dsk 2
 pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/extended/symlink-link:symlink-link -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run symlink-link < /dev/null 2> tests/filesys/extended/symlink-link.errors > tests/filesys/extended/symlink-link.output
-pintos -v -k -T 60   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/symlink-link.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/symlink-link-persistence.errors > tests/filesys/extended/symlink-link-persistence.output
+pintos -v -k -T 120   --fs-disk=tmp.dsk -g fs.tar:tests/filesys/extended/symlink-link.tar --swap-disk=4 -- -q  run 'tar fs.tar /' < /dev/null 2> tests/filesys/extended/symlink-link-persistence.errors > tests/filesys/extended/symlink-link-persistence.output
 rm -f tmp.dsk
 perl -I../.. ../../tests/filesys/extended/symlink-link.ck tests/filesys/extended/symlink-link tests/filesys/extended/symlink-link.result
 FAIL tests/filesys/extended/symlink-link
@@ -512,6 +512,49 @@ Differences in `diff -u' format:
 - (symlink-link) end
 
 (Process exit codes are excluded for matching purposes.)
+rm -f tmp.dsk
+rm -f mnt.dsk
+pintos-mkdisk tmp.dsk 2
+pintos-mkdisk mnt.dsk 2
+pintos -v -k -T 60 --fs-disk=tmp.dsk -p tests/filesys/mount/mount-easy:mount-easy -p tests/filesys/extended/tar:tar -- -q -f < /dev/null 2> /dev/null > /dev/null
+pintos -v -k -T 60 --fs-disk=mnt.dsk -- -q   -f < /dev/null 2> /dev/null > /dev/null
+pintos -v -k -T 60 -m 20   --fs-disk=tmp.dsk -p tests/filesys/mount/mount-easy:mount-easy -p tests/filesys/extended/tar:tar --swap-disk=4 -- -q   -f run mount-easy < /dev/null 2> tests/filesys/mount/mount-easy.errors > tests/filesys/mount/mount-easy.output
+rm -f tmp.dsk
+rm -f mnt.dsk
+perl -I../.. ../../tests/filesys/mount/mount-easy.ck tests/filesys/mount/mount-easy tests/filesys/mount/mount-easy.result
+FAIL tests/filesys/mount/mount-easy
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (mount-easy) begin
+  (mount-easy) mkdir "/a"
+  (mount-easy) mount the second disk at "/a"
+  Formatting file system...done.
+  (mount-easy) chdir "/a"
+  (mount-easy) mkdir "/a/b"
+  (mount-easy) chdir "/a/b"
+  (mount-easy) pop back to "/"
+  (mount-easy) unmount the second disk from "/a"
+  (mount-easy) chdir to unmounted directory (must fail)
+  (mount-easy) mount the second disk at "/a"
+  (mount-easy) chdir to re-mounted directory
+  (mount-easy) end
+Differences in `diff -u' format:
+  (mount-easy) begin
+  (mount-easy) mkdir "/a"
+  (mount-easy) mount the second disk at "/a"
+- Formatting file system...done.
+- (mount-easy) chdir "/a"
+- (mount-easy) mkdir "/a/b"
+- (mount-easy) chdir "/a/b"
+- (mount-easy) pop back to "/"
+- (mount-easy) unmount the second disk from "/a"
+- (mount-easy) chdir to unmounted directory (must fail)
+- (mount-easy) mount the second disk at "/a"
+- (mount-easy) chdir to re-mounted directory
+- (mount-easy) end
+
+(Process exit codes are excluded for matching purposes.)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/pt-grow-stack:pt-grow-stack --swap-disk=4 -- -q   -f run pt-grow-stack < /dev/null 2> tests/vm/pt-grow-stack.errors > tests/vm/pt-grow-stack.output
 perl -I../.. ../../tests/vm/pt-grow-stack.ck tests/vm/pt-grow-stack tests/vm/pt-grow-stack.result
 pass tests/vm/pt-grow-stack
@@ -541,7 +584,21 @@ perl -I../.. ../../tests/vm/page-linear.ck tests/vm/page-linear tests/vm/page-li
 pass tests/vm/page-linear
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-parallel:page-parallel -p tests/vm/child-linear:child-linear --swap-disk=4 -- -q   -f run page-parallel < /dev/null 2> tests/vm/page-parallel.errors > tests/vm/page-parallel.output
 perl -I../.. ../../tests/vm/page-parallel.ck tests/vm/page-parallel tests/vm/page-parallel.result
-pass tests/vm/page-parallel
+FAIL tests/vm/page-parallel
+Kernel panic in run: PANIC at ../../threads/thread.c:332 in thread_current(): assertion `t->status == THREAD_RUNNING' failed.
+Call stack: 0x8004214c05 0x80042074ff 0x8004206e34 0x800420e899 0x800420963e 0x8004209a5c 0x800421bcff 0x800421a448 0x40010f 0x400c8c 0x400cd5
+Translation of call stack:
+0x0000008004214c05: debug_panic (lib/kernel/debug.c:32)
+0x00000080042074ff: thread_current (threads/thread.c:334)
+0x0000008004206e34: thread_tick (threads/thread.c:163)
+0x000000800420e899: timer_interrupt (devices/timer.c:129)
+0x000000800420963e: intr_handler (threads/interrupt.c:352)
+0x0000008004209a5c: intr_entry (threads/intr-stubs.o:?)
+0x000000800421bcff: syscall_handler (userprog/syscall.c:600)
+0x000000800421a448: no_sti (userprog/syscall-entry.o:?)
+0x000000000040010f: (unknown)
+0x0000000000400c8c: (unknown)
+0x0000000000400cd5: (unknown)
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-merge-seq:page-merge-seq -p tests/vm/child-sort:child-sort --swap-disk=4 -- -q   -f run page-merge-seq < /dev/null 2> tests/vm/page-merge-seq.errors > tests/vm/page-merge-seq.output
 perl -I../.. ../../tests/vm/page-merge-seq.ck tests/vm/page-merge-seq tests/vm/page-merge-seq.result
 pass tests/vm/page-merge-seq
@@ -639,16 +696,15 @@ pass tests/vm/lazy-file
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/lazy-anon:lazy-anon --swap-disk=4 -- -q   -f run lazy-anon < /dev/null 2> tests/vm/lazy-anon.errors > tests/vm/lazy-anon.output
 perl -I../.. ../../tests/vm/lazy-anon.ck tests/vm/lazy-anon tests/vm/lazy-anon.result
 pass tests/vm/lazy-anon
-pintos -v -k -T 60 -m 8    --fs-disk=10 -p tests/vm/swap-file:swap-file -p ../../tests/vm/large.txt:large.txt --swap-disk=10 -- -q   -f run swap-file < /dev/null 2> tests/vm/swap-file.errors > tests/vm/swap-file.output
+pintos -v -k -T 180 -m 8   --fs-disk=10 -p tests/vm/swap-file:swap-file -p ../../tests/vm/large.txt:large.txt --swap-disk=10 -- -q   -f run swap-file < /dev/null 2> tests/vm/swap-file.errors > tests/vm/swap-file.output
 perl -I../.. ../../tests/vm/swap-file.ck tests/vm/swap-file tests/vm/swap-file.result
 pass tests/vm/swap-file
-pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-anon:swap-anon --swap-disk=30 -- -q   -f run swap-anon < /dev/null 2> tests/vm/swap-anon.errors > tests/vm/swap-anon.output
+pintos -v -k -T 180 -m 10   --fs-disk=10 -p tests/vm/swap-anon:swap-anon --swap-disk=30 -- -q   -f run swap-anon < /dev/null 2> tests/vm/swap-anon.errors > tests/vm/swap-anon.output
 perl -I../.. ../../tests/vm/swap-anon.ck tests/vm/swap-anon tests/vm/swap-anon.result
 pass tests/vm/swap-anon
-pintos -v -k -T 60 -m 10   --fs-disk=10 -p tests/vm/swap-iter:swap-iter -p ../../tests/vm/large.txt:large.txt --swap-disk=50 -- -q   -f run swap-iter < /dev/null 2> tests/vm/swap-iter.errors > tests/vm/swap-iter.output
+pintos -v -k -T 180 -m 10   --fs-disk=10 -p tests/vm/swap-iter:swap-iter -p ../../tests/vm/large.txt:large.txt --swap-disk=50 -- -q   -f run swap-iter < /dev/null 2> tests/vm/swap-iter.errors > tests/vm/swap-iter.output
 perl -I../.. ../../tests/vm/swap-iter.ck tests/vm/swap-iter tests/vm/swap-iter.result
-FAIL tests/vm/swap-iter
-run: TIMEOUT
+pass tests/vm/swap-iter
 pintos -v -k -T 600 -m 40   --fs-disk=10 -p tests/vm/swap-fork:swap-fork -p tests/vm/child-swap:child-swap --swap-disk=200 -- -q   -f run swap-fork < /dev/null 2> tests/vm/swap-fork.errors > tests/vm/swap-fork.output
 perl -I../.. ../../tests/vm/swap-fork.ck tests/vm/swap-fork tests/vm/swap-fork.result
 pass tests/vm/swap-fork
@@ -706,9 +762,8 @@ perl -I../.. ../../tests/filesys/extended/symlink-link-persistence.ck tests/file
 FAIL tests/filesys/extended/symlink-link-persistence
 Prerequisite test tests/filesys/extended/symlink-link failed.
 ../../tests/make-grade ../.. results ../../tests/filesys/Grading.with-vm | tee grade
-warning: tests/filesys/mount/placeholder not tested, assuming failure
-warning: tests/filesys/journaling/placeholder not tested, assuming failure
-TOTAL TESTING SCORE: 96.1%
+warning: tests/filesys/buffer-cache/bc-easy not tested, assuming failure
+TOTAL TESTING SCORE: 96.3%
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -720,16 +775,16 @@ tests/threads/Rubric.alarm                      7/  7   2.0%/  2.0%
 tests/threads/Rubric.priority                  25/ 25   3.0%/  3.0%
 tests/userprog/Rubric.functionality            40/ 40  10.0%/ 10.0%
 tests/userprog/Rubric.robustness               40/ 40   5.0%/  5.0%
-tests/vm/Rubric.functionality                  76/ 82   7.4%/  8.0%
+tests/vm/Rubric.functionality                  78/ 82   7.6%/  8.0%
 tests/vm/Rubric.robustness                     29/ 29   2.0%/  2.0%
 tests/filesys/base/Rubric                      17/ 17  10.0%/ 10.0%
 tests/filesys/extended/Rubric.functionality    44/ 49  22.4%/ 25.0%
 tests/filesys/extended/Rubric.robustness       10/ 10  15.0%/ 15.0%
 tests/filesys/extended/Rubric.persistence      25/ 26  19.2%/ 20.0%
-tests/filesys/mount/Rubric                      0/  1   0.0%/ 10.0%
-tests/filesys/journaling/Rubric                 0/  1   0.0%/ 30.0%
+tests/filesys/mount/Rubric                      0/  1   0.0%/ 20.0%
+tests/filesys/buffer-cache/Rubric               0/  1   0.0%/ 20.0%
 --------------------------------------------- --- --- ------ ------
-Total                                                  96.1%/140.0%
+Total                                                  96.3%/140.0%
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -887,7 +942,7 @@ Functionality of virtual memory subsystem (tests/vm/Rubric.functionality):
 
 	- Test paging behavior.
 	     1/ 1 tests/vm/page-linear
-	     4/ 4 tests/vm/page-parallel
+	  ** 0/ 4 tests/vm/page-parallel
 	     2/ 2 tests/vm/page-shuffle
 	     2/ 2 tests/vm/page-merge-seq
 	     5/ 5 tests/vm/page-merge-par
@@ -910,7 +965,7 @@ Functionality of virtual memory subsystem (tests/vm/Rubric.functionality):
 	- Test memory swapping
 	     3/ 3 tests/vm/swap-anon
 	     3/ 3 tests/vm/swap-file
-	  ** 0/ 6 tests/vm/swap-iter
+	     6/ 6 tests/vm/swap-iter
 	     8/ 8 tests/vm/swap-fork
 
 	- Test lazy loading
@@ -919,7 +974,7 @@ Functionality of virtual memory subsystem (tests/vm/Rubric.functionality):
 
 	- Section summary.
 	     26/ 27 tests passed
-	     76/ 82 points subtotal
+	     78/ 82 points subtotal
 
 Robustness of virtual memory subsystem (tests/vm/Rubric.robustness):
 	- Test robustness of page table support.
@@ -1060,15 +1115,15 @@ Persistence of file system (tests/filesys/extended/Rubric.persistence):
 
 Functionality of mount (tests/filesys/mount/Rubric):
 	- Basic functionality for mount.
-	  ** 0/ 1 tests/filesys/mount/placeholder
+	  ** 0/ 1 tests/filesys/mount/mount-easy
 
 	- Section summary.
 	      0/  1 tests passed
 	      0/  1 points subtotal
 
-Functionality of journaling (tests/filesys/journaling/Rubric):
-	- Basic functionality for journaling.
-	  ** 0/ 1 tests/filesys/journaling/placeholder
+Functionality of buffercache (tests/filesys/buffer-cache/Rubric):
+	- Basic functionality for buffercache.
+	  ** 0/ 1 tests/filesys/buffer-cache/bc-easy
 
 	- Section summary.
 	      0/  1 tests passed
@@ -1077,52 +1132,53 @@ Functionality of journaling (tests/filesys/journaling/Rubric):
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-DETAILS OF tests/vm/swap-iter FAILURE:
+DETAILS OF tests/vm/page-parallel FAILURE:
 
-run: TIMEOUT
+Kernel panic in run: PANIC at ../../threads/thread.c:332 in thread_current(): assertion `t->status == THREAD_RUNNING' failed.
+Call stack: 0x8004214c05 0x80042074ff 0x8004206e34 0x800420e899 0x800420963e 0x8004209a5c 0x800421bcff 0x800421a448 0x40010f 0x400c8c 0x400cd5
+Translation of call stack:
+0x0000008004214c05: debug_panic (lib/kernel/debug.c:32)
+0x00000080042074ff: thread_current (threads/thread.c:334)
+0x0000008004206e34: thread_tick (threads/thread.c:163)
+0x000000800420e899: timer_interrupt (devices/timer.c:129)
+0x000000800420963e: intr_handler (threads/interrupt.c:352)
+0x0000008004209a5c: intr_entry (threads/intr-stubs.o:?)
+0x000000800421bcff: syscall_handler (userprog/syscall.c:600)
+0x000000800421a448: no_sti (userprog/syscall-entry.o:?)
+0x000000000040010f: (unknown)
+0x0000000000400c8c: (unknown)
+0x0000000000400cd5: (unknown)
 
-OUTPUT FROM tests/vm/swap-iter:
+OUTPUT FROM tests/vm/page-parallel:
 
-Kernel command line: -q -f put swap-iter put large.txt run swap-iter
+Kernel command line: -q -f put page-parallel put child-linear run page-parallel
 0 ~ 9fc00 1
-100000 ~ 9e0000 1
+100000 ~ 13e0000 1
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
-	ext_mem: 0x100000 ~ 0x9e0000 (Usable: 9,088 kB)
-Calibrating timer...  65,433,600 loops/s.
+	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
+Calibrating timer...  26,188,800 loops/s.
 hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 7,932 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00003"
-hd1:1: detected 100,800 sector (49 MB) disk, model "QEMU HARDDISK", serial "QM00004"
+hd1:0: detected 209 sector (104 kB) disk, model "QEMU HARDDISK", serial "QM00003"
+hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
 Formatting file system...done.
 Boot complete.
-Putting 'swap-iter' into the file system...
-Putting 'large.txt' into the file system...
-Executing 'swap-iter':
-(swap-iter) begin
-(swap-iter) write sparsely over page 0
-(swap-iter) write sparsely over page 512
-(swap-iter) write sparsely over page 1024
-(swap-iter) write sparsely over page 1536
-(swap-iter) write sparsely over page 2048
-(swap-iter) write sparsely over page 2560
-(swap-iter) write sparsely over page 3072
-(swap-iter) write sparsely over page 3584
-(swap-iter) write sparsely over page 4096
-(swap-iter) write sparsely over page 4608
-(swap-iter) open "large.txt"
-(swap-iter) mmap "large.txt"
-(swap-iter) check consistency in page 0
-(swap-iter) check consistency in page 512
-(swap-iter) check consistency in page 1024
-(swap-iter) check consistency in page 1536
-(swap-iter) check consistency in page 2048
-(swap-iter) check consistency in page 2560
-(swap-iter) check consistency in page 3072
-(swap-iter) check consistency in page 3584
-(swap-iter) check consistency in page 4096
-(swap-iter) check consistency in page 4608
-TIMEOUT
+Putting 'page-parallel' into the file system...
+Putting 'child-linear' into the file system...
+Executing 'page-parallel':
+(page-parallel) begin
+Kernel PANIC at ../../threads/thread.c:332 in thread_current(): assertion `t->status == THREAD_RUNNING' failed.
+Call stack: 0x8004214c05 0x80042074ff 0x8004206e34 0x800420e899 0x800420963e 0x8004209a5c 0x800421bcff 0x800421a448 0x40010f 0x400c8c 0x400cd5 0Interrupt 0x0d (#GP General Protection Exception) at rip=8004211c3f
+ cr2=00000000004037ec error=               0
+rax 000080042087b100 rbx 0000800426ff7000 rcx 00000080040b8000 rdx 00000000000003d4
+rsp 000000800426fce0 rbp 000000800426fcf0 rsi 000000000000c00f rdi 0000000000000000
+rip 0000008004211c3f r8 000000800426fbf8  r9 000000800421807e r10 0000000000000000
+r11 0000000000000216 r12 000000800421bc77 r13 0000000000000200 r14 0000800422fe5800
+r15 0000800422fe4800 rflags 00000006
+es: 0010 ds: 0010 cs: 0008 ss: 0010
+Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
+
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 DETAILS OF tests/filesys/extended/symlink-link FAILURE:
@@ -1184,7 +1240,7 @@ Kernel command line: -q -f put symlink-link put tar run symlink-link
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
-Calibrating timer...  167,936,000 loops/s.
+Calibrating timer...  65,433,600 loops/s.
 hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 227 sector (113 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -1198,13 +1254,13 @@ Executing 'symlink-link':
 (symlink-link) create symlink "link_a"
 symlink-link: exit(-1)
 Execution of 'symlink-link' complete.
-Timer: 97 ticks
-Thread: 54 idle ticks, 37 kernel ticks, 6 user ticks
+Timer: 76 ticks
+Thread: 30 idle ticks, 40 kernel ticks, 6 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 189 reads, 523 writes
 hd1:0: 227 reads, 0 writes
 hd1:1: 0 reads, 0 writes
-Console: 1039 characters output
+Console: 1038 characters output
 Keyboard: 0 keys pressed
 Exception: 1 page faults
 Powering off...
@@ -1233,24 +1289,90 @@ Executing 'tar fs.tar /':
 tar: exit(0)
 Execution of 'tar' complete.
 Getting 'fs.tar' from the file system...
-Timer: 101 ticks
-Thread: 65 idle ticks, 26 kernel ticks, 11 user ticks
+Timer: 86 ticks
+Thread: 49 idle ticks, 27 kernel ticks, 11 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 604 reads, 493 writes
 hd1:0: 0 reads, 230 writes
 hd1:1: 0 reads, 0 writes
-Console: 875 characters output
+Console: 874 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-DETAILS OF tests/filesys/mount/placeholder FAILURE:
+DETAILS OF tests/filesys/mount/mount-easy FAILURE:
 
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (mount-easy) begin
+  (mount-easy) mkdir "/a"
+  (mount-easy) mount the second disk at "/a"
+  Formatting file system...done.
+  (mount-easy) chdir "/a"
+  (mount-easy) mkdir "/a/b"
+  (mount-easy) chdir "/a/b"
+  (mount-easy) pop back to "/"
+  (mount-easy) unmount the second disk from "/a"
+  (mount-easy) chdir to unmounted directory (must fail)
+  (mount-easy) mount the second disk at "/a"
+  (mount-easy) chdir to re-mounted directory
+  (mount-easy) end
+Differences in `diff -u' format:
+  (mount-easy) begin
+  (mount-easy) mkdir "/a"
+  (mount-easy) mount the second disk at "/a"
+- Formatting file system...done.
+- (mount-easy) chdir "/a"
+- (mount-easy) mkdir "/a/b"
+- (mount-easy) chdir "/a/b"
+- (mount-easy) pop back to "/"
+- (mount-easy) unmount the second disk from "/a"
+- (mount-easy) chdir to unmounted directory (must fail)
+- (mount-easy) mount the second disk at "/a"
+- (mount-easy) chdir to re-mounted directory
+- (mount-easy) end
+
+(Process exit codes are excluded for matching purposes.)
+
+OUTPUT FROM tests/filesys/mount/mount-easy:
+
+Kernel command line: -q -f put mount-easy put tar run mount-easy
+0 ~ 9fc00 1
+100000 ~ 13e0000 1
+Pintos booting with: 
+	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
+	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
+Calibrating timer...  117,964,800 loops/s.
+hd0:0: detected 369 sector (184 kB) disk, model "QEMU HARDDISK", serial "QM00001"
+hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
+hd1:0: detected 226 sector (113 kB) disk, model "QEMU HARDDISK", serial "QM00003"
+hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
+Formatting file system...done.
+Boot complete.
+Putting 'mount-easy' into the file system...
+Putting 'tar' into the file system...
+Executing 'mount-easy':
+(mount-easy) begin
+(mount-easy) mkdir "/a"
+(mount-easy) mount the second disk at "/a"
+mount-easy: exit(0)
+Execution of 'mount-easy' complete.
+Timer: 104 ticks
+Thread: 54 idle ticks, 47 kernel ticks, 3 user ticks
+hd0:0: 0 reads, 0 writes
+hd0:1: 247 reads, 526 writes
+hd1:0: 226 reads, 0 writes
+hd1:1: 0 reads, 0 writes
+Console: 1053 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-DETAILS OF tests/filesys/journaling/placeholder FAILURE:
+DETAILS OF tests/filesys/buffer-cache/bc-easy FAILURE:
 
 make[1]: Leaving directory '/home/kaist/pintos/filesys/build'
