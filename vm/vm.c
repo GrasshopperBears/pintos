@@ -394,6 +394,7 @@ copy_page_struct(struct page* src, struct page* dst) {
 
 void
 copy_spt_hash(struct hash_elem *e, void *aux) {
+	struct thread *curr = thread_current();
 	struct supplemental_page_table *dst = (struct supplemental_page_table*)aux;
 	struct page* page_original = hash_entry(e, struct page, spt_hash_elem);
 	struct frame *frame;
@@ -416,14 +417,14 @@ copy_spt_hash(struct hash_elem *e, void *aux) {
 		copy_page_struct(page_original, page_copy);
 
 		memcpy(frame->kva, page_original->frame->kva, PGSIZE);
-		pml4_clear_page(thread_current()->pml4, page_copy->va);
+		pml4_clear_page(curr->pml4, page_copy->va);
 		pml4_set_page(page_original->owner->pml4, page_original->va, frame->kva, false);
-		pml4_set_page(thread_current()->pml4, page_copy->va, frame->kva, false);
+		pml4_set_page(curr->pml4, page_copy->va, frame->kva, false);
 		
 		if (VM_TYPE(page_original->operations->type) == VM_FILE)
 			copy_file_page(&page_original->file, &page_copy->file);
 		lock_release(&cow_lock);
-		spt_insert_page(&thread_current()->spt.hash, page_copy);
+		spt_insert_page(&curr->spt.hash, page_copy);
 	}
 }
 

@@ -279,8 +279,12 @@ __do_fork (void *aux) {
 	 * TODO:       the resources of parent.*/
 
 	process_init ();
-	if (!copy_file_list(parent, current))
+	lock_acquire(&filesys_lock);
+	if (!copy_file_list(parent, current)) {
+		lock_release(&filesys_lock);
 		goto error;
+	}
+	lock_release(&filesys_lock);
 
 	c_el = palloc_get_page(PAL_ZERO);
 	if (c_el == NULL)
